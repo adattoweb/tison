@@ -1,0 +1,25 @@
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100..700;1,100..700&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
+@import "tailwindcss";
+
+@layer base {
+   * {
+      margin: 0;
+      padding: 0;
+      font-family: "Montserrat", sans-serif;
+      color: #c7c7c7;
+   }
+}
+
+:root {
+   --bg-color: #080909;
+   --accent-color: #e8ba6f;
+   --second-color: #c7c7c7;
+}
+
+.ibm-plex-sans {
+   font-family: "IBM Plex Sans", sans-serif;
+}
+
+.montserrat {
+   font-family: "Montserrat", sans-serif;
+}
