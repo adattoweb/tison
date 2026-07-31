@@ -6,14 +6,18 @@
       margin: 0;
       padding: 0;
       font-family: "Montserrat", sans-serif;
-      color: #c7c7c7;
+      color: #fff;
    }
 }
 
 :root {
    --bg-color: #080909;
+   --bg-trans-color: rgba(255, 255, 255, 0.03);
+   --bg-trans-hover-color: rgba(255, 255, 255, 0.05);
    --accent-color: #e8ba6f;
    --second-color: #c7c7c7;
+   --stroke-color: #2e2b25;
+   --right-color: #61d381;
 }
 
 .ibm-plex-sans {

@@ -1,9 +1,9 @@
-import DashboardLayout from "@/features/dashboard/DashboardLayout"
+import { Dashboard } from "@/features/dashboard/Dashboard"
 import { LayoutDashboard } from "lucide-react"
 
 export const dashboard = {
    path: "dashboard",
-   Component: DashboardLayout,
+   Component: Dashboard,
    handle: {
       label: "Панель керування",
       Icon: LayoutDashboard,
