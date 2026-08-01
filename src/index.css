@@ -17,8 +17,11 @@
    --accent-color: #e8ba6f;
    --second-color: #c7c7c7;
    --stroke-color: #2e2b25;
+   --stroke-active-color: #403e3b;
    --right-color: #61d381;
    --components-gap: 24px;
+   --components-py: 16px;
+   --components-px: 24px;
 }
 
 .ibm-plex-sans {

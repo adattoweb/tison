@@ -26,16 +26,16 @@ export function DashboardChart() {
 
    return (
       <div
-         className="flex flex-col bg-(--bg-trans-color) border border-(--stroke-color) rounded-xl p-6 w-full"
+         className="flex flex-col bg-(--bg-trans-color) border border-(--stroke-color) rounded-xl py-(--components-py) px-(--components-px) w-full"
          style={{ gridArea: "chart" }}
       >
-         <div className="flex items-center justify-between mb-6">
+         <div className="flex items-start justify-between mb-6">
             <h2 className="text-xl font-bold text-white">Дефекти за сьогодні</h2>
             <Dropdown value={period} options={PERIOD_OPTIONS} onChange={setPeriod} />
          </div>
 
-         <div className="grid items-center gap-8 grid-cols-[1fr_2fr]">
-            <div className="w-full aspect-square shrink-0">
+         <div className="flex items-center gap-16">
+            <div className="size-72 aspect-square shrink-0">
                <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                      <Pie

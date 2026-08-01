@@ -123,7 +123,7 @@ function TableRow({ product }: TableRowProps) {
    const status = STATUS_CONFIG[product.status]
 
    return (
-      <div className="flex items-center px-6 py-5 border-b border-(--stroke-color) last:border-0 hover:bg-(--bg-trans-color) transition-colors">
+      <div className="flex items-center py-(--components-py) px-(--components-px) border-b border-(--stroke-color) last:border-0 hover:bg-(--bg-trans-color) transition-colors">
          <div className={`${COLUMN_WIDTHS.product} flex items-center gap-3`}>
             <div className="flex items-center justify-center size-10 rounded-xl bg-(--bg-trans-color) shrink-0">
                <Box className="size-5 text-(--accent-color)" strokeWidth={1.5} />

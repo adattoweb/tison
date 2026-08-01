@@ -87,10 +87,10 @@ export default function DashboardAnalysis() {
 
    return (
       <div
-         className="rounded-xl border border-(--stroke-color) bg-(--bg-trans-color) p-5 sm:p-6"
+         className="rounded-xl border border-(--stroke-color) bg-(--bg-trans-color) py-(--components-py) px-(--components-px)"
          style={{ gridArea: "analysis" }}
       >
-         <div className="mb-2 flex flex-wrap items-center justify-between gap-4">
+         <div className="mb-2 flex flex-wrap items-start justify-between gap-4">
             <h2 className="text-lg font-bold text-white sm:text-xl">Аналіз виробництва</h2>
             <Dropdown value={period} options={["Сьогодні", "Тиждень", "Місяць"]} onChange={setPeriod} />
          </div>

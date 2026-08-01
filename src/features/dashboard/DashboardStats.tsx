@@ -49,7 +49,7 @@ function StatItem({ index, name, points, diff }: ItemProps) {
 export function DashboardStats() {
    return (
       <div
-         className="ibm-plex-sans bg-(--bg-trans-color) py-4 px-6 border border-(--stroke-color) rounded-xl flex flex-col gap-2"
+         className="ibm-plex-sans bg-(--bg-trans-color) py-(--components-py) px-(--components-px) border border-(--stroke-color) rounded-xl flex flex-col gap-2"
          style={{ gridArea: "stats" }}
       >
          <header className="flex justify-between">
@@ -60,7 +60,7 @@ export function DashboardStats() {
          </header>
          <div className="flex flex-1 flex-col">
             {leaderboard.map((el, index) => (
-               <StatItem index={index} name={el.name} points={el.points} diff={el.diff} />
+               <StatItem key={index} index={index} name={el.name} points={el.points} diff={el.diff} />
             ))}
          </div>
       </div>
