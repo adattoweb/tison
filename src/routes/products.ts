@@ -5,7 +5,7 @@ export const products = {
    path: "products",
    Component: Dashboard,
    handle: {
-      label: "Працівники",
+      label: "Вироби",
       Icon: PackageSearch,
       nav: true,
    },

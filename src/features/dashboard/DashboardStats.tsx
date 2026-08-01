@@ -35,8 +35,8 @@ interface ItemProps {
 
 function StatItem({ index, name, points, diff }: ItemProps) {
    return (
-      <div className="grid grid-cols-[24px_1fr_100px_50px] items-center gap-4 px-2 py-4 border-(--stroke-color) border-b last:border-0">
-         <p className="font-medium text-base">{index}</p>
+      <div className="flex-1 grid grid-cols-[24px_1fr_1fr_1fr] items-center gap-4 px-2 py-4 border-(--stroke-color) border-b last:border-0">
+         <p className="font-medium text-base">{index + 1}</p>
          <p className="text-base">{name}</p>
          <p className="text-(--second-color) text-base text-right">
             <span className="text-white">{points}</span> балів
@@ -48,16 +48,21 @@ function StatItem({ index, name, points, diff }: ItemProps) {
 
 export function DashboardStats() {
    return (
-      <div className="ibm-plex-sans bg-(--bg-trans-color) py-4 px-6 border border-(--stroke-color) rounded-xl w-125">
+      <div
+         className="ibm-plex-sans bg-(--bg-trans-color) py-4 px-6 border border-(--stroke-color) rounded-xl flex flex-col gap-2"
+         style={{ gridArea: "stats" }}
+      >
          <header className="flex justify-between">
             <p className="font-medium text-[18px]">Топ співробітників</p>
             <a href="#" className="text-(--accent-color) underline ">
                Весь рейтинг
             </a>
          </header>
-         {leaderboard.map((el, index) => (
-            <StatItem index={index} name={el.name} points={el.points} diff={el.diff} />
-         ))}
+         <div className="flex flex-1 flex-col">
+            {leaderboard.map((el, index) => (
+               <StatItem index={index} name={el.name} points={el.points} diff={el.diff} />
+            ))}
+         </div>
       </div>
    )
 }

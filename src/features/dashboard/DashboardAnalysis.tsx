@@ -86,7 +86,10 @@ export default function DashboardAnalysis() {
    const [period, setPeriod] = useState("Сьогодні")
 
    return (
-      <div className="rounded-xl border border-(--stroke-color) bg-(--bg-trans-color) p-5 sm:p-6">
+      <div
+         className="rounded-xl border border-(--stroke-color) bg-(--bg-trans-color) p-5 sm:p-6"
+         style={{ gridArea: "analysis" }}
+      >
          <div className="mb-2 flex flex-wrap items-center justify-between gap-4">
             <h2 className="text-lg font-bold text-white sm:text-xl">Аналіз виробництва</h2>
             <Dropdown value={period} options={["Сьогодні", "Тиждень", "Місяць"]} onChange={setPeriod} />
@@ -108,8 +111,8 @@ export default function DashboardAnalysis() {
                </div>
 
                <a
-                  type="button"
-                  className="mt-auto text-sm font-medium text-(--accent-color) underline underline-offset-4 transition-opacity hover:opacity-80 lg:pt-8"
+                  href="#"
+                  className="mt-auto text-sm font-medium text-(--accent-color) underline underline-offset-4 transition-opacity hover:opacity-80 lg:pt-8 "
                >
                   Детальніше
                </a>

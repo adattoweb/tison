@@ -13,11 +13,10 @@ interface NavItemProps {
    to: string
    label: string
    Icon: LucideIcon
-   isOpen: boolean
    labelRef: (el: HTMLParagraphElement | null) => void
 }
 
-function NavItem({ to, label, Icon, isOpen, labelRef }: NavItemProps) {
+function NavItem({ to, label, Icon, labelRef }: NavItemProps) {
    return (
       <NavLink
          to={to}
@@ -48,7 +47,6 @@ function NavItem({ to, label, Icon, isOpen, labelRef }: NavItemProps) {
                      "montserrat overflow-hidden text-[18px] font-medium whitespace-nowrap",
                      isActive ? "text-(--accent-color)" : "text-(--second-color) group-hover:text-white",
                   )}
-                  style={{ opacity: isOpen ? 1 : 0 }}
                >
                   {label}
                </p>
@@ -65,56 +63,56 @@ export function Sidebar() {
    const titleWrapperRef = useRef<HTMLHeadingElement>(null)
    const buttonRef = useRef<HTMLButtonElement>(null)
    const labelRefs = useRef<(HTMLParagraphElement | null)[]>([])
+   const timelineRef = useRef<gsap.core.Timeline | null>(null)
    const titleWidthRef = useRef(0)
 
    useLayoutEffect(() => {
       const labels = labelRefs.current.filter(Boolean)
 
-      // Реальну ширину заголовка фіксуємо один раз, поки елемент ще не обмежений
-      // інлайновими стилями від gsap — щоб надалі анімувати до точного пікселя,
-      // а не до "auto" (саме "auto" і викликав смикання/стрибок тексту)
       if (titleWrapperRef.current && titleWidthRef.current === 0) {
          titleWidthRef.current = titleWrapperRef.current.scrollWidth
       }
 
-      gsap.to(asideRef.current, {
-         width: isOpen ? EXPANDED_WIDTH : COLLAPSED_WIDTH,
-         duration: 0.35,
-         ease: "power2.inOut",
-      })
+      timelineRef.current?.kill()
 
-      gsap.to(titleWrapperRef.current, {
-         opacity: isOpen ? 1 : 0,
-         width: isOpen ? titleWidthRef.current : 0,
-         duration: 0.3,
-         ease: "power2.inOut",
-      })
+      const tl = gsap.timeline({ defaults: { ease: "power2.inOut" } })
 
-      gsap.to(buttonRef.current, {
-         marginLeft: isOpen ? 20 : 0,
-         duration: 0.3,
-         ease: "power2.inOut",
-      })
+      tl.to(
+         asideRef.current,
+         { width: isOpen ? EXPANDED_WIDTH : COLLAPSED_WIDTH, duration: 0.35, roundProps: "width" },
+         0,
+      )
+      tl.to(
+         titleWrapperRef.current,
+         {
+            opacity: isOpen ? 1 : 0,
+            width: isOpen ? titleWidthRef.current : 0,
+            duration: 0.3,
+            roundProps: "width",
+         },
+         0,
+      )
+      tl.to(buttonRef.current, { marginLeft: isOpen ? 20 : 0, duration: 0.3, roundProps: "marginLeft" }, 0)
+      tl.to(labels, { opacity: isOpen ? 1 : 0, duration: 0.25 }, isOpen ? 0.12 : 0)
 
-      gsap.to(labels, {
-         opacity: isOpen ? 1 : 0,
-         duration: 0.25,
-         delay: isOpen ? 0.12 : 0,
-         stagger: isOpen ? 0.03 : 0,
-         ease: "power1.out",
-      })
+      timelineRef.current = tl
+
+      return () => {
+         tl.kill()
+      }
    }, [isOpen])
 
    return (
       <aside
          ref={asideRef}
-         style={{ width: EXPANDED_WIDTH }}
-         className="top-0 bottom-0 z-11 flex flex-col items-center overflow-hidden border-r-2 border-(--stroke-color) bg-[#090A0B] py-7"
+         style={{ width: EXPANDED_WIDTH, contain: "layout style", willChange: "width" }}
+         className="top-0 bottom-0 z-11 flex flex-col items-start overflow-hidden border-r-2 border-(--stroke-color) bg-[#090A0B] py-7"
       >
          <div className="flex w-full items-center justify-center overflow-hidden">
             <h1
                ref={titleWrapperRef}
                className="ibm-plex-sans overflow-hidden text-3xl font-semibold whitespace-nowrap text-white"
+               style={{ willChange: "width" }}
             >
                {NAME} <span className="text-(--accent-color)">MES</span>
             </h1>
@@ -124,7 +122,7 @@ export function Sidebar() {
                type="button"
                onClick={() => setIsOpen(prev => !prev)}
                aria-label={isOpen ? "Згорнути меню" : "Розгорнути меню"}
-               className="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-full border border-(--stroke-color) bg-[#17191C] text-(--second-color) transition-colors hover:text-white"
+               className="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-full border border-(--stroke-color) bg-[#17191C] text-(--second-color) transition-colors hover:text-white ml-5"
             >
                <ChevronsLeft
                   width={24}
@@ -141,7 +139,6 @@ export function Sidebar() {
                   to={el.path}
                   label={el.handle.label}
                   Icon={el.handle.Icon}
-                  isOpen={isOpen}
                   labelRef={node => {
                      labelRefs.current[index] = node
                   }}

@@ -164,7 +164,10 @@ function TableRow({ product }: TableRowProps) {
 
 export function DashboardPlanning() {
    return (
-      <div className="bg-(--bg-trans-color) border border-(--stroke-color) rounded-2xl overflow-hidden w-full">
+      <div
+         className="bg-(--bg-trans-color) border border-(--stroke-color) rounded-2xl overflow-hidden w-full"
+         style={{ gridArea: "planning" }}
+      >
          <TableHeader />
          {mockProducts.map(product => (
             <TableRow key={product.id} product={product} />

@@ -10,7 +10,6 @@ interface DefectItem {
 
 const PERIOD_OPTIONS = ["Сьогодні", "Тиждень", "Місяць"]
 
-// Імітація отримання даних (наприклад, з API)
 const mockDefects: DefectItem[] = [
    { name: "Пайка", value: 20, fill: "#c0392b" },
    { name: "Лакування", value: 12, fill: "#b5651d" },
@@ -26,16 +25,17 @@ export function DashboardChart() {
    const total = useMemo(() => mockDefects.reduce((sum, item) => sum + item.value, 0), [])
 
    return (
-      <div className="bg-(--bg-trans-color) border border-(--stroke-color) rounded-xl p-6 w-full max-w-xl">
-         {/* Заголовок */}
+      <div
+         className="flex flex-col bg-(--bg-trans-color) border border-(--stroke-color) rounded-xl p-6 w-full"
+         style={{ gridArea: "chart" }}
+      >
          <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold text-white">Дефекти за сьогодні</h2>
             <Dropdown value={period} options={PERIOD_OPTIONS} onChange={setPeriod} />
          </div>
 
-         {/* Донат-діаграма + легенда */}
-         <div className="flex items-center gap-8">
-            <div className="w-48 h-48 shrink-0">
+         <div className="grid items-center gap-8 grid-cols-[1fr_2fr]">
+            <div className="w-full aspect-square shrink-0">
                <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                      <Pie
@@ -68,8 +68,7 @@ export function DashboardChart() {
             </div>
          </div>
 
-         {/* Посилання */}
-         <a href="#" className="inline-block mt-6 text-(--accent-color) text-base underline underline-offset-4">
+         <a href="#" className="inline-block mt-auto text-(--accent-color) text-base underline underline-offset-4">
             Вся статистика дефектів
          </a>
       </div>
