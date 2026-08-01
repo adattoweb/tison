@@ -29,7 +29,7 @@ interface ParagraphProps extends WithClassName {
 }
 
 function Paragraph({ className = "", children }: ParagraphProps) {
-   return <p className={`${className} font-medium text-normal text-inherit`}>{children}</p>
+   return <p className={`${className} font-base text-normal text-inherit`}>{children}</p>
 }
 
 interface IconProps extends WithClassName, LucideProps {

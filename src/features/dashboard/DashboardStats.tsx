@@ -1,3 +1,6 @@
+import type { WithClassName } from "@/types/common"
+import clsx from "clsx"
+
 const leaderboard: Omit<ItemProps, "index">[] = [
    {
       name: "Шевченко Тарас",
@@ -46,14 +49,17 @@ function StatItem({ index, name, points, diff }: ItemProps) {
    )
 }
 
-export function DashboardStats() {
+export function DashboardStats({ className }: WithClassName) {
    return (
       <div
-         className="ibm-plex-sans bg-(--bg-trans-color) py-(--components-py) px-(--components-px) border border-(--stroke-color) rounded-xl flex flex-col gap-2"
+         className={clsx(
+            className,
+            "ibm-plex-sans bg-(--bg-trans-color) py-(--components-py) px-(--components-px) border border-(--stroke-color) rounded-xl flex flex-col gap-2",
+         )}
          style={{ gridArea: "stats" }}
       >
          <header className="flex justify-between">
-            <p className="font-medium text-[18px]">Топ співробітників</p>
+            <p className="font-medium text-lg">Топ співробітників</p>
             <a href="#" className="text-(--accent-color) underline ">
                Весь рейтинг
             </a>

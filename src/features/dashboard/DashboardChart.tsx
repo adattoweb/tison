@@ -1,6 +1,8 @@
 import { useMemo, useState } from "react"
 import { PieChart, Pie, ResponsiveContainer } from "recharts"
 import Dropdown from "@/components/UI/Dropdown"
+import type { WithClassName } from "@/types/common"
+import clsx from "clsx"
 
 interface DefectItem {
    name: string
@@ -19,23 +21,40 @@ const mockDefects: DefectItem[] = [
    { name: "Інші", value: 50, fill: "#5a5a5a" },
 ]
 
-export function DashboardChart() {
+export function DashboardChart({ className }: WithClassName) {
    const [period, setPeriod] = useState(PERIOD_OPTIONS[0])
 
    const total = useMemo(() => mockDefects.reduce((sum, item) => sum + item.value, 0), [])
 
    return (
       <div
-         className="flex flex-col bg-(--bg-trans-color) border border-(--stroke-color) rounded-xl py-(--components-py) px-(--components-px) w-full"
+         className={clsx(
+            className,
+            "flex flex-col bg-(--bg-trans-color) border border-(--stroke-color) rounded-xl py-(--components-py) px-(--components-px) w-full",
+         )}
          style={{ gridArea: "chart" }}
       >
          <div className="flex items-start justify-between mb-6">
             <h2 className="text-xl font-bold text-white">Дефекти за сьогодні</h2>
-            <Dropdown value={period} options={PERIOD_OPTIONS} onChange={setPeriod} />
+
+            <Dropdown>
+               <Dropdown.Button>
+                  <span className="text-base font-normal text-white whitespace-nowrap">{period}</span>
+                  <Dropdown.Chevron />
+               </Dropdown.Button>
+
+               <Dropdown.Content>
+                  {PERIOD_OPTIONS.map(option => (
+                     <Dropdown.Item key={option} onClick={() => setPeriod(option)}>
+                        {option}
+                     </Dropdown.Item>
+                  ))}
+               </Dropdown.Content>
+            </Dropdown>
          </div>
 
          <div className="flex items-center gap-16">
-            <div className="size-72 aspect-square shrink-0">
+            <div className="size-56 shrink-0">
                <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                      <Pie

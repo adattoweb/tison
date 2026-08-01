@@ -1,6 +1,12 @@
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100..700;1,100..700&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
 @import "tailwindcss";
 
+@theme {
+   --breakpoint-3xl: 1600px;
+   --breakpoint-4xl: 1920px;
+   --breakpoint-5xl: 2560px;
+}
+
 @layer base {
    * {
       margin: 0;
@@ -20,8 +26,12 @@
    --stroke-active-color: #403e3b;
    --right-color: #61d381;
    --components-gap: 24px;
-   --components-py: 16px;
+   --components-py: 20px;
    --components-px: 24px;
+}
+
+body {
+   background-color: var(--bg-color);
 }
 
 .ibm-plex-sans {
@@ -30,4 +40,18 @@
 
 .montserrat {
    font-family: "Montserrat", sans-serif;
+}
+@media screen and (max-width: 1600px) {
+   :root {
+      --components-gap: 20px;
+      --components-py: 18px;
+      --components-px: 20px;
+   }
+}
+@media screen and (max-width: 1280px) {
+   :root {
+      --components-gap: 16px;
+      --components-py: 16px;
+      --components-px: 18px;
+   }
 }

@@ -65,7 +65,8 @@ export function EmployeesTable() {
                   className="w-full rounded-md border border-(--stroke-color) bg-(--bg-trans-color) py-2.5 pl-11 pr-4 text-sm text-white placeholder:text-(--second-color) outline-none focus:border-(--stroke-active-color)"
                />
             </div>
-            <Dropdown
+
+            <FilterDropdown
                value={department}
                options={DEPARTMENT_OPTIONS}
                onChange={v => {
@@ -73,7 +74,7 @@ export function EmployeesTable() {
                   setPage(1)
                }}
             />
-            <Dropdown
+            <FilterDropdown
                value={position}
                options={POSITION_OPTIONS}
                onChange={v => {
@@ -81,7 +82,7 @@ export function EmployeesTable() {
                   setPage(1)
                }}
             />
-            <Dropdown
+            <FilterDropdown
                value={shift}
                options={SHIFT_OPTIONS}
                onChange={v => {
@@ -89,7 +90,8 @@ export function EmployeesTable() {
                   setPage(1)
                }}
             />
-            <Dropdown value={experience} options={EXPERIENCE_OPTIONS} onChange={setExperience} />
+            <FilterDropdown value={experience} options={EXPERIENCE_OPTIONS} onChange={setExperience} />
+
             <Button onClick={resetFilters}>
                <Button.Icon Icon={RotateCcw} strokeWidth={1.5} />
                <Button.Paragraph>Скинути фільтри</Button.Paragraph>
@@ -128,5 +130,30 @@ export function EmployeesTable() {
             />
          </Table>
       </div>
+   )
+}
+
+interface FilterDropdownProps {
+   value: string
+   options: string[]
+   onChange: (value: string) => void
+}
+
+function FilterDropdown({ value, options, onChange }: FilterDropdownProps) {
+   return (
+      <Dropdown>
+         <Dropdown.Button>
+            <span className="text-base font-normal text-white whitespace-nowrap">{value}</span>
+            <Dropdown.Chevron />
+         </Dropdown.Button>
+
+         <Dropdown.Content>
+            {options.map(option => (
+               <Dropdown.Item key={option} onClick={() => onChange(option)}>
+                  {option}
+               </Dropdown.Item>
+            ))}
+         </Dropdown.Content>
+      </Dropdown>
    )
 }

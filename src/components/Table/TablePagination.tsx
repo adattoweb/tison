@@ -32,7 +32,8 @@ export function TablePagination({
          <span className="text-sm text-(--second-color)">
             Показано {from}-{to} з {total} {entityLabel}
          </span>
-         <div className="flex items-center gap-4">
+
+         <div className="flex items-center gap-4 pr-6">
             <div className="flex items-center gap-1.5">
                {getPageNumbers(page, totalPages).map((p, i) =>
                   p === "..." ? (
@@ -56,13 +57,21 @@ export function TablePagination({
                   ),
                )}
             </div>
-            <div className="w-36">
-               <Dropdown
-                  value={`${pageSize} / сторінка`}
-                  options={pageSizeOptions.map(n => `${n} / сторінка`)}
-                  onChange={v => onPageSizeChange(Number(v.split(" ")[0]))}
-               />
-            </div>
+
+            <Dropdown className="w-36">
+               <Dropdown.Button className="w-full">
+                  <span className="text-base font-normal text-white whitespace-nowrap">{pageSize} / сторінка</span>
+                  <Dropdown.Chevron />
+               </Dropdown.Button>
+
+               <Dropdown.Content>
+                  {pageSizeOptions.map(n => (
+                     <Dropdown.Item key={n} onClick={() => onPageSizeChange(n)}>
+                        {n} / сторінка
+                     </Dropdown.Item>
+                  ))}
+               </Dropdown.Content>
+            </Dropdown>
          </div>
       </div>
    )
@@ -70,7 +79,7 @@ export function TablePagination({
 
 function getPageNumbers(current: number, totalPages: number): (number | "...")[] {
    if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1)
-   const pages = new Set<number>([1, 2, totalPages - 1, totalPages, current - 1, current, current + 1])
+   const pages = new Set<number>([1, totalPages, current - 1, current, current + 1])
    const sorted = [...pages].filter(p => p >= 1 && p <= totalPages).sort((a, b) => a - b)
    const result: (number | "...")[] = []
    let prev = 0

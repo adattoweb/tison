@@ -54,7 +54,7 @@ export function Sidebar() {
          onMouseEnter={() => setIsOpen(true)}
          onMouseLeave={() => setIsOpen(false)}
          style={{ width: COLLAPSED_WIDTH, contain: "layout style", willChange: "width" }}
-         className="fixed top-0 left-0 bottom-0 z-11 flex flex-col items-start overflow-hidden border-r-2 border-(--stroke-color) bg-[#090A0B] py-7 px-4"
+         className="fixed top-0 left-0 bottom-0 z-11 flex flex-col items-start overflow-hidden border-r-2 border-(--stroke-color) bg-[#090A0B] py-7 px-4 max-h-screen"
       >
          <div className="flex w-full items-center justify-center overflow-hidden">
             <h1 className="ibm-plex-sans flex items-baseline overflow-hidden text-3xl font-semibold whitespace-nowrap text-white">

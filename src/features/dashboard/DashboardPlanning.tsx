@@ -1,5 +1,7 @@
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer } from "recharts"
 import { Box } from "lucide-react"
+import type { WithClassName } from "@/types/common"
+import clsx from "clsx"
 
 type ProductStatus = "onTrack" | "atRisk" | "notStarted"
 
@@ -95,22 +97,24 @@ function MiniProgressBar({ progress, color }: MiniProgressBarProps) {
    )
 }
 
+const TABLE_MIN_WIDTH = "min-w-[820px]"
+
 const COLUMN_WIDTHS = {
-   product: "w-72",
-   metric: "w-28",
+   product: "w-56 sm:w-64 lg:w-72",
+   metric: "w-20 sm:w-24 lg:w-28",
    progress: "flex-1",
-   status: "w-40",
+   status: "w-32 sm:w-36 lg:w-40",
 }
 
 function TableHeader() {
    return (
-      <div className="flex items-center px-6 py-4 border-b border-(--stroke-color)">
-         <span className={`${COLUMN_WIDTHS.product} text-(--second-color) text-sm`}>Виріб</span>
-         <span className={`${COLUMN_WIDTHS.metric} text-(--second-color) text-sm text-center`}>План</span>
-         <span className={`${COLUMN_WIDTHS.metric} text-(--second-color) text-sm text-center`}>В роботі</span>
-         <span className={`${COLUMN_WIDTHS.metric} text-(--second-color) text-sm text-center`}>Завершено</span>
+      <div className={clsx(TABLE_MIN_WIDTH, "flex items-center px-4 py-4 sm:px-6 border-b border-(--stroke-color)")}>
+         <span className={`${COLUMN_WIDTHS.product} text-(--second-color) text-sm shrink-0`}>Виріб</span>
+         <span className={`${COLUMN_WIDTHS.metric} text-(--second-color) text-sm text-center shrink-0`}>План</span>
+         <span className={`${COLUMN_WIDTHS.metric} text-(--second-color) text-sm text-center shrink-0`}>В роботі</span>
+         <span className={`${COLUMN_WIDTHS.metric} text-(--second-color) text-sm text-center shrink-0`}>Завершено</span>
          <span className={`${COLUMN_WIDTHS.progress} text-(--second-color) text-sm`}>Прогрес</span>
-         <span className={`${COLUMN_WIDTHS.status} text-(--second-color) text-sm`}>Статус</span>
+         <span className={`${COLUMN_WIDTHS.status} text-(--second-color) text-sm shrink-0`}>Статус</span>
       </div>
    )
 }
@@ -123,55 +127,69 @@ function TableRow({ product }: TableRowProps) {
    const status = STATUS_CONFIG[product.status]
 
    return (
-      <div className="flex items-center py-(--components-py) px-(--components-px) border-b border-(--stroke-color) last:border-0 hover:bg-(--bg-trans-color) transition-colors">
-         <div className={`${COLUMN_WIDTHS.product} flex items-center gap-3`}>
-            <div className="flex items-center justify-center size-10 rounded-xl bg-(--bg-trans-color) shrink-0">
+      <div
+         className={clsx(
+            TABLE_MIN_WIDTH,
+            "flex items-center py-(--components-py) px-4 sm:px-6 border-b border-(--stroke-color) last:border-0 hover:bg-(--bg-trans-color) transition-colors",
+         )}
+      >
+         <div className={`${COLUMN_WIDTHS.product} flex min-w-0 shrink-0 items-center gap-3`}>
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-(--bg-trans-color)">
                <Box className="size-5 text-(--accent-color)" strokeWidth={1.5} />
             </div>
-            <div className="flex flex-col">
-               <span className="text-white font-medium text-base">{product.name}</span>
-               <span className="text-(--second-color) text-sm">{product.model}</span>
+            <div className="flex min-w-0 flex-col">
+               <span className="truncate text-base font-medium text-white">{product.name}</span>
+               <span className="truncate text-sm text-(--second-color)">{product.model}</span>
             </div>
          </div>
 
-         <div className={`${COLUMN_WIDTHS.metric} flex flex-col items-center`}>
-            <span className="text-white text-lg font-medium">{product.plan}</span>
-            <span className="text-(--second-color) text-sm">од.</span>
+         <div className={`${COLUMN_WIDTHS.metric} flex shrink-0 flex-col items-center`}>
+            <span className="text-lg font-medium text-white">{product.plan}</span>
+            <span className="text-sm text-(--second-color)">од.</span>
          </div>
 
-         <div className={`${COLUMN_WIDTHS.metric} flex flex-col items-center`}>
-            <span className="text-white text-lg font-medium">{product.inProgress}</span>
-            <span className="text-(--second-color) text-sm">од.</span>
+         <div className={`${COLUMN_WIDTHS.metric} flex shrink-0 flex-col items-center`}>
+            <span className="text-lg font-medium text-white">{product.inProgress}</span>
+            <span className="text-sm text-(--second-color)">од.</span>
          </div>
 
-         <div className={`${COLUMN_WIDTHS.metric} flex flex-col items-center`}>
-            <span className="text-white text-lg font-medium">{product.completed}</span>
-            <span className="text-(--second-color) text-sm">од.</span>
+         <div className={`${COLUMN_WIDTHS.metric} flex shrink-0 flex-col items-center`}>
+            <span className="text-lg font-medium text-white">{product.completed}</span>
+            <span className="text-sm text-(--second-color)">од.</span>
          </div>
 
-         <div className={`${COLUMN_WIDTHS.progress} flex items-center gap-4 pr-8`}>
+         <div className={`${COLUMN_WIDTHS.progress} flex min-w-24 items-center gap-4 pr-4 sm:pr-8`}>
             <MiniProgressBar progress={product.progress} color={status.color} />
-            <span className="text-white text-base font-medium shrink-0 w-12 text-right">{product.progress}%</span>
+            <span className="w-12 shrink-0 text-right text-base font-medium text-white">{product.progress}%</span>
          </div>
 
-         <div className={`${COLUMN_WIDTHS.status} flex items-center gap-2`}>
-            <span className="size-2.5 rounded-full shrink-0" style={{ backgroundColor: status.color }} />
-            <span className="text-(--second-color) text-base">{status.label}</span>
+         <div className={`${COLUMN_WIDTHS.status} flex shrink-0 items-center gap-2`}>
+            <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: status.color }} />
+            <span className="truncate text-base text-(--second-color)">{status.label}</span>
          </div>
       </div>
    )
 }
 
-export function DashboardPlanning() {
+interface DashboardPlanningProps extends WithClassName {
+   style?: React.CSSProperties
+}
+
+export function DashboardPlanning({ className, style }: DashboardPlanningProps) {
    return (
       <div
-         className="bg-(--bg-trans-color) border border-(--stroke-color) rounded-2xl overflow-hidden w-full"
-         style={{ gridArea: "planning" }}
+         className={clsx(
+            className,
+            "w-full overflow-hidden rounded-2xl border border-(--stroke-color) bg-(--bg-trans-color)",
+         )}
+         style={style}
       >
-         <TableHeader />
-         {mockProducts.map(product => (
-            <TableRow key={product.id} product={product} />
-         ))}
+         <div className="overflow-x-auto">
+            <TableHeader />
+            {mockProducts.map(product => (
+               <TableRow key={product.id} product={product} />
+            ))}
+         </div>
       </div>
    )
 }

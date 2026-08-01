@@ -38,7 +38,7 @@ function TableHeader({ children }: { children: ReactNode }) {
    return (
       <div
          role="row"
-         className="grid border-b border-(--stroke-color) bg-(--bg-trans-color) py-(--components-py) px-(--components-px) gap-x-(--components-gap)"
+         className="grid border-b border-(--stroke-color) rounded-t-2xl bg-(--bg-trans-color) py-(--components-py) px-(--components-px) gap-x-(--components-gap)"
          style={{ gridTemplateColumns }}
       >
          {children}

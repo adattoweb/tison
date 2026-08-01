@@ -12,6 +12,8 @@ import {
 } from "recharts"
 import type { NameType, ValueType } from "recharts/types/component/DefaultTooltipContent"
 import Dropdown from "@/components/UI/Dropdown"
+import type { WithClassName } from "@/types/common"
+import clsx from "clsx"
 
 interface ChartPoint {
    time: string
@@ -30,6 +32,8 @@ const chartData: ChartPoint[] = [
    { time: "16:30", plan: 54, fact: 78 },
    { time: "18:00", plan: 59, fact: 85 },
 ]
+
+const PERIOD_OPTIONS = ["Сьогодні", "Тиждень", "Місяць"]
 
 const SERIES_LABELS: Record<string, string> = {
    plan: "План",
@@ -67,7 +71,7 @@ function CustomTooltip({ active, payload, label }: TooltipContentProps<ValueType
    if (!active || !payload?.length) return null
 
    return (
-      <div className="min-w-[140px] rounded-md border border-(--stroke-color) bg-(--bg-color) px-3 py-2 shadow-lg">
+      <div className="min-w-35 rounded-md border border-(--stroke-color) bg-(--bg-color) px-3 py-2 shadow-lg">
          <p className="mb-1 text-xs text-(--second-color)">{label}</p>
          {payload.map(entry => {
             const key = String(entry.dataKey ?? entry.name ?? "")
@@ -82,17 +86,34 @@ function CustomTooltip({ active, payload, label }: TooltipContentProps<ValueType
    )
 }
 
-export default function DashboardAnalysis() {
-   const [period, setPeriod] = useState("Сьогодні")
+export default function DashboardAnalysis({ className }: WithClassName) {
+   const [period, setPeriod] = useState(PERIOD_OPTIONS[0])
 
    return (
       <div
-         className="rounded-xl border border-(--stroke-color) bg-(--bg-trans-color) py-(--components-py) px-(--components-px)"
+         className={clsx(
+            className,
+            "rounded-xl border border-(--stroke-color) bg-(--bg-trans-color) py-(--components-py) px-(--components-px)",
+         )}
          style={{ gridArea: "analysis" }}
       >
          <div className="mb-2 flex flex-wrap items-start justify-between gap-4">
             <h2 className="text-lg font-bold text-white sm:text-xl">Аналіз виробництва</h2>
-            <Dropdown value={period} options={["Сьогодні", "Тиждень", "Місяць"]} onChange={setPeriod} />
+
+            <Dropdown>
+               <Dropdown.Button>
+                  <span className="text-base font-normal text-white whitespace-nowrap">{period}</span>
+                  <Dropdown.Chevron />
+               </Dropdown.Button>
+
+               <Dropdown.Content>
+                  {PERIOD_OPTIONS.map(option => (
+                     <Dropdown.Item key={option} onClick={() => setPeriod(option)}>
+                        {option}
+                     </Dropdown.Item>
+                  ))}
+               </Dropdown.Content>
+            </Dropdown>
          </div>
 
          <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:gap-10">
