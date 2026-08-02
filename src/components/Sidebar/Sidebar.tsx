@@ -82,7 +82,7 @@ export function Sidebar() {
 
       tl.to(
          titleRestRef.current,
-         { opacity: isOpen ? 1 : 0, width: isOpen ? titleRestWidthRef.current : 0, display: "block", duration: 0.3 },
+         { opacity: isOpen ? 1 : 0, width: isOpen ? titleRestWidthRef.current : 0, duration: 0.3 },
          0,
       )
       tl.to([...labels, profileTextsRef.current], { opacity: isOpen ? 1 : 0, duration: 0.25 }, isOpen ? 0.12 : 0)
@@ -119,7 +119,11 @@ export function Sidebar() {
                <h1 className="ibm-plex-sans flex items-baseline text-3xl font-semibold whitespace-nowrap text-white">
                   <span>{FIRST_LETTER}</span>
 
-                  <span ref={titleRestRef} className="overflow-hidden hidden" style={{ willChange: "width, opacity" }}>
+                  <span
+                     ref={titleRestRef}
+                     className="overflow-hidden"
+                     style={{ width: 0, opacity: 0, willChange: "width, opacity" }}
+                  >
                      {REST_OF_NAME} <span className="text-(--accent-color)">MES</span>
                   </span>
                </h1>
