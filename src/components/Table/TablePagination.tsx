@@ -1,7 +1,8 @@
 import clsx from "clsx"
 import Dropdown from "../UI/Dropdown"
+import type { WithClassName } from "@/types/common"
 
-interface TablePaginationProps {
+interface TablePaginationProps extends WithClassName {
    page: number
    pageSize: number
    total: number
@@ -19,6 +20,7 @@ export function TablePagination({
    onPageSizeChange,
    pageSizeOptions = [10, 25, 50],
    entityLabel = "записів",
+   className = "",
 }: TablePaginationProps) {
    const totalPages = Math.max(1, Math.ceil(total / pageSize))
    const from = total === 0 ? 0 : (page - 1) * pageSize + 1
@@ -26,7 +28,7 @@ export function TablePagination({
 
    return (
       <div
-         className="flex flex-wrap items-center justify-between gap-4 border-t border-(--stroke-color)"
+         className={clsx("flex flex-wrap items-center justify-between gap-4", className)}
          style={{ padding: "var(--components-py) var(--components-px)" }}
       >
          <span className="text-sm text-(--second-color)">

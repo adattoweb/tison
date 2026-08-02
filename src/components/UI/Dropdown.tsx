@@ -107,7 +107,7 @@ function DropdownButton({ children, className, onClick, ...props }: DropdownButt
             setOpen(!open)
          }}
          className={clsx(
-            "inline-flex items-center justify-between rounded-md border border-(--stroke-color) bg-(--bg-trans-color) px-2 md:px-4 py-1 md:py-2 gap-3 md:gap-4 cursor-pointer text-sm!",
+            "inline-flex items-center justify-between rounded-md border border-(--stroke-color) bg-(--bg-trans-color) px-2 md:px-4 py-1 md:py-2 gap-3 md:gap-4 cursor-pointer text-sm md:text-base",
             className,
          )}
          {...props}

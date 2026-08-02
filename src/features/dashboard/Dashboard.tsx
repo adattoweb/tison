@@ -6,7 +6,6 @@ import { DashboardStats } from "./DashboardStats"
 import { DashboardChart } from "./DashboardChart"
 import { DashboardPlanning } from "./DashboardPlanning"
 import DashboardAnalysis from "./DashboardAnalysis"
-
 const WIDE_BREAKPOINT = "(min-width: 1600px)" // 3xl
 const MEDIUM_BREAKPOINT = "(min-width: 1024px)" // lg — поріг між "50/50" і "100%"
 
@@ -92,7 +91,7 @@ export function Dashboard() {
             <DashboardAnalysis />
             <DashboardStats />
             <DashboardChart />
-            <DashboardPlanning style={{ gridArea: "planning" }} />
+            <DashboardPlanning />
          </div>
       </>
    )

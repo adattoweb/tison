@@ -1,9 +1,9 @@
-import { Dashboard } from "@/features/dashboard/Dashboard"
+import { Products } from "@/features/products/Products"
 import { PackageSearch } from "lucide-react"
 
 export const products = {
    path: "products",
-   Component: Dashboard,
+   Component: Products,
    handle: {
       label: "Вироби",
       Icon: PackageSearch,
