@@ -38,11 +38,12 @@ interface ItemProps {
 
 function StatItem({ index, name, points, diff }: ItemProps) {
    return (
-      <div className="flex-1 grid grid-cols-[24px_1fr_1fr_1fr] items-center gap-4 px-2 py-4 border-(--stroke-color) border-b last:border-0">
+      <div className="flex-1 grid grid-cols-[12px_3fr_1fr_1fr] md:grid-cols-[24px_2fr_1fr_1fr] items-center gap-2 md:gap-4 px-2 py-4 border-(--stroke-color) border-b last:border-0">
          <p className="font-medium text-base">{index + 1}</p>
-         <p className="text-base">{name}</p>
-         <p className="text-(--second-color) text-base text-right">
-            <span className="text-white">{points}</span> балів
+         <p className="text-base overflow-hidden truncate">{name}</p>
+         <p className="text-base text-right flex gap-2 px-2">
+            <span className="text-white">{points}</span>
+            <span className="hidden sm:block text-(--second-color)">балів</span>
          </p>
          <p className="text-(--right-color) text-base text-right">+{diff}</p>
       </div>
@@ -59,8 +60,8 @@ export function DashboardStats({ className }: WithClassName) {
          style={{ gridArea: "stats" }}
       >
          <header className="flex justify-between">
-            <p className="font-medium text-lg">Топ співробітників</p>
-            <a href="#" className="text-(--accent-color) underline ">
+            <p className="font-medium text-base md:text-lg lg:text-xl">Топ співробітників</p>
+            <a href="#" className="text-(--accent-color) underline text-sm md:text-base">
                Весь рейтинг
             </a>
          </header>

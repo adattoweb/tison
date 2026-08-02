@@ -98,11 +98,11 @@ export default function DashboardAnalysis({ className }: WithClassName) {
          style={{ gridArea: "analysis" }}
       >
          <div className="mb-2 flex flex-wrap items-start justify-between gap-4">
-            <h2 className="text-lg font-bold text-white sm:text-xl">Аналіз виробництва</h2>
+            <h2 className="font-medium text-white text-base md:text-lg lg:text-xl">Аналіз виробництва</h2>
 
             <Dropdown>
                <Dropdown.Button>
-                  <span className="text-base font-normal text-white whitespace-nowrap">{period}</span>
+                  <span className="font-normal text-white whitespace-nowrap">{period}</span>
                   <Dropdown.Chevron />
                </Dropdown.Button>
 
@@ -141,7 +141,7 @@ export default function DashboardAnalysis({ className }: WithClassName) {
 
             <div className="flex w-full min-w-0 flex-col">
                <div className="mb-2 flex flex-wrap items-center gap-x-6 gap-y-2">
-                  <h3 className="text-base font-bold text-white">Динаміка виробництва</h3>
+                  <h3 className="text-sm md:text-base font-medium text-white">Динаміка виробництва</h3>
                   <div className="flex items-center gap-4 text-sm text-(--second-color)">
                      <span className="flex items-center gap-2">
                         <span className="h-0 w-4 border-t-2 border-dashed border-(--accent-color)" />
