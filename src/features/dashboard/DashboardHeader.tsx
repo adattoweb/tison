@@ -7,7 +7,7 @@ export function DashboardHeader({ className = "" }: WithClassName) {
    return (
       <InfoCardWrapper style={{ gridArea: "header" }} className={className}>
          <InfoCard
-            title="Кількість готової продукції"
+            title="Готова продукція"
             value="256"
             diff="+8.3% за сьогодні"
             diffColor="#61D381"
@@ -31,7 +31,7 @@ export function DashboardHeader({ className = "" }: WithClassName) {
             className="col-span-3 lg:col-span-2 4xl:col-span-1!"
          />
          <InfoCard
-            title="Завантаження дільниць"
+            title="Завантаження"
             value="94.2%"
             diff="+5.2% за вчора"
             diffColor="#61D381"

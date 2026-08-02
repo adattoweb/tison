@@ -35,7 +35,7 @@ export function DashboardChart({ className }: WithClassName) {
          style={{ gridArea: "chart" }}
       >
          <div className="flex items-start justify-between mb-6">
-            <h2 className="text-xl font-bold text-white">Дефекти за сьогодні</h2>
+            <h2 className="text-xl font-bold text-white">Дефекти за {period.toLowerCase()}</h2>
 
             <Dropdown>
                <Dropdown.Button>
@@ -53,8 +53,8 @@ export function DashboardChart({ className }: WithClassName) {
             </Dropdown>
          </div>
 
-         <div className="flex items-center gap-16">
-            <div className="size-56 shrink-0">
+         <div className="flex flex-col md:flex-row md:items-center gap-8 md:gap-16 mb-4">
+            <div className="mx-auto md:mx-0 size-56 shrink-0">
                <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                      <Pie

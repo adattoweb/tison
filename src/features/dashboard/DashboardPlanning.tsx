@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react"
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer } from "recharts"
 import { Box } from "lucide-react"
 import type { WithClassName } from "@/types/common"
@@ -12,7 +13,7 @@ interface ProductStat {
    plan: number
    inProgress: number
    completed: number
-   progress: number // %
+   progress: number
    status: ProductStatus
 }
 
@@ -84,7 +85,7 @@ function MiniProgressBar({ progress, color }: MiniProgressBarProps) {
    const data = [{ name: "progress", value: progress, rest: 100 - progress }]
 
    return (
-      <div className="h-2 w-full">
+      <div className="h-2 w-full rounded-xl bg-(--stroke-color)">
          <ResponsiveContainer width="100%" height="100%">
             <BarChart data={data} layout="vertical" margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
                <XAxis type="number" domain={[0, 100]} hide />
@@ -97,43 +98,73 @@ function MiniProgressBar({ progress, color }: MiniProgressBarProps) {
    )
 }
 
-const TABLE_MIN_WIDTH = "min-w-[820px]"
+const COMPACT_BREAKPOINT = 640
 
-const COLUMN_WIDTHS = {
-   product: "w-56 sm:w-64 lg:w-72",
-   metric: "w-20 sm:w-24 lg:w-28",
-   progress: "flex-1",
-   status: "w-32 sm:w-36 lg:w-40",
+function useIsCompact(ref: React.RefObject<HTMLElement | null>) {
+   const [isCompact, setIsCompact] = useState(false)
+
+   useEffect(() => {
+      const el = ref.current
+      if (!el) return
+
+      const observer = new ResizeObserver(entries => {
+         const width = entries[0]?.contentRect.width
+         if (width === undefined) return
+         setIsCompact(width < COMPACT_BREAKPOINT)
+      })
+
+      observer.observe(el)
+      return () => observer.disconnect()
+   }, [ref])
+
+   return isCompact
 }
 
-function TableHeader() {
+function getRowTemplateColumns(isCompact: boolean) {
+   return [
+      isCompact ? "minmax(140px, 1fr)" : "minmax(180px, 280px)",
+      "minmax(64px, 100px)",
+      "minmax(64px, 100px)",
+      "minmax(64px, 100px)",
+      isCompact ? "56px" : "minmax(160px, 1fr)",
+      isCompact ? "24px" : "minmax(120px, 160px)",
+   ].join(" ")
+}
+
+interface TableHeaderProps {
+   isCompact: boolean
+}
+
+function TableHeader({ isCompact }: TableHeaderProps) {
    return (
-      <div className={clsx(TABLE_MIN_WIDTH, "flex items-center px-4 py-4 sm:px-6 border-b border-(--stroke-color)")}>
-         <span className={`${COLUMN_WIDTHS.product} text-(--second-color) text-sm shrink-0`}>Виріб</span>
-         <span className={`${COLUMN_WIDTHS.metric} text-(--second-color) text-sm text-center shrink-0`}>План</span>
-         <span className={`${COLUMN_WIDTHS.metric} text-(--second-color) text-sm text-center shrink-0`}>В роботі</span>
-         <span className={`${COLUMN_WIDTHS.metric} text-(--second-color) text-sm text-center shrink-0`}>Завершено</span>
-         <span className={`${COLUMN_WIDTHS.progress} text-(--second-color) text-sm`}>Прогрес</span>
-         <span className={`${COLUMN_WIDTHS.status} text-(--second-color) text-sm shrink-0`}>Статус</span>
+      <div
+         className="grid items-center gap-2 border-b border-(--stroke-color) px-4 py-4 sm:px-6"
+         style={{ gridTemplateColumns: getRowTemplateColumns(isCompact) }}
+      >
+         <span className="text-sm text-(--second-color)">Виріб</span>
+         <span className="text-center text-sm text-(--second-color)">План</span>
+         <span className="text-center text-sm text-(--second-color)">В роботі</span>
+         <span className="text-center text-sm text-(--second-color)">Завершено</span>
+         <span className="text-sm text-(--second-color)">{isCompact ? "%" : "Прогрес"}</span>
+         {!isCompact && <span className="text-sm text-(--second-color)">Статус</span>}
       </div>
    )
 }
 
 interface TableRowProps {
    product: ProductStat
+   isCompact: boolean
 }
 
-function TableRow({ product }: TableRowProps) {
+function TableRow({ product, isCompact }: TableRowProps) {
    const status = STATUS_CONFIG[product.status]
 
    return (
       <div
-         className={clsx(
-            TABLE_MIN_WIDTH,
-            "flex items-center py-(--components-py) px-4 sm:px-6 border-b border-(--stroke-color) last:border-0 hover:bg-(--bg-trans-color) transition-colors",
-         )}
+         className="grid items-center gap-2 border-b border-(--stroke-color) px-4 py-(--components-py) transition-colors last:border-0 hover:bg-(--bg-trans-color) sm:px-6"
+         style={{ gridTemplateColumns: getRowTemplateColumns(isCompact) }}
       >
-         <div className={`${COLUMN_WIDTHS.product} flex min-w-0 shrink-0 items-center gap-3`}>
+         <div className="flex min-w-0 items-center gap-3">
             <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-(--bg-trans-color)">
                <Box className="size-5 text-(--accent-color)" strokeWidth={1.5} />
             </div>
@@ -143,30 +174,43 @@ function TableRow({ product }: TableRowProps) {
             </div>
          </div>
 
-         <div className={`${COLUMN_WIDTHS.metric} flex shrink-0 flex-col items-center`}>
+         <div className="flex flex-col items-center">
             <span className="text-lg font-medium text-white">{product.plan}</span>
             <span className="text-sm text-(--second-color)">од.</span>
          </div>
 
-         <div className={`${COLUMN_WIDTHS.metric} flex shrink-0 flex-col items-center`}>
+         <div className="flex flex-col items-center">
             <span className="text-lg font-medium text-white">{product.inProgress}</span>
             <span className="text-sm text-(--second-color)">од.</span>
          </div>
 
-         <div className={`${COLUMN_WIDTHS.metric} flex shrink-0 flex-col items-center`}>
+         <div className="flex flex-col items-center">
             <span className="text-lg font-medium text-white">{product.completed}</span>
             <span className="text-sm text-(--second-color)">од.</span>
          </div>
 
-         <div className={`${COLUMN_WIDTHS.progress} flex min-w-24 items-center gap-4 pr-4 sm:pr-8`}>
-            <MiniProgressBar progress={product.progress} color={status.color} />
-            <span className="w-12 shrink-0 text-right text-base font-medium text-white">{product.progress}%</span>
+         <div className="flex min-w-0 items-center gap-4 pr-2 sm:pr-6">
+            {!isCompact && (
+               <div className="min-w-0 flex-1">
+                  <MiniProgressBar progress={product.progress} color={status.color} />
+               </div>
+            )}
+            <span
+               className={clsx(
+                  "shrink-0 text-base font-medium text-white",
+                  isCompact ? "text-left" : "w-10 text-right",
+               )}
+            >
+               {product.progress}%
+            </span>
          </div>
 
-         <div className={`${COLUMN_WIDTHS.status} flex shrink-0 items-center gap-2`}>
-            <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: status.color }} />
-            <span className="truncate text-base text-(--second-color)">{status.label}</span>
-         </div>
+         {!isCompact && (
+            <div className="flex min-w-0 items-center gap-2">
+               <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: status.color }} />
+               <span className="truncate text-base text-(--second-color)">{status.label}</span>
+            </div>
+         )}
       </div>
    )
 }
@@ -176,6 +220,9 @@ interface DashboardPlanningProps extends WithClassName {
 }
 
 export function DashboardPlanning({ className, style }: DashboardPlanningProps) {
+   const wrapperRef = useRef<HTMLDivElement>(null)
+   const isCompact = useIsCompact(wrapperRef)
+
    return (
       <div
          className={clsx(
@@ -184,10 +231,10 @@ export function DashboardPlanning({ className, style }: DashboardPlanningProps) 
          )}
          style={style}
       >
-         <div className="overflow-x-auto">
-            <TableHeader />
+         <div ref={wrapperRef} className="overflow-x-auto">
+            <TableHeader isCompact={isCompact} />
             {mockProducts.map(product => (
-               <TableRow key={product.id} product={product} />
+               <TableRow key={product.id} product={product} isCompact={isCompact} />
             ))}
          </div>
       </div>
