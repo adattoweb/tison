@@ -6,8 +6,8 @@ export function Products() {
    return (
       <>
          <div>
-            <PageHeader>Панель керування</PageHeader>
-            <PageDescription>Керування та інформація про систему</PageDescription>
+            <PageHeader>Вироби</PageHeader>
+            <PageDescription>Список усіх виробів та їх поточний статус</PageDescription>
          </div>
 
          <div className="grid gap-(--components-gap) w-full">

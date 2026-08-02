@@ -5,7 +5,7 @@ import { PackageSearchIcon, WrenchIcon, PauseCircleIcon, BugIcon, PackageCheckIc
 
 export function ProductsHeader({ className = "" }: WithClassName) {
    return (
-      <InfoCardWrapper style={{ gridArea: "header" }} className={className}>
+      <InfoCardWrapper className={className}>
          <InfoCard
             title="Всього виробів"
             value="200"

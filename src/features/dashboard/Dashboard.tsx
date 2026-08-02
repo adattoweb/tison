@@ -80,10 +80,8 @@ export function Dashboard() {
          </div>
 
          <div
-            className="grid gap-(--components-gap) w-full"
+            className="grid grid-cols-[repeat(10,1fr)] gap-(--components-gap) w-full"
             style={{
-               display: "grid",
-               gridTemplateColumns: "repeat(10, 1fr)",
                gridTemplateAreas: AREAS_BY_MODE[mode],
             }}
          >
