@@ -1,9 +1,9 @@
-import { Users } from "@/features/users/Users"
+import { Employees } from "@/features/employees/Employees"
 import { UserIcon } from "@heroicons/react/24/outline"
 
 export const users = {
    path: "users",
-   Component: Users,
+   Component: Employees,
    handle: {
       label: "Працівники",
       Icon: UserIcon,

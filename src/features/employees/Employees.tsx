@@ -1,9 +1,9 @@
 import PageDescription from "@/components/UI/PageDescription"
 import PageHeader from "@/components/UI/PageHeader"
-import { UsersHeader } from "./UsersHeader"
+import { EmployeesHeader } from "./EmployeesHeader"
 import { EmployeesTable } from "./EmployeesTable"
 
-export function Users() {
+export function Employees() {
    return (
       <>
          <div>
@@ -11,7 +11,7 @@ export function Users() {
             <PageDescription>Управління персоналом та інформація про працівників</PageDescription>
          </div>
          <div className="flex flex-col gap-(--components-gap)">
-            <UsersHeader />
+            <EmployeesHeader />
             <EmployeesTable />
          </div>
       </>

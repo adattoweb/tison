@@ -2,7 +2,7 @@ import InfoCard from "@/components/UI/InfoCard"
 import InfoCardWrapper from "@/components/UI/InfoCardWrapper"
 import { UserIcon, UserPlusIcon, UsersIcon, UserMinusIcon, ClockIcon } from "@heroicons/react/24/outline"
 
-export function UsersHeader() {
+export function EmployeesHeader() {
    return (
       <InfoCardWrapper className="flex gap-(--components-gap)">
          <InfoCard
