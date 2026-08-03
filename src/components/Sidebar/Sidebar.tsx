@@ -44,14 +44,7 @@ export function Sidebar() {
    const titleRestRef = useRef<HTMLSpanElement>(null)
    const labelRefs = useRef<(HTMLParagraphElement | null)[]>([])
    const timelineRef = useRef<gsap.core.Timeline | null>(null)
-   const titleRestWidthRef = useRef(0)
    const profileTextsRef = useRef<HTMLDivElement>(null)
-
-   useLayoutEffect(() => {
-      if (titleRestRef.current) {
-         titleRestWidthRef.current = titleRestRef.current.scrollWidth
-      }
-   }, [])
 
    useEffect(() => {
       if (!isMobile) setMobileOpen(false)
@@ -82,7 +75,7 @@ export function Sidebar() {
 
       tl.to(
          titleRestRef.current,
-         { opacity: isOpen ? 1 : 0, width: isOpen ? titleRestWidthRef.current : 0, duration: 0.3 },
+         { opacity: isOpen ? 1 : 0, width: isOpen ? titleRestRef.current?.scrollWidth : 0, duration: 0.3 },
          0,
       )
       tl.to([...labels, profileTextsRef.current], { opacity: isOpen ? 1 : 0, duration: 0.25 }, isOpen ? 0.12 : 0)
