@@ -246,6 +246,40 @@ function Wrapper({ children, className }: PropsWithChildren<WithClassName>) {
 function Header({ children, className }: PropsWithChildren<WithClassName>) {
    return <div className={clsx("flex flex-wrap items-center gap-(--components-gap)", className)}>{children}</div>
 }
+interface DurationProps {
+   label: string
+   startTime?: string
+   endTime?: string
+}
+
+function Duration({ label, startTime, endTime }: DurationProps) {
+   if (!startTime && !endTime) {
+      return <span className="text-white">{label}</span>
+   }
+
+   return (
+      <div className="group relative inline-block cursor-default">
+         <span className="text-white">{label}</span>
+
+         <div
+            className="pointer-events-none absolute left-1/2 top-full z-20 mt-2 w-max -translate-x-1/2 rounded-md
+               border border-(--stroke-color) bg-(--bg-trans-color) px-3 py-2 text-sm text-white opacity-0
+               shadow-lg backdrop-blur-sm transition-opacity duration-150 group-hover:opacity-100"
+         >
+            {startTime && (
+               <div className="whitespace-nowrap">
+                  Початок: <span className="font-medium">{startTime}</span>
+               </div>
+            )}
+            {endTime && (
+               <div className="whitespace-nowrap">
+                  Завершення: <span className="font-medium">{endTime}</span>
+               </div>
+            )}
+         </div>
+      </div>
+   )
+}
 
 Table.Row = Row
 Table.Columns = Columns
@@ -262,5 +296,6 @@ Table.TextGroup = TextGroup
 Table.MenuButton = MenuButton
 Table.Wrapper = Wrapper
 Table.Header = Header
+Table.Duration = Duration
 
 export default Table

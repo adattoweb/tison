@@ -11,7 +11,7 @@ export function Products() {
             <PageDescription>Список усіх виробів та їх поточний статус</PageDescription>
          </div>
 
-         <div className="grid gap-(--components-gap) w-full">
+         <div className="flex flex-col gap-(--components-gap)">
             <ProductsHeader />
             <ProductsTable />
          </div>
