@@ -100,7 +100,7 @@ export function Sidebar() {
             onMouseEnter={() => !isMobile && setIsHoverOpen(true)}
             onMouseLeave={() => !isMobile && setIsHoverOpen(false)}
             style={{ width: COLLAPSED_WIDTH, contain: "layout style", willChange: "width, transform" }}
-            className="fixed top-0 left-0 bottom-0 z-11 flex flex-col items-start overflow-hidden border-r-2 border-(--stroke-color) bg-[#090A0B] py-7 px-4 max-h-screen"
+            className="fixed top-0 left-0 z-11 flex flex-col items-start overflow-x-hidden overflow-y-auto min-h-dvh border-r-2 border-(--stroke-color) bg-[#090A0B] py-7 px-4 max-h-screen"
          >
             {isMobile && mobileOpen && (
                <MenuButton onClick={() => setMobileOpen(false)} className="right-4! left-auto!">
@@ -108,8 +108,8 @@ export function Sidebar() {
                </MenuButton>
             )}
 
-            <div className="flex w-full items-center justify-center overflow-hidden">
-               <h1 className="ibm-plex-sans flex items-baseline text-3xl font-semibold whitespace-nowrap text-white">
+            <div className="flex w-full items-center justify-center overflow-hidden shrink-0">
+               <h1 className="ibm-plex-sans flex items-baseline text-3xl font-semibold whitespace-nowrap text-white h-min-10">
                   <span>{FIRST_LETTER}</span>
 
                   <span

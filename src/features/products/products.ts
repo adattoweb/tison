@@ -1,4 +1,4 @@
-import type { StatusType } from "@/types/status"
+import type { ProductStatusType } from "@/types/status"
 
 export interface Product {
    id: number
@@ -14,7 +14,7 @@ export interface Product {
    executorCode: string
    executorAvatarUrl: string
    progress: number
-   status: StatusType
+   status: ProductStatusType
 }
 
 export const mockProducts: Product[] = [

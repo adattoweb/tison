@@ -39,7 +39,7 @@ export function TablePagination({
             <div className="flex items-center gap-1.5">
                {getPageNumbers(page, totalPages).map((p, i) =>
                   p === "..." ? (
-                     <span key={`dots-${i}`} className="px-1 text-sm text-(--second-color)">
+                     <span key={`dots-${i}`} className="px-1 text-sm text-(--second-color) cursor-pointer">
                         …
                      </span>
                   ) : (
@@ -48,7 +48,7 @@ export function TablePagination({
                         type="button"
                         onClick={() => onPageChange(p)}
                         className={clsx(
-                           "h-9 min-w-9 rounded-lg px-2 text-sm font-medium transition-colors",
+                           "h-9 min-w-9 rounded-lg px-2 text-sm font-medium transition-colors cursor-pointer",
                            p === page
                               ? "bg-(--accent-color) text-(--bg-color)"
                               : "bg-(--bg-trans-color) text-white hover:bg-(--bg-trans-hover-color)",

@@ -1,4 +1,4 @@
-import type { StatusType } from "@/types/status"
+import type { DefectStatusType } from "@/types/status"
 
 export interface Defect {
    id: number
@@ -11,7 +11,7 @@ export interface Defect {
    section: string
    detectedDate: string
    detectedTime: string
-   status: StatusType
+   status: DefectStatusType
    responsibleName: string
    responsibleCode: string
    responsibleAvatarUrl: string

@@ -9,6 +9,7 @@ import {
    type ReactNode,
    type RefObject,
 } from "react"
+import { createPortal } from "react-dom"
 import clsx from "clsx"
 import { ChevronDownIcon } from "@heroicons/react/24/outline"
 import gsap from "gsap"
@@ -53,7 +54,10 @@ function Dropdown({ children, className, open: controlledOpen, onOpenChange }: D
    useEffect(() => {
       if (!open) return
       function handleClickOutside(e: MouseEvent) {
-         if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+         const target = e.target as Node
+         const clickedContainer = containerRef.current && containerRef.current.contains(target)
+         const clickedContent = contentRef.current && contentRef.current.contains(target)
+         if (!clickedContainer && !clickedContent) {
             setOpen(false)
          }
       }
@@ -138,12 +142,60 @@ interface DropdownContentProps extends HTMLAttributes<HTMLDivElement> {
    children: ReactNode
 }
 
+interface PortalCoords {
+   top?: number
+   bottom?: number
+   left: number
+   width: number
+}
+
 function DropdownContent({ children, className, ...props }: DropdownContentProps) {
-   const { open, direction, contentRef } = useCheckContext(DropdownContext)
+   const { open, direction, triggerRef, contentRef } = useCheckContext(DropdownContext)
+   const [coords, setCoords] = useState<PortalCoords | null>(null)
+   const [mounted, setMounted] = useState(false)
+
+   useEffect(() => {
+      setMounted(true)
+   }, [])
+
+   // Обчислюємо/оновлюємо позицію відносно viewport, поки dropdown відкритий
+   useLayoutEffect(() => {
+      if (!open) return
+
+      function updatePosition() {
+         const trigger = triggerRef.current
+         if (!trigger) return
+         const rect = trigger.getBoundingClientRect()
+
+         if (direction === "down") {
+            setCoords({
+               top: rect.bottom + GAP,
+               left: rect.left,
+               width: rect.width,
+            })
+         } else {
+            setCoords({
+               bottom: window.innerHeight - rect.top + GAP,
+               left: rect.left,
+               width: rect.width,
+            })
+         }
+      }
+
+      updatePosition()
+
+      window.addEventListener("scroll", updatePosition, true)
+      window.addEventListener("resize", updatePosition)
+      return () => {
+         window.removeEventListener("scroll", updatePosition, true)
+         window.removeEventListener("resize", updatePosition)
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+   }, [open, direction])
 
    useEffect(() => {
       const content = contentRef.current
-      if (!content) return
+      if (!content || !coords) return
 
       const fromY = direction === "down" ? -8 : 8
 
@@ -156,22 +208,32 @@ function DropdownContent({ children, className, ...props }: DropdownContentProps
          transformOrigin: direction === "down" ? "top" : "bottom",
       })
       // eslint-disable-next-line react-hooks/exhaustive-deps
-   }, [open, direction])
+   }, [open, direction, coords])
 
-   return (
+   if (!mounted) return null
+
+   return createPortal(
       <div
          ref={contentRef}
-         style={{ visibility: "hidden", opacity: 0 }}
+         style={{
+            position: "fixed",
+            top: coords?.top,
+            bottom: coords?.bottom,
+            left: coords?.left,
+            width: coords?.width,
+            visibility: "hidden",
+            opacity: 0,
+         }}
          className={clsx(
-            "absolute left-0 right-0 overflow-hidden rounded-sm border border-(--stroke-color) bg-(--bg-trans-color) z-10 backdrop-blur-sm",
-            direction === "down" ? "top-[calc(100%+12px)]" : "bottom-[calc(100%+12px)]",
+            "overflow-hidden rounded-sm border border-(--stroke-color) bg-(--bg-trans-color) z-50 backdrop-blur-sm",
             open ? "pointer-events-auto" : "pointer-events-none",
             className,
          )}
          {...props}
       >
          {children}
-      </div>
+      </div>,
+      document.body,
    )
 }
 

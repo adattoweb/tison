@@ -1,11 +1,11 @@
-import type { StatusType } from "@/types/status"
+import type { StationStatusType } from "@/types/status"
 
 export interface Station {
    id: number
    code: string
    department: string
    section: string
-   status: StatusType
+   status: StationStatusType
    taskName: string
    taskCode: string
    load: number

@@ -1,4 +1,4 @@
-import type { StatusType } from "@/types/status"
+import type { ProductStatusType } from "@/types/status"
 
 export interface Operation {
    id: number
@@ -14,7 +14,7 @@ export interface Operation {
    durationLabel: string
    startTime: string
    endTime: string
-   status: StatusType
+   status: ProductStatusType
 }
 
 export const mockOperations: Operation[] = [
