@@ -1,8 +1,11 @@
+import { STATUS } from "@/constants/status"
 import { useCheckContext } from "@/hooks/useCheckContext"
 import type { WithClassName } from "@/types/common"
+import type { StatusType } from "@/types/status"
 import clsx from "clsx"
 import { Box, MoreVertical } from "lucide-react"
 import { createContext, type PropsWithChildren } from "react"
+import { Link } from "react-router"
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer } from "recharts"
 
 const defaultTableClassNames = `min-w-225 grid items-center border-b border-(--stroke-color) last:border-b-0 py-4 px-8 gap-12`
@@ -17,7 +20,7 @@ interface HeaderProps {
    columns: string[]
 }
 
-function Header({ columns }: HeaderProps) {
+function Columns({ columns }: HeaderProps) {
    const { tableClassNames } = useCheckContext(TableContext)
    return (
       <header className={`${tableClassNames} ${defaultTableClassNames}`}>
@@ -103,14 +106,17 @@ function Text({ text, className = "" }: TextProps) {
 }
 
 interface StatusProps {
-   status: boolean
+   status: StatusType
 }
 
 function Status({ status }: StatusProps) {
    return (
       <div className="flex min-w-0 items-center gap-2 ">
-         <span className="size-2.5 shrink-0 rounded-full bg-(--right-color) hidden lg:block" />
-         <span className="truncate text-(--second-color)">Виконується</span>
+         <span
+            className="size-2.5 shrink-0 rounded-full hidden lg:block"
+            style={{ backgroundColor: STATUS[status].color }}
+         />
+         <span className="truncate text-(--second-color)">{STATUS[status].label}</span>
       </div>
    )
 }
@@ -196,14 +202,19 @@ function Shift({ name, time }: ShiftProps) {
    )
 }
 
-function Row({ children }: PropsWithChildren) {
+interface RowProps extends PropsWithChildren {
+   to: string
+}
+
+function Row({ children, to }: RowProps) {
    const { tableClassNames } = useCheckContext(TableContext)
    return (
-      <div
+      <Link
+         to={to}
          className={`${tableClassNames} ${defaultTableClassNames} transition-colors transition-300 hover:bg-(--bg-trans-hover-color) flex-1`}
       >
          {children}
-      </div>
+      </Link>
    )
 }
 
@@ -217,20 +228,27 @@ function Table({ columns, children, tableClassNames, className = "" }: TableProp
       <TableContext.Provider value={{ tableClassNames }}>
          <div
             className={clsx(
-               "bg-(--bg-trans-color) rounded-xl border border-(--stroke-color) flex flex-col overflow-x-scroll overflow-y-hidden",
+               "bg-(--bg-trans-color) rounded-xl border border-(--stroke-color) flex flex-col overflow-x-scroll overflow-y-clip",
                className,
             )}
             style={{ gridArea: "planning" }}
          >
-            <Header columns={columns} />
+            <Columns columns={columns} />
             {children}
          </div>
       </TableContext.Provider>
    )
 }
 
+function Wrapper({ children, className }: PropsWithChildren<WithClassName>) {
+   return <div className={clsx("flex flex-col mt-4 gap-(--components-gap)", className)}>{children}</div>
+}
+function Header({ children, className }: PropsWithChildren<WithClassName>) {
+   return <div className={clsx("flex flex-wrap items-center gap-(--components-gap)", className)}>{children}</div>
+}
+
 Table.Row = Row
-Table.Header = Header
+Table.Columns = Columns
 Table.Status = Status
 Table.Name = Name
 Table.StatItem = StatItem
@@ -242,5 +260,7 @@ Table.Percent = Percent
 Table.Person = Person
 Table.TextGroup = TextGroup
 Table.MenuButton = MenuButton
+Table.Wrapper = Wrapper
+Table.Header = Header
 
 export default Table

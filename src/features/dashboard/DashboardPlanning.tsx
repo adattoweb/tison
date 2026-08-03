@@ -1,4 +1,5 @@
 import Table from "@/components/Table/Table"
+import type { StatusType } from "@/types/status"
 
 interface Element {
    name: string
@@ -7,7 +8,7 @@ interface Element {
    active: number
    maded: number
    progress: number
-   status: boolean
+   status: StatusType
 }
 
 const data: Element[] = [
@@ -18,16 +19,16 @@ const data: Element[] = [
       active: 80,
       maded: 75,
       progress: 62,
-      status: true,
+      status: "inProgress",
    },
    {
       name: "Модуль B",
       model: "Модель B-7",
       plan: 80,
-      active: 50,
-      maded: 30,
-      progress: 37,
-      status: true,
+      active: 0,
+      maded: 80,
+      progress: 100,
+      status: "completed",
    },
    {
       name: "Плата C",
@@ -36,7 +37,7 @@ const data: Element[] = [
       active: 40,
       maded: 40,
       progress: 67,
-      status: true,
+      status: "waiting",
    },
    {
       name: "Блок D",
@@ -45,7 +46,7 @@ const data: Element[] = [
       active: 16,
       maded: 16,
       progress: 40,
-      status: true,
+      status: "inProgress",
    },
    {
       name: "Пристрій E",
@@ -54,7 +55,7 @@ const data: Element[] = [
       active: 0,
       maded: 0,
       progress: 0,
-      status: false,
+      status: "delayed",
    },
 ]
 
@@ -66,7 +67,7 @@ export function DashboardPlanning() {
    return (
       <Table columns={columns} tableClassNames={tableClassNames}>
          {data.map((el, index) => (
-            <Table.Row key={index}>
+            <Table.Row key={index} to="/">
                <Table.Name name={el.name} model={el.model} />
                <Table.StatItem value={el.plan} />
                <Table.StatItem value={el.active} />

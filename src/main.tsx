@@ -5,13 +5,15 @@ import "./index.css"
 import { createBrowserRouter } from "react-router"
 import { RouterProvider } from "react-router"
 
-import AppLayout from "@/layouts/AppLayout"
+import { AppLayout } from "@/layouts/AppLayout"
 import { routes } from "./routes/routes"
+import { ErrorPage } from "@/components/ErrorPage/ErrorPage"
 
 const router = createBrowserRouter([
    {
       path: "/",
       Component: AppLayout,
+      errorElement: <ErrorPage />,
       children: routes,
    },
 ])

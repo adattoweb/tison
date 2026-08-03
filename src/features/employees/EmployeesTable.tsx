@@ -70,8 +70,8 @@ export function EmployeesTable() {
    }
 
    return (
-      <div className="flex flex-col mt-4" style={{ gap: "var(--components-gap)" }}>
-         <div className="flex flex-wrap items-center" style={{ gap: "var(--components-gap)" }}>
+      <Table.Wrapper>
+         <Table.Header>
             <div className="relative w-full min-w-0 sm:w-auto sm:min-w-55 sm:max-w-100">
                <Search
                   size={18}
@@ -145,11 +145,11 @@ export function EmployeesTable() {
                <Button.Icon Icon={RotateCcw} strokeWidth={1.5} />
                <Button.Paragraph>Скинути фільтри</Button.Paragraph>
             </Button>
-         </div>
+         </Table.Header>
 
          <Table columns={columns} tableClassNames={tableClassNames} className="">
             {pageItems.map((employee, index) => (
-               <Table.Row key={employee.code ?? index}>
+               <Table.Row key={employee.code ?? index} to="/">
                   <Table.Person avatarUrl={employee.avatarUrl} name={employee.fullName} code={employee.code} />
                   <Table.Text text={employee.position} />
                   <Table.TextGroup primary={employee.department} secondary={employee.departmentSub} />
@@ -174,6 +174,6 @@ export function EmployeesTable() {
                className="min-w-300"
             />
          </Table>
-      </div>
+      </Table.Wrapper>
    )
 }

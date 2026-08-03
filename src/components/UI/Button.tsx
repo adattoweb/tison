@@ -1,6 +1,7 @@
 import type { WithClassName } from "@/types/common"
 import type { LucideIcon, LucideProps } from "lucide-react"
 import type { PropsWithChildren } from "react"
+import { Link, type LinkProps } from "react-router"
 
 type ButtonTheme = "transparent" | "accent"
 
@@ -9,18 +10,30 @@ interface ButtonProps extends WithClassName, PropsWithChildren {
    type?: ButtonTheme
 }
 
+const buttonClassName = "px-3 py-2 flex gap-2 border rounded-md cursor-pointer transition-colors duration-300"
+
+const getTypeClassName = (type: ButtonTheme) =>
+   type === "transparent"
+      ? "border-(--stroke-color) bg-(--bg-trans-color) text-white stroke-white hover:bg-(--bg-trans-hover-color)"
+      : "border-(--accent-color) text-(--accent-color) stroke-(--accent-color)"
+
 function Button({ className = "", children, onClick, type = "transparent" }: ButtonProps) {
-   const typeClassName =
-      type === "transparent"
-         ? "border-(--stroke-color) bg-(--bg-trans-color) text-white stroke-white"
-         : "border-(--accent-color) text-(--accent-color) stroke-(--accent-color)"
+   const typeClassName = getTypeClassName(type)
    return (
-      <div
-         className={`${className} px-3 py-2 flex gap-2 border rounded-md cursor-pointer ${typeClassName}`}
-         onClick={onClick}
-      >
+      <div className={`${className} ${buttonClassName} ${typeClassName}`} onClick={onClick}>
          {children}
       </div>
+   )
+}
+
+type ButtonLinkProps = Omit<ButtonProps, "onClick"> & LinkProps
+
+function ButtonLink({ className = "", children, onClick, type = "transparent", ...props }: ButtonLinkProps) {
+   const typeClassName = getTypeClassName(type)
+   return (
+      <Link {...props} className={`${className} ${buttonClassName} ${typeClassName}`} onClick={onClick}>
+         {children}
+      </Link>
    )
 }
 
@@ -42,5 +55,6 @@ function Icon({ Icon, className = "", ...props }: IconProps) {
 
 Button.Paragraph = Paragraph
 Button.Icon = Icon
+Button.ButtonLink = ButtonLink
 
 export default Button
