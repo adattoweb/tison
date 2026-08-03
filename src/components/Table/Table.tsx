@@ -212,6 +212,7 @@ function Row({ children, to }: RowProps) {
       <Link
          to={to}
          className={`${tableClassNames} ${defaultTableClassNames} transition-colors transition-300 hover:bg-(--bg-trans-hover-color) flex-1`}
+         draggable={false}
       >
          {children}
       </Link>
@@ -281,6 +282,19 @@ function Duration({ label, startTime, endTime }: DurationProps) {
    )
 }
 
+interface PhotoProps {
+   src: string
+   alt?: string
+}
+
+function Photo({ src, alt = "" }: PhotoProps) {
+   return (
+      <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg border border-(--stroke-color) bg-(--bg-trans-color)">
+         <img src={src} alt={alt} className="h-full w-full object-cover" />
+      </div>
+   )
+}
+
 Table.Row = Row
 Table.Columns = Columns
 Table.Status = Status
@@ -297,5 +311,6 @@ Table.MenuButton = MenuButton
 Table.Wrapper = Wrapper
 Table.Header = Header
 Table.Duration = Duration
+Table.Photo = Photo
 
 export default Table

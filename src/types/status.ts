@@ -1,1 +1,11 @@
-export type StatusType = "inProgress" | "completed" | "waiting" | "delayed"
+export type StatusType =
+   | "inProgress"
+   | "completed"
+   | "waiting"
+   | "delayed"
+   | "active"
+   | "idle"
+   | "maintenance"
+   | "error"
+   | "open"
+   | "closed"

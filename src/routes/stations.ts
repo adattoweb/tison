@@ -1,9 +1,9 @@
-import { Dashboard } from "@/features/dashboard/Dashboard"
+import { Stations } from "@/features/stations/Stations"
 import { MonitorCog } from "lucide-react"
 
 export const stations = {
    path: "stations",
-   Component: Dashboard,
+   Component: Stations,
    handle: {
       label: "Робочі станції",
       Icon: MonitorCog,
