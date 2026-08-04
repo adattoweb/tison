@@ -1,53 +1,53 @@
 import InfoCard from "@/components/UI/InfoCard"
-import InfoCardWrapper from "@/components/UI/InfoCardWrapper"
 import { UserIcon, UserPlusIcon, UsersIcon, UserMinusIcon, ClockIcon } from "@heroicons/react/24/outline"
 
 export function EmployeesHeader() {
    return (
-      <InfoCardWrapper className="flex gap-(--components-gap)">
-         <InfoCard
-            title="Загальна кількість"
-            value="32"
-            diff="+3 за місяць"
-            diffColor="#61D381"
-            Icon={UsersIcon}
-            className="col-span-3 lg:col-span-2 4xl:col-span-1!"
-         />
+      <InfoCard.Wrapper className="flex gap-(--components-gap)">
+         <InfoCard className="col-span-3 lg:col-span-2 4xl:col-span-1!">
+            <InfoCard.Icon Icon={UsersIcon} />
+            <InfoCard.TextWrapper>
+               <InfoCard.Title>Загальна кількість</InfoCard.Title>
+               <InfoCard.Value>32</InfoCard.Value>
+               <InfoCard.Description className="text-[#61D381]">+3 за місяць</InfoCard.Description>
+            </InfoCard.TextWrapper>
+         </InfoCard>
 
-         <InfoCard
-            title="Активні"
-            value="30"
-            diff="90% від всіх"
-            diffColor="#61D381"
-            Icon={UserIcon}
-            className="col-span-3 lg:col-span-2 4xl:col-span-1!"
-         />
+         <InfoCard className="col-span-3 lg:col-span-2 4xl:col-span-1!">
+            <InfoCard.Icon Icon={UserIcon} />
+            <InfoCard.TextWrapper>
+               <InfoCard.Title>Активні</InfoCard.Title>
+               <InfoCard.Value>30</InfoCard.Value>
+               <InfoCard.Description className="text-[#61D381]">90% від всіх</InfoCard.Description>
+            </InfoCard.TextWrapper>
+         </InfoCard>
 
-         <InfoCard
-            title="Відсутні"
-            value="2"
-            diff="7% від всіх"
-            diffColor="#F2A65A"
-            Icon={UserMinusIcon}
-            className="col-span-3 lg:col-span-2 4xl:col-span-1!"
-         />
+         <InfoCard className="col-span-3 lg:col-span-2 4xl:col-span-1!">
+            <InfoCard.Icon Icon={UserMinusIcon} />
+            <InfoCard.TextWrapper>
+               <InfoCard.Title>Відсутні</InfoCard.Title>
+               <InfoCard.Value>2</InfoCard.Value>
+               <InfoCard.Description className="text-[#F2A65A]">7% від всіх</InfoCard.Description>
+            </InfoCard.TextWrapper>
+         </InfoCard>
 
-         <InfoCard
-            title="Нові робітники"
-            value="2"
-            diff="+1 за минулий місяць"
-            diffColor="#61D381"
-            Icon={UserPlusIcon}
-            className="col-span-3 4xl:col-span-1!"
-         />
-         <InfoCard
-            title="На зміні"
-            value="24"
-            diff="75% від всіх"
-            diffColor="#61D381"
-            Icon={ClockIcon}
-            className="col-span-6 lg:col-span-3 4xl:col-span-1!"
-         />
-      </InfoCardWrapper>
+         <InfoCard className="col-span-3 4xl:col-span-1!">
+            <InfoCard.Icon Icon={UserPlusIcon} />
+            <InfoCard.TextWrapper>
+               <InfoCard.Title>Нові робітники</InfoCard.Title>
+               <InfoCard.Value>2</InfoCard.Value>
+               <InfoCard.Description className="text-[#61D381]">+1 за минулий місяць</InfoCard.Description>
+            </InfoCard.TextWrapper>
+         </InfoCard>
+
+         <InfoCard className="col-span-6 lg:col-span-3 4xl:col-span-1!">
+            <InfoCard.Icon Icon={ClockIcon} />
+            <InfoCard.TextWrapper>
+               <InfoCard.Title>На зміні</InfoCard.Title>
+               <InfoCard.Value>24</InfoCard.Value>
+               <InfoCard.Description className="text-[#61D381]">75% від всіх</InfoCard.Description>
+            </InfoCard.TextWrapper>
+         </InfoCard>
+      </InfoCard.Wrapper>
    )
 }
