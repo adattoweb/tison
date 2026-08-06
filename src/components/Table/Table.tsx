@@ -6,7 +6,7 @@ import clsx from "clsx"
 import { Box, MoreVertical } from "lucide-react"
 import { createContext, type PropsWithChildren } from "react"
 import { Link } from "react-router"
-import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer } from "recharts"
+import { ProgressBar } from "../UI/ProgressBar"
 
 const defaultTableClassNames = `min-w-225 grid items-center border-b border-(--stroke-color) last:border-b-0 py-4 px-8 gap-12`
 
@@ -33,23 +33,6 @@ function Columns({ columns }: HeaderProps) {
    )
 }
 
-function MiniProgressBar({ progress, color }: { progress: number; color: string }) {
-   const data = [{ name: "progress", value: progress, rest: 100 - progress }]
-
-   return (
-      <div className="h-2 w-full rounded-xl bg-(--stroke-color) ">
-         <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data} layout="vertical" margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
-               <XAxis type="number" domain={[0, 100]} hide />
-               <YAxis type="category" dataKey="name" hide />
-               <Bar dataKey="value" stackId="progress" fill={color} radius={4} barSize={8} />
-               <Bar dataKey="rest" stackId="progress" fill="var(--stroke-color)" radius={4} barSize={8} />
-            </BarChart>
-         </ResponsiveContainer>
-      </div>
-   )
-}
-
 interface StatItemProps {
    value: string | number
 }
@@ -71,7 +54,7 @@ function Progress({ value }: ProgressProps) {
    return (
       <div className="flex min-w-0 items-center gap-4 pr-2 sm:pr-6">
          <div className="min-w-0 flex-1 hidden 4xl:block">
-            <MiniProgressBar progress={value} color="#61d381" />
+            <ProgressBar progress={value} color="#61d381" />
          </div>
          <span className="shrink-0 font-medium text-white">{value}%</span>
       </div>

@@ -14,6 +14,7 @@ import type { NameType, ValueType } from "recharts/types/component/DefaultToolti
 import Dropdown from "@/components/UI/Dropdown"
 import type { WithClassName } from "@/types/common"
 import clsx from "clsx"
+import { titleClassName } from "@/utils/classNames"
 
 interface ChartPoint {
    time: string
@@ -93,12 +94,12 @@ export default function DashboardAnalysis({ className }: WithClassName) {
       <div
          className={clsx(
             className,
-            "rounded-xl border border-(--stroke-color) bg-(--bg-trans-color) py-(--components-py) px-(--components-px) flex-1 self-start",
+            "rounded-xl border border-(--stroke-color) bg-(--bg-trans-color) py-(--components-py) px-(--components-px) flex-1 flex flex-col h-full min-h-0",
          )}
          style={{ gridArea: "analysis" }}
       >
-         <div className="mb-2 flex flex-wrap items-start justify-between gap-4">
-            <h2 className="font-medium text-white text-base md:text-lg lg:text-xl">Аналіз виробництва</h2>
+         <div className="mb-2 flex flex-wrap items-start justify-between gap-4 shrink-0">
+            <h2 className={titleClassName}>Аналіз виробництва</h2>
 
             <Dropdown>
                <Dropdown.Button>
@@ -116,8 +117,8 @@ export default function DashboardAnalysis({ className }: WithClassName) {
             </Dropdown>
          </div>
 
-         <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:gap-10">
-            <div className="flex w-full flex-col lg:w-70!">
+         <div className="flex flex-col gap-8 lg:flex-row lg:gap-10 flex-1 min-h-0">
+            <div className="flex w-full flex-col lg:w-70! shrink-0">
                <div className="flex flex-col gap-4">
                   <StatRow label="Виробів у роботі" value="53" />
                   <StatRow label="На тестуванні" value="12" />
@@ -139,8 +140,8 @@ export default function DashboardAnalysis({ className }: WithClassName) {
                </a>
             </div>
 
-            <div className="flex w-full min-w-0 flex-col">
-               <div className="mb-2 flex flex-wrap items-center gap-x-6 gap-y-2">
+            <div className="flex w-full min-w-0 flex-col flex-1 min-h-0">
+               <div className="mb-2 flex flex-wrap items-center gap-x-6 gap-y-2 shrink-0">
                   <h3 className="text-sm md:text-base font-medium text-white">Динаміка виробництва</h3>
                   <div className="flex items-center gap-4 text-sm text-(--second-color)">
                      <span className="flex items-center gap-2">
@@ -154,7 +155,7 @@ export default function DashboardAnalysis({ className }: WithClassName) {
                   </div>
                </div>
 
-               <div className="h-55 w-full sm:h-65 lg:h-70">
+               <div className="w-full flex-1 min-h-64">
                   <ResponsiveContainer width="100%" height="100%">
                      <LineChart data={chartData} margin={{ top: 0, right: 8, left: -8, bottom: 0 }}>
                         <CartesianGrid vertical={false} stroke="var(--stroke-color)" />

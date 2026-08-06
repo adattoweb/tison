@@ -1,5 +1,8 @@
+import { employees } from "@/routes/employees"
 import type { WithClassName } from "@/types/common"
+import { titleClassName } from "@/utils/classNames"
 import clsx from "clsx"
+import { Link } from "react-router"
 
 const leaderboard: Omit<ItemProps, "index">[] = [
    {
@@ -60,10 +63,10 @@ export function DashboardStats({ className }: WithClassName) {
          style={{ gridArea: "stats" }}
       >
          <header className="flex justify-between">
-            <p className="font-medium text-base md:text-lg lg:text-xl">Топ співробітників</p>
-            <a href="#" className="text-(--accent-color) underline text-sm md:text-base">
+            <h2 className={titleClassName}>Топ співробітників</h2>
+            <Link to={`/${employees.path}`} className="text-(--accent-color) underline text-sm md:text-base">
                Весь рейтинг
-            </a>
+            </Link>
          </header>
          <div className="flex flex-1 flex-col">
             {leaderboard.map((el, index) => (

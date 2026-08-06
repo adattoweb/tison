@@ -20,11 +20,12 @@
    --bg-color: #080909;
    --bg-trans-color: rgba(255, 255, 255, 0.03);
    --bg-trans-hover-color: rgba(255, 255, 255, 0.05);
-   --accent-color: #e8ba6f;
+   --accent-color: #e5a839;
    --second-color: #c7c7c7;
    --stroke-color: #2e2b25;
    --stroke-active-color: #403e3b;
    --right-color: #61d381;
+   --bad-color: #e25757;
    --components-gap: 24px;
    --components-py: 16px;
    --components-px: 24px;

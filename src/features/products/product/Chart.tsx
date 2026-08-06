@@ -2,6 +2,7 @@ import { useMemo } from "react"
 import { PieChart, Pie, ResponsiveContainer } from "recharts"
 import type { WithClassName } from "@/types/common"
 import clsx from "clsx"
+import { titleClassName } from "@/utils/classNames"
 
 interface DefectItem {
    name: string
@@ -30,7 +31,7 @@ export function Chart({ className }: WithClassName) {
          style={{ gridArea: "chart" }}
       >
          <div className="flex items-start justify-between mb-6">
-            <h2 className="text-base md:text-lg lg:text-xl font-medium text-white">Дефекти за виробів цього типу</h2>
+            <h2 className={titleClassName}>Дефекти за виробів цього типу</h2>
          </div>
 
          <div className="flex flex-wrap justify-center md:items-center gap-8 md:gap-16 mb-4">

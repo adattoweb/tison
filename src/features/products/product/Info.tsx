@@ -1,6 +1,7 @@
 import productImg from "@/assets/images/product.jpg"
 import type { Product } from "../products"
 import { STATUS } from "@/constants/status"
+import { titleClassName } from "@/utils/classNames"
 
 interface InfoBlockProps {
    product: Product
@@ -30,7 +31,7 @@ export function Info({ product }: InfoBlockProps) {
             className="flex-1 rounded-lg aspect-video bg-center bg-cover bg-no-repeat"
             style={{ backgroundImage: `url(${productImg})` }}
          ></div>
-         <h2 className="text-white text-xl font-medium">Інформація про виріб</h2>
+         <h2 className={titleClassName}>Інформація про виріб</h2>
          <ul className="flex flex-col gap-1">
             <ListItem label="Серійний номер" value={product.code} />
             <ListItem label="Тип виробу" value={product.modelType} />

@@ -4,6 +4,10 @@ import Button from "@/components/UI/Button"
 import { mockClick } from "@/utils/mockClick"
 import { PackagePlus } from "lucide-react"
 import { AnalyticsHeader } from "./AnalyticsHeader"
+import DashboardAnalysis from "../dashboard/DashboardAnalysis"
+import { AnalyticsWorkload } from "./AnalyticsWorkload"
+import { ProductDefects } from "./ProductDefects"
+import { OperationsTime } from "./OperationsTime"
 
 export function Analytics() {
    return (
@@ -21,6 +25,10 @@ export function Analytics() {
 
          <div className="flex flex-col gap-(--components-gap)">
             <AnalyticsHeader />
+            <DashboardAnalysis />
+            <AnalyticsWorkload />
+            <ProductDefects />
+            <OperationsTime />
          </div>
       </>
    )

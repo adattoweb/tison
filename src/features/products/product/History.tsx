@@ -1,4 +1,5 @@
 import { avatarUrl } from "@/constants/global"
+import { titleClassName } from "@/utils/classNames"
 import { ClockIcon } from "lucide-react"
 
 function HistoryItem() {
@@ -27,7 +28,7 @@ export function History() {
          className="flex flex-col flex-1 ibm-plex-sans bg-(--bg-trans-color) border border-(--stroke-color) rounded-xl py-(--components-py) px-(--components-px) gap-2"
          style={{ gridArea: "history" }}
       >
-         <h2 className="text-white text-xl font-medium">Історія</h2>
+         <h2 className={titleClassName}>Історія</h2>
          <ul className="flex flex-col flex-1">
             <HistoryItem />
             <HistoryItem />

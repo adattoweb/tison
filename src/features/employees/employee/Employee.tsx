@@ -6,23 +6,26 @@ import { History } from "./History"
 import { Chart } from "./Chart"
 import DashboardAnalysis from "@/features/dashboard/DashboardAnalysis"
 import { useLayoutMode, type LayoutMode } from "@/hooks/useLayoutMode"
+import { OperationsHeatmap } from "./OperationsHeatmap"
 
 const WIDE_AREAS = `
    "header header header header header header header header header header"
-   "info info history history history history analysis analysis analysis analysis"
-   "info info history history history history chart chart chart chart"
+   "info info history history history analysis analysis analysis analysis analysis"
+   "info info history history history chart chart chart map map"
 `
 
 const MEDIUM_AREAS = `
    "header header header header header header header header header header"
    "info info info info info history history history history history"
-   "info info info info info history history history history history"
-   "analysis analysis analysis analysis analysis chart chart chart chart chart"
+   "map map map map map map map map map map"
+   "analysis analysis analysis analysis analysis analysis analysis analysis analysis analysis"
+   "chart chart chart chart chart chart chart chart chart chart"
 `
 
 const STACKED_AREAS = `
    "header header header header header header header header header header"
    "info info info info info info info info info info"
+   "map map map map map map map map map map"
    "analysis analysis analysis analysis analysis analysis analysis analysis analysis analysis"
    "history history history history history history history history history history"
    "chart chart chart chart chart chart chart chart chart chart"
@@ -53,6 +56,7 @@ export function Employee() {
             <History />
             <Chart />
             <DashboardAnalysis />
+            <OperationsHeatmap />
          </div>
       </div>
    )

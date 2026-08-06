@@ -1,4 +1,5 @@
 import avatar from "@/assets/images/avatar.jpg"
+import { titleClassName } from "@/utils/classNames"
 
 interface ListItemProps {
    label: string
@@ -29,7 +30,12 @@ export function Info() {
             Відповідальний та досвідчений оператор верстатів. Спеціалізується на обробці складних деталей з високими
             вимогами до точності. Дотримується стандартів якості та техніки безпеки.
          </p>
-         <h2 className="text-white text-xl font-medium">Інформація про працівника</h2>
+         <h2 className={`${titleClassName} mt-auto`}>Контактна інформація</h2>
+         <ul className="flex flex-col gap-1">
+            <ListItem label="Телефон" value="+38 (067) 1234 45 67" />
+            <ListItem label="Пошта" value="example@gmail.com" />
+         </ul>
+         <h2 className={`${titleClassName} mt-2`}>Інформація про працівника</h2>
          <ul className="flex flex-col gap-1">
             <ListItem label="Серійний номер" value="EMP-2026" />
             <ListItem label="Посада" value="Оператор верстату" />

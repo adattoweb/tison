@@ -3,6 +3,7 @@ import { PieChart, Pie, ResponsiveContainer } from "recharts"
 import Dropdown from "@/components/UI/Dropdown"
 import type { WithClassName } from "@/types/common"
 import clsx from "clsx"
+import { titleClassName } from "@/utils/classNames"
 
 interface DefectItem {
    name: string
@@ -35,9 +36,7 @@ export function DashboardChart({ className }: WithClassName) {
          style={{ gridArea: "chart" }}
       >
          <div className="flex items-start justify-between mb-6">
-            <h2 className="text-base md:text-lg lg:text-xl font-medium text-white">
-               Дефекти за {period.toLowerCase()}
-            </h2>
+            <h2 className={titleClassName}>Дефекти за {period.toLowerCase()}</h2>
 
             <Dropdown>
                <Dropdown.Button>
