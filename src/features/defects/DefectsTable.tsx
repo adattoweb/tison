@@ -7,6 +7,7 @@ import { TablePagination } from "@/components/Table/TablePagination"
 import { mockDefects } from "./defects"
 import { STATUS } from "@/constants/status"
 import type { StatusType } from "@/types/status"
+import { defects } from "@/routes/defects"
 
 const ALL = {
    type: "Всі типи",
@@ -161,7 +162,7 @@ export function DefectsTable() {
 
          <Table columns={columns} tableClassNames={tableClassNames} className="">
             {pageItems.map(defect => (
-               <Table.Row key={defect.id} to={`/defects/${defect.id}`}>
+               <Table.Row key={defect.id} to={`/${defects.path}/${defect.id}`}>
                   <Table.Photo src={defect.photoUrl} alt={defect.code} />
                   <Table.Text text={defect.code} className="font-medium" />
                   <Table.Text text={defect.productCode} />
@@ -187,7 +188,7 @@ export function DefectsTable() {
                   setPage(1)
                }}
                entityLabel="фото"
-               className="min-w-320"
+               className="min-w-7xl"
             />
          </Table>
       </Table.Wrapper>
