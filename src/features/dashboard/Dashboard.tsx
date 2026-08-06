@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react"
 import PageDescription from "@/components/UI/PageDescription"
 import PageHeader from "@/components/UI/PageHeader"
 import { DashboardHeader } from "./DashboardHeader"
@@ -6,10 +5,7 @@ import { DashboardStats } from "./DashboardStats"
 import { DashboardChart } from "./DashboardChart"
 import { DashboardPlanning } from "./DashboardPlanning"
 import DashboardAnalysis from "./DashboardAnalysis"
-const WIDE_BREAKPOINT = "(min-width: 1600px)" // 3xl
-const MEDIUM_BREAKPOINT = "(min-width: 1024px)" // lg — поріг між "50/50" і "100%"
-
-type LayoutMode = "wide" | "medium" | "stacked"
+import { useLayoutMode, type LayoutMode } from "@/hooks/useLayoutMode"
 
 // >= 1600px: analysis(3/5) + stats(2/5) в один ряд, planning(3/5) + chart(2/5) в один ряд
 const WIDE_AREAS = `
@@ -34,34 +30,6 @@ const STACKED_AREAS = `
    "stats stats stats stats stats stats stats stats stats stats"
    "chart chart chart chart chart chart chart chart chart chart"
 `
-
-function useLayoutMode(): LayoutMode {
-   const getMode = (): LayoutMode => {
-      if (window.matchMedia(WIDE_BREAKPOINT).matches) return "wide"
-      if (window.matchMedia(MEDIUM_BREAKPOINT).matches) return "medium"
-      return "stacked"
-   }
-
-   const [mode, setMode] = useState<LayoutMode>(getMode)
-
-   useEffect(() => {
-      const wideMql = window.matchMedia(WIDE_BREAKPOINT)
-      const mediumMql = window.matchMedia(MEDIUM_BREAKPOINT)
-
-      const handleChange = () => setMode(getMode())
-
-      wideMql.addEventListener("change", handleChange)
-      mediumMql.addEventListener("change", handleChange)
-
-      return () => {
-         wideMql.removeEventListener("change", handleChange)
-         mediumMql.removeEventListener("change", handleChange)
-      }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-   }, [])
-
-   return mode
-}
 
 const AREAS_BY_MODE: Record<LayoutMode, string> = {
    wide: WIDE_AREAS,

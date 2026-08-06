@@ -149,7 +149,7 @@ export function EmployeesTable() {
 
          <Table columns={columns} tableClassNames={tableClassNames} className="">
             {pageItems.map((employee, index) => (
-               <Table.Row key={employee.code ?? index} to="/">
+               <Table.Row key={employee.code ?? index} to={`/employees/${employee.id}`}>
                   <Table.Person avatarUrl={employee.avatarUrl} name={employee.fullName} code={employee.code} />
                   <Table.Text text={employee.position} />
                   <Table.TextGroup primary={employee.department} secondary={employee.departmentSub} />

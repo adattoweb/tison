@@ -7,11 +7,11 @@ import { products } from "./products"
 import { scheduling } from "./scheduling"
 import { settings } from "./settings"
 import { stations } from "./stations"
-import { users } from "./users"
+import { employees } from "./employees"
 
 export const routes = [
    dashboard,
-   users,
+   employees,
    products,
    operations,
    stations,

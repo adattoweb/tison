@@ -3,7 +3,7 @@ import { ClipboardCheck, CheckCircle2, Factory, Timer, UserCog } from "lucide-re
 
 export function ProductHeader() {
    return (
-      <InfoCard.Wrapper>
+      <InfoCard.Wrapper style={{ gridArea: "header" }}>
          <InfoCard className="col-span-3 lg:col-span-2 4xl:col-span-1!">
             <InfoCard.Icon Icon={ClipboardCheck} />
             <InfoCard.TextWrapper>

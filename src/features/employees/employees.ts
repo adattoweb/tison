@@ -1,3 +1,5 @@
+import { avatarUrl } from "@/constants/global"
+
 export interface Employee {
    id: string
    code: string
@@ -18,7 +20,7 @@ export const mockEmployees: Employee[] = Array.from({ length: 100 }, (_, i) => (
    id: `EMP-${1024 + i}`,
    code: `EMP-${1024 + i}`,
    fullName: "Іваненко Сергій",
-   avatarUrl: `https://i.pravatar.cc/80?img=${12}`,
+   avatarUrl: avatarUrl,
    position: "Тестувальник",
    department: "Виробництво",
    departmentSub: "Механічний цех",

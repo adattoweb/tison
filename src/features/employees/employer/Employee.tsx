@@ -1,13 +1,9 @@
-import { useParams } from "react-router"
-import { mockProducts } from "../products"
-import PageHeader from "@/components/UI/PageHeader"
-import { ErrorPage } from "@/components/ErrorPage/ErrorPage"
 import PageDescription from "@/components/UI/PageDescription"
-import { ProductHeader } from "./ProductHeader"
+import PageHeader from "@/components/UI/PageHeader"
+import { EmployeeHeader } from "./EmployeeHeader"
 import { Info } from "./Info"
 import { History } from "./History"
 import { Chart } from "./Chart"
-import { Prediction } from "./Prediction"
 import DashboardAnalysis from "@/features/dashboard/DashboardAnalysis"
 import { useLayoutMode, type LayoutMode } from "@/hooks/useLayoutMode"
 
@@ -38,16 +34,13 @@ const AREAS_BY_MODE: Record<LayoutMode, string> = {
    stacked: STACKED_AREAS,
 }
 
-export function Product() {
+export function Employee() {
    const mode = useLayoutMode()
-   const { id } = useParams()
-   const product = mockProducts.find(el => el.id === Number(id))
-   if (product === undefined) return <ErrorPage />
    return (
       <div className="flex flex-col gap-(--components-gap)">
          <div>
-            <PageHeader>{product.code}</PageHeader>
-            <PageDescription>{product.model}</PageDescription>
+            <PageHeader>Іван Савченко</PageHeader>
+            <PageDescription>Оператор</PageDescription>
          </div>
          <div
             className="grid grid-cols-[repeat(10,1fr)] gap-(--components-gap) w-full"
@@ -55,11 +48,10 @@ export function Product() {
                gridTemplateAreas: AREAS_BY_MODE[mode],
             }}
          >
-            <ProductHeader />
-            <Info product={product} />
+            <EmployeeHeader />
+            <Info />
             <History />
             <Chart />
-            {/* <Prediction /> */}
             <DashboardAnalysis />
          </div>
       </div>

@@ -15,6 +15,10 @@ export interface Product {
    executorAvatarUrl: string
    progress: number
    status: ProductStatusType
+   createdAt: string
+   plannedStartDate: string
+   plannedEndDate: string
+   actualEndDate: string | null
 }
 
 export const mockProducts: Product[] = [
@@ -33,6 +37,10 @@ export const mockProducts: Product[] = [
       executorAvatarUrl: "https://i.pravatar.cc/150?img=12",
       progress: 50,
       status: "inProgress",
+      createdAt: "08.06.2026 09:15",
+      plannedStartDate: "08.06.2026 09:20",
+      plannedEndDate: "08.06.2026 14:00",
+      actualEndDate: null,
    },
    {
       id: 257,
@@ -49,6 +57,10 @@ export const mockProducts: Product[] = [
       executorAvatarUrl: "https://i.pravatar.cc/150?img=32",
       progress: 100,
       status: "completed",
+      createdAt: "08.06.2026 08:00",
+      plannedStartDate: "08.06.2026 08:10",
+      plannedEndDate: "08.06.2026 13:00",
+      actualEndDate: "08.06.2026 12:47",
    },
    {
       id: 258,
@@ -65,6 +77,10 @@ export const mockProducts: Product[] = [
       executorAvatarUrl: "https://i.pravatar.cc/150?img=15",
       progress: 10,
       status: "waiting",
+      createdAt: "08.06.2026 10:30",
+      plannedStartDate: "08.06.2026 11:00",
+      plannedEndDate: "08.06.2026 16:00",
+      actualEndDate: null,
    },
    {
       id: 259,
@@ -81,6 +97,10 @@ export const mockProducts: Product[] = [
       executorAvatarUrl: "https://i.pravatar.cc/150?img=45",
       progress: 65,
       status: "delayed",
+      createdAt: "08.06.2026 07:45",
+      plannedStartDate: "08.06.2026 08:00",
+      plannedEndDate: "08.06.2026 12:30",
+      actualEndDate: null,
    },
    {
       id: 260,
@@ -97,6 +117,10 @@ export const mockProducts: Product[] = [
       executorAvatarUrl: "https://i.pravatar.cc/150?img=8",
       progress: 33,
       status: "inProgress",
+      createdAt: "08.06.2026 09:00",
+      plannedStartDate: "08.06.2026 09:15",
+      plannedEndDate: "08.06.2026 15:00",
+      actualEndDate: null,
    },
    {
       id: 261,
@@ -113,5 +137,9 @@ export const mockProducts: Product[] = [
       executorAvatarUrl: "https://i.pravatar.cc/150?img=48",
       progress: 83,
       status: "inProgress",
+      createdAt: "08.06.2026 06:50",
+      plannedStartDate: "08.06.2026 07:00",
+      plannedEndDate: "08.06.2026 13:30",
+      actualEndDate: null,
    },
 ]
