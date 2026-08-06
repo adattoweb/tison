@@ -7,7 +7,6 @@ import { ProductHeader } from "./ProductHeader"
 import { Info } from "./Info"
 import { History } from "./History"
 import { Chart } from "./Chart"
-import { Prediction } from "./Prediction"
 import DashboardAnalysis from "@/features/dashboard/DashboardAnalysis"
 import { useLayoutMode, type LayoutMode } from "@/hooks/useLayoutMode"
 
