@@ -17,7 +17,7 @@ function ListItem({ label, value }: ListItemProps) {
 export function Info() {
    return (
       <div
-         className="flex flex-col flex-1 ibm-plex-sans bg-(--bg-trans-color) border border-(--stroke-color) rounded-xl py-(--components-py) px-(--components-py) gap-2"
+         className="flex flex-col ibm-plex-sans bg-(--bg-trans-color) border border-(--stroke-color) rounded-xl py-(--components-py) px-(--components-py) gap-2"
          style={{ gridArea: "info" }}
       >
          <div

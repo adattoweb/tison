@@ -24,13 +24,11 @@ function HistoryItem() {
 export function History() {
    return (
       <div
-         className="flex flex-col flex-1 ibm-plex-sans bg-(--bg-trans-color) border border-(--stroke-color) rounded-xl py-(--components-py) px-(--components-px) gap-2"
+         className="flex flex-col ibm-plex-sans bg-(--bg-trans-color) border border-(--stroke-color) rounded-xl py-(--components-py) px-(--components-px) gap-2"
          style={{ gridArea: "history" }}
       >
          <h2 className="text-white text-xl font-medium">Історія</h2>
          <ul className="flex flex-col flex-1">
-            <HistoryItem />
-            <HistoryItem />
             <HistoryItem />
             <HistoryItem />
             <HistoryItem />

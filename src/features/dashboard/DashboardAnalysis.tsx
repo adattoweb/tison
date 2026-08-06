@@ -93,7 +93,7 @@ export default function DashboardAnalysis({ className }: WithClassName) {
       <div
          className={clsx(
             className,
-            "rounded-xl border border-(--stroke-color) bg-(--bg-trans-color) py-(--components-py) px-(--components-px)",
+            "rounded-xl border border-(--stroke-color) bg-(--bg-trans-color) py-(--components-py) px-(--components-px) flex-1 self-start",
          )}
          style={{ gridArea: "analysis" }}
       >
