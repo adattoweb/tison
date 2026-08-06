@@ -4,7 +4,7 @@ import type { WithClassName } from "@/types/common"
 import type { StatusType } from "@/types/status"
 import clsx from "clsx"
 import { Box, MoreVertical } from "lucide-react"
-import { createContext, type PropsWithChildren } from "react"
+import { createContext, type CSSProperties, type PropsWithChildren } from "react"
 import { Link } from "react-router"
 import { ProgressBar } from "../UI/ProgressBar"
 
@@ -12,6 +12,7 @@ const defaultTableClassNames = `min-w-225 grid items-center border-b border-(--s
 
 interface TableContextType {
    tableClassNames: string
+   isFlexible: boolean
 }
 
 const TableContext = createContext<TableContextType | null>(null)
@@ -194,7 +195,11 @@ function Row({ children, to }: RowProps) {
    return (
       <Link
          to={to}
-         className={`${tableClassNames} ${defaultTableClassNames} transition-colors transition-300 hover:bg-(--bg-trans-hover-color) flex-1`}
+         className={clsx(
+            "transition-colors transition-300 hover:bg-(--bg-trans-hover-color) flex-1",
+            tableClassNames,
+            defaultTableClassNames,
+         )}
          draggable={false}
       >
          {children}
@@ -205,27 +210,40 @@ function Row({ children, to }: RowProps) {
 interface TableProps extends PropsWithChildren, WithClassName {
    columns: string[]
    tableClassNames: string
+   style?: React.CSSProperties
+   isFlexible?: boolean
 }
 
-function Table({ columns, children, tableClassNames, className = "" }: TableProps) {
+function Table({ columns, children, tableClassNames, className = "", style, isFlexible = false }: TableProps) {
    return (
-      <TableContext.Provider value={{ tableClassNames }}>
+      <TableContext.Provider value={{ tableClassNames, isFlexible }}>
          <div
             className={clsx(
-               "bg-(--bg-trans-color) rounded-xl border border-(--stroke-color) flex flex-col overflow-x-scroll overflow-y-clip",
+               "bg-(--bg-trans-color) rounded-xl border border-(--stroke-color) overflow-hidden",
                className,
+               isFlexible && "h-full",
             )}
-            style={{ gridArea: "planning" }}
+            style={style}
          >
-            <Columns columns={columns} />
-            {children}
+            <div className={clsx("flex flex-col overflow-x-scroll overflow-y-clip h-full", isFlexible && "h-full")}>
+               <Columns columns={columns} />
+               {children}
+            </div>
          </div>
       </TableContext.Provider>
    )
 }
 
-function Wrapper({ children, className }: PropsWithChildren<WithClassName>) {
-   return <div className={clsx("flex flex-col mt-4 gap-(--components-gap)", className)}>{children}</div>
+interface WrapperProps extends PropsWithChildren, WithClassName {
+   style?: CSSProperties
+}
+
+function Wrapper({ children, className, style }: WrapperProps) {
+   return (
+      <div className={clsx("flex flex-col gap-(--components-gap) rounded-xl", className)} style={style}>
+         {children}
+      </div>
+   )
 }
 function Header({ children, className }: PropsWithChildren<WithClassName>) {
    return <div className={clsx("flex flex-wrap items-center gap-(--components-gap)", className)}>{children}</div>

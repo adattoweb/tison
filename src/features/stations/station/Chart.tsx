@@ -67,7 +67,10 @@ export default function HourlyLoadChart() {
    }, [])
 
    return (
-      <div className="rounded-xl border border-(--stroke-color) bg-(--bg-trans-color) py-(--components-py) px-(--components-px) flex flex-col gap-4">
+      <div
+         className="rounded-xl border border-(--stroke-color) bg-(--bg-trans-color) py-(--components-py) px-(--components-px) flex flex-col gap-4"
+         style={{ gridArea: "chart" }}
+      >
          <h2 className={titleClassName}>Завантаження по годинах</h2>
 
          {!data ? (

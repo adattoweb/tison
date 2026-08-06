@@ -65,7 +65,7 @@ const tableClassNames = "grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr] 4xl:grid-cols-[2fr_
 
 export function DashboardPlanning() {
    return (
-      <Table columns={columns} tableClassNames={tableClassNames}>
+      <Table columns={columns} tableClassNames={tableClassNames} style={{ gridArea: "planning" }}>
          {data.map((el, index) => (
             <Table.Row key={index} to="/">
                <Table.Name name={el.name} model={el.model} />

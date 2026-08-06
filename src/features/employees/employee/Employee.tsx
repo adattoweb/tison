@@ -10,8 +10,9 @@ import { OperationsHeatmap } from "./OperationsHeatmap"
 
 const WIDE_AREAS = `
    "header header header header header header header header header header"
-   "info info history history history analysis analysis analysis analysis analysis"
-   "info info history history history chart chart chart map map"
+   "info info analysis analysis analysis analysis analysis history history history"
+   "info info analysis analysis analysis analysis analysis history history history"
+   "map map map map chart chart chart history history history"
 `
 
 const MEDIUM_AREAS = `

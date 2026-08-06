@@ -3,7 +3,7 @@ import { Activity, Gauge, Factory, ClipboardList, User } from "lucide-react"
 
 export function StationHeader() {
    return (
-      <InfoCard.Wrapper style={{ gridArea: "station-header" }}>
+      <InfoCard.Wrapper style={{ gridArea: "header" }}>
          <InfoCard className="col-span-3 lg:col-span-2 4xl:col-span-1!">
             <InfoCard.Icon Icon={Activity} />
             <InfoCard.TextWrapper>

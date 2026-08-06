@@ -28,7 +28,7 @@ export function TablePagination({
 
    return (
       <div
-         className={clsx("flex flex-wrap items-center justify-between gap-4", className)}
+         className={clsx("flex flex-wrap items-center justify-between gap-4 rounded-b-xl", className)}
          style={{ padding: "var(--components-py) var(--components-px)" }}
       >
          <span className="text-sm text-(--second-color)">
