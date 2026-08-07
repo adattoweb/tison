@@ -26,7 +26,7 @@ export function Info({ station }: InfoProps) {
          style={{ gridArea: "info" }}
       >
          <h2 className={`${titleClassName}`}>Інформація про станцію</h2>
-         <ul className="flex flex-col gap-1">
+         <ul className="flex flex-col gap-1 justify-between flex-1">
             <ListItem label="Серійний номер" value={station.code} />
             <ListItem label="Завантаження" value={station.load} />
             <ListItem label="Тип станції" value="Паяльна станція" />

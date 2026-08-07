@@ -4,7 +4,7 @@ import { TargetIcon, CheckCircle2Icon, BugIcon, WrenchIcon, ClockIcon } from "lu
 
 export function AnalyticsHeader({ className = "" }: WithClassName) {
    return (
-      <InfoCard.Wrapper className={className}>
+      <InfoCard.Wrapper className={className} style={{ gridArea: "header" }}>
          <InfoCard className="col-span-3 lg:col-span-2 4xl:col-span-1!">
             <InfoCard.Icon Icon={TargetIcon} />
             <InfoCard.TextWrapper>

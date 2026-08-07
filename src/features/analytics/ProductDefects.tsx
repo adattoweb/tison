@@ -27,22 +27,29 @@ export function ProductDefects({ className }: WithClassName) {
       <div
          className={clsx(
             className,
-            "ibm-plex-sans bg-(--bg-trans-color) py-(--components-py) px-(--components-px) border border-(--stroke-color) rounded-xl flex flex-col gap-2 w-150",
+            "ibm-plex-sans bg-(--bg-trans-color) border border-(--stroke-color) rounded-xl flex overflow-hidden",
          )}
-         style={{ gridArea: "stats" }}
+         style={{ gridArea: "defects" }}
       >
-         <header className="flex justify-between">
-            <h2 className={titleClassName}>Топ дефектних виробів</h2>
-            <Link to={`/${defects.path}`} className="text-(--accent-color) underline text-sm md:text-base">
-               Весь рейтинг
-            </Link>
-         </header>
-         <div className="flex flex-1 flex-col">
-            <StatItem index={0} name="Зарядна станція V4" points={5} diff={2} />
-            <StatItem index={1} name="Зарядна станція V4" points={5} diff={2} />
-            <StatItem index={2} name="Зарядна станція V4" points={5} diff={2} />
-            <StatItem index={3} name="Зарядна станція V4" points={5} diff={2} />
-            <StatItem index={4} name="Зарядна станція V4" points={5} diff={2} />
+         <div className="overflow-auto">
+            <div className="flex flex-col gap-2 min-w-100 py-(--components-py) px-(--components-px)">
+               <header className="flex justify-between">
+                  <h2 className={`${titleClassName} pr-2 truncate`}>Топ дефектних виробів</h2>
+                  <Link
+                     to={`/${defects.path}`}
+                     className="text-(--accent-color) underline text-sm md:text-base hidden md:block"
+                  >
+                     Весь рейтинг
+                  </Link>
+               </header>
+               <div className="flex flex-1 flex-col">
+                  <StatItem index={0} name="Зарядна станція V4" points={5} diff={2} />
+                  <StatItem index={1} name="Зарядна станція V4" points={5} diff={2} />
+                  <StatItem index={2} name="Зарядна станція V4" points={5} diff={2} />
+                  <StatItem index={3} name="Зарядна станція V4" points={5} diff={2} />
+                  <StatItem index={4} name="Зарядна станція V4" points={5} diff={2} />
+               </div>
+            </div>
          </div>
       </div>
    )
