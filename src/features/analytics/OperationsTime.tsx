@@ -31,7 +31,7 @@ export function OperationsTime({ className }: WithClassName) {
          )}
          style={{ gridArea: "optime" }}
       >
-         <div className="overflow-auto">
+         <div className="overflow-auto flex-1">
             <div className="flex flex-col gap-2 min-w-100 py-(--components-py) px-(--components-px)">
                <header className="flex justify-between">
                   <h2 className={`${titleClassName} pr-2 truncate`}>Аналіз часу операцій</h2>

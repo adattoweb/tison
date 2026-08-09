@@ -8,6 +8,9 @@ import { scheduling } from "./scheduling"
 import { settings } from "./settings"
 import { stations } from "./stations"
 import { employees } from "./employees"
+import { control } from "./control"
+import { storage } from "./storage"
+import { types } from "./types"
 
 export const routes = [
    dashboard,
@@ -18,6 +21,9 @@ export const routes = [
    analytics,
    scheduling,
    defects,
+   control,
+   storage,
+   types,
    analysis,
    settings,
 ]
