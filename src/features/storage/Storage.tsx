@@ -3,10 +3,10 @@ import PageHeader from "@/components/UI/PageHeader"
 import Button from "@/components/UI/Button"
 import { mockClick } from "@/utils/mockClick"
 import { PlusIcon } from "lucide-react"
-import { SchedulingHeader } from "./SchedulingHeader"
-import { SchedulingTable } from "./SchedulingTable"
+import { StorageTable } from "./StorageTable"
+import { StorageHeader } from "./StorageHeader"
 
-export function Scheduling() {
+export function Storage() {
    return (
       <>
          <div className="flex justify-between items-center">
@@ -16,13 +16,13 @@ export function Scheduling() {
             </div>
             <Button onClick={mockClick} type="accent" className="h-min">
                <Button.Icon Icon={PlusIcon} />
-               <Button.Paragraph>Створити план</Button.Paragraph>
+               <Button.Paragraph>Додати матеріал</Button.Paragraph>
             </Button>
          </div>
 
          <div className="flex flex-col gap-(--components-gap)">
-            <SchedulingHeader />
-            <SchedulingTable />
+            <StorageHeader />
+            <StorageTable />
          </div>
       </>
    )

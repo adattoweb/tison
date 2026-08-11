@@ -82,7 +82,7 @@ function Name({ name, model }: NameProps) {
 }
 
 interface TextProps extends WithClassName {
-   text: string
+   text: string | number
 }
 
 function Text({ text, className = "" }: TextProps) {

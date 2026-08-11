@@ -1,9 +1,9 @@
-import { Dashboard } from "@/features/dashboard/Dashboard"
+import { Storage } from "@/features/storage/Storage"
 import { WarehouseIcon } from "lucide-react"
 
 export const storage = {
    path: "storage",
-   Component: Dashboard,
+   Component: Storage,
    handle: {
       label: "Склад",
       Icon: WarehouseIcon,
