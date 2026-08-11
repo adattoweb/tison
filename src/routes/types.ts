@@ -1,9 +1,9 @@
-import { Dashboard } from "@/features/dashboard/Dashboard"
+import { Types } from "@/features/types/Types"
 import { PackagePlus } from "lucide-react"
 
 export const types = {
    path: "types",
-   Component: Dashboard,
+   Component: Types,
    handle: {
       label: "Типи продуктів",
       Icon: PackagePlus,

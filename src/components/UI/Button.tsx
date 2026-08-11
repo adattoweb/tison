@@ -6,7 +6,7 @@ import { Link, type LinkProps } from "react-router"
 type ButtonTheme = "transparent" | "accent"
 
 interface ButtonProps extends WithClassName, PropsWithChildren {
-   onClick: () => void
+   onClick?: () => void
    type?: ButtonTheme
 }
 

@@ -21,6 +21,8 @@
    --bg-trans-color: rgba(255, 255, 255, 0.03);
    --bg-trans-hover-color: rgba(255, 255, 255, 0.05);
    --accent-color: #e5a839;
+   --accent-trans-color: rgba(229, 168, 57, 0.05);
+   --accent-trans-hover-color: rgba(233, 205, 154, 0.05);
    --second-color: #c7c7c7;
    --stroke-color: #2e2b25;
    --stroke-active-color: #403e3b;
