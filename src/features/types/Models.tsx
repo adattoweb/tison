@@ -1,21 +1,25 @@
+import { useState } from "react"
 import PageDescription from "@/components/UI/PageDescription"
 import PageHeader from "@/components/UI/PageHeader"
 import Button from "@/components/UI/Button"
 import { FilePlus } from "lucide-react"
 import { ModelList } from "./ModelList"
 import { ModelHeader } from "./ModelHeader"
+import { AddModelModal } from "./AddModelModal"
 
 export function Models() {
+   const [isModalOpen, setIsModalOpen] = useState(false)
+
    return (
       <>
          <div className="flex justify-between items-center">
             <div className="flex flex-col">
                <PageHeader>Моделі виробів</PageHeader>
-               <PageDescription>Створення та редагування типів та інструкцій до продуктів</PageDescription>
+               <PageDescription>Створення та редагування моделей та інструкцій до них</PageDescription>
             </div>
-            <Button type="accent" className="h-min">
+            <Button type="accent" className="h-min" onClick={() => setIsModalOpen(true)}>
                <Button.Icon Icon={FilePlus} />
-               <Button.Paragraph>Додати новий тип</Button.Paragraph>
+               <Button.Paragraph>Додати нову модель</Button.Paragraph>
             </Button>
          </div>
 
@@ -23,6 +27,8 @@ export function Models() {
             <ModelHeader />
             <ModelList />
          </div>
+
+         <AddModelModal open={isModalOpen} onClose={() => setIsModalOpen(false)} />
       </>
    )
 }
