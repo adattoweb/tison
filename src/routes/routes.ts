@@ -10,7 +10,7 @@ import { stations } from "./stations"
 import { employees } from "./employees"
 import { control } from "./control"
 import { storage } from "./storage"
-import { types } from "./types"
+import { models } from "./models"
 
 export const routes = [
    dashboard,
@@ -23,7 +23,7 @@ export const routes = [
    defects,
    control,
    storage,
-   types,
+   models,
    analysis,
    settings,
 ]

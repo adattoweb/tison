@@ -11,8 +11,8 @@ export function Storage() {
       <>
          <div className="flex justify-between items-center">
             <div className="flex flex-col">
-               <PageHeader>Планування виробництва</PageHeader>
-               <PageDescription>Створення та контроль виробничих планів</PageDescription>
+               <PageHeader>Склад</PageHeader>
+               <PageDescription>Зберігання та редагування матеріалів</PageDescription>
             </div>
             <Button onClick={mockClick} type="accent" className="h-min">
                <Button.Icon Icon={PlusIcon} />

@@ -1,6 +1,6 @@
 import { titleClassName } from "@/utils/classNames"
 import product from "@/assets/images/product.jpg"
-import { ChevronDownIcon } from "lucide-react"
+import { ChevronDownIcon, EditIcon, PlusIcon } from "lucide-react"
 import { useLayoutEffect, useRef, useState } from "react"
 import clsx from "clsx"
 import gsap from "gsap"
@@ -15,7 +15,7 @@ function ListItem({ isActive, index, name }: ItemProps) {
    return (
       <li
          className={clsx(
-            "flex flex-1 gap-2 items-center hover:bg-(--bg-trans-color) py-2 px-2 rounded-lg duration-200",
+            "flex flex-1 gap-2 items-center hover:bg-(--bg-trans-color) py-2 px-2 rounded-lg duration-200 cursor-pointer",
             isActive && "bg-(--accent-trans-color) hover:bg-(--accent-trans-color)!",
          )}
       >
@@ -32,13 +32,23 @@ function ListItem({ isActive, index, name }: ItemProps) {
    )
 }
 
+function AddItem() {
+   return (
+      <li className="flex flex-1 gap-2 items-center hover:bg-(--bg-trans-color) py-2 px-2 rounded-lg duration-200">
+         <div className="size-8 text-center flex justify-center items-center rounded-full border border-(--stroke-color) text-lg font-medium text-(--second-color)">
+            <PlusIcon strokeWidth={1.5} className="size-5" />
+         </div>
+         <p className="ibm-plex-sans text-(--second-color)">Додати новий етап</p>
+      </li>
+   )
+}
+
 function Content() {
    const parameters = [
       { label: "Тип операції:", value: "Паяльна" },
       { label: "Обладнання:", value: "Піч оплавлення" },
       { label: "Температура:", value: "245 °C" },
       { label: "Час:", value: "180 с" },
-      { label: "Атмосфера:", value: "Азот" },
    ]
 
    const instructions = [
@@ -51,7 +61,7 @@ function Content() {
 
    const checkpoints = ["Температура профілю", "Час оплавлення", "Якість пайки"]
    return (
-      <main className="flex gap-4">
+      <main className="flex flex-col lg:flex-row gap-4">
          <div className="flex flex-col rounded-lg border-(--stroke-color) border px-(--components-py) py-(--components-py)">
             <p className="text-(--second-color)">Інструкція (6) операцій</p>
             <ul className="flex flex-col gap-2 mt-2">
@@ -61,20 +71,24 @@ function Content() {
                <ListItem isActive={false} index={4} name="Програмування" />
                <ListItem isActive={false} index={5} name="Фінальне тестування" />
                <ListItem isActive={false} index={6} name="Пакування" />
+               <AddItem />
             </ul>
          </div>
          <div className="flex flex-col gap-(--components-gap) ibm-plex-sans border border-(--stroke-color) rounded-lg px-(--components-py) py-(--components-py) flex-1">
-            <div className="flex flex-col gap-1">
-               <h2 className="text-white text-xl font-semibold">1. Пайка</h2>
-               <p className="text-(--second-color)">
-                  Паяльна операція - встановлення SMD компонентів на плату методом оплавлення.
-               </p>
+            <div className="flex justify-between">
+               <div className="flex flex-col gap-1">
+                  <h2 className={titleClassName}>1. Пайка</h2>
+                  <p className="text-(--second-color)">
+                     Паяльна операція - встановлення SMD компонентів на плату методом оплавлення.
+                  </p>
+               </div>
+               <EditIcon strokeWidth={1.5} className="cursor-pointer" />
             </div>
 
             <div className="flex flex-col gap-(--components-gap)">
-               <div className="flex gap-(--components-gap)">
+               <div className="flex flex-col xl:flex-row gap-(--components-gap)">
                   <div className="flex flex-col gap-3 flex-1">
-                     <h3 className="text-white font-semibold">Параметри операції</h3>
+                     <h3 className="text-white font-medium text-base xl:text-lg">Параметри операції</h3>
                      <div className="flex flex-col gap-2.5">
                         {parameters.map(param => (
                            <div key={param.label} className="flex gap-2">
@@ -86,7 +100,7 @@ function Content() {
                   </div>
 
                   <div className="flex flex-col gap-3 flex-1">
-                     <h3 className="text-white font-semibold">Інструкція виконання</h3>
+                     <h3 className="text-white font-medium text-base xl:text-lg">Інструкція виконання</h3>
                      <div className="flex flex-col gap-2.5">
                         {instructions.map((step, index) => (
                            <div key={index} className="flex gap-2">
@@ -99,7 +113,7 @@ function Content() {
                </div>
 
                <div className="flex flex-col gap-3">
-                  <h3 className="text-white font-semibold">Контрольні точки</h3>
+                  <h3 className="text-white font-medium text-base xl:text-lg">Контрольні точки</h3>
                   <div className="flex gap-2 flex-wrap">
                      {checkpoints.map(point => (
                         <span
@@ -121,7 +135,7 @@ const EASE_OPEN = "cubic-bezier(0.16, 1, 0.3, 1)"
 const EASE_CLOSE = "cubic-bezier(0.4, 0, 0.2, 1)"
 const GAP_PX = 16 // те саме значення, що й gap-4 / --components-gap: 16px
 
-export function TypeElement() {
+export function Model() {
    const [isOpen, setIsOpen] = useState(false)
    const [shouldRender, setShouldRender] = useState(false)
 
@@ -215,9 +229,8 @@ export function TypeElement() {
    }, [isOpen])
 
    return (
-      // gap-4 прибрано з батька — тепер відступ повністю контролює marginTop на clipRef
-      <div className="flex flex-col bg-(--bg-trans-color) border-(--stroke-color) border py-(--components-py) px-(--components-py) rounded-lg ibm-plex-sans cursor-pointer">
-         <header className="flex flex-1 justify-between h-20 items-center" onClick={switchOpen}>
+      <div className="flex flex-col bg-(--bg-trans-color) border-(--stroke-color) border py-(--components-py) px-(--components-py) rounded-lg ibm-plex-sans">
+         <header className="flex flex-1 justify-between h-20 items-center cursor-pointer" onClick={switchOpen}>
             <div className="flex gap-4 h-20">
                <img src={product} className="h-full w-auto rounded-lg object-contain" />
                <div className="flex flex-col gap-1">
