@@ -4,17 +4,20 @@ import { EmployeesHeader } from "./EmployeesHeader"
 import { EmployeesTable } from "./EmployeesTable"
 import Button from "@/components/UI/Button"
 import { UserPlus } from "lucide-react"
-import { mockClick } from "@/utils/mockClick"
+import { AddEmployeeModal } from "./AddEmployeeModal"
+import { useState } from "react"
 
 export function Employees() {
+   const [isOpen, setIsOpen] = useState(true)
+   const openModal = () => setIsOpen(true)
    return (
       <>
-         <div className="flex justify-between items-center">
+         <div className="flex justify-between items-center flex-wrap gap-4">
             <div className="flex flex-col">
                <PageHeader>Працівники</PageHeader>
                <PageDescription>Управління персоналом та інформація про працівників</PageDescription>
             </div>
-            <Button onClick={mockClick} type="accent" className="h-min">
+            <Button onClick={openModal} type="accent" className="h-min">
                <Button.Icon Icon={UserPlus} />
                <Button.Paragraph>Додати працівника</Button.Paragraph>
             </Button>
@@ -23,6 +26,7 @@ export function Employees() {
             <EmployeesHeader />
             <EmployeesTable />
          </div>
+         <AddEmployeeModal isOpen={isOpen} setIsOpen={setIsOpen} />
       </>
    )
 }

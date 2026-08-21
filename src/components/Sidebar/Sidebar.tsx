@@ -9,6 +9,7 @@ import { Profile } from "./Profile"
 import type { WithClassName } from "@/types/common"
 import clsx from "clsx"
 import { useIsMobile } from "@/hooks/useIsMobile"
+import { useGSAP } from "@gsap/react"
 
 const FIRST_LETTER = NAME.charAt(0)
 const REST_OF_NAME = NAME.slice(1)
@@ -24,7 +25,7 @@ function MenuButton({ children, onClick, className = "" }: ButtonProps) {
          aria-label="Відкрити меню"
          className={clsx(
             className,
-            "fixed top-5 left-4 z-20 flex size-10 items-center justify-center rounded-md border border-(--stroke-color) bg-[#090A0B] text-white cursor-pointer",
+            "fixed top-4 left-4 z-20 flex size-10 items-center justify-center rounded-md border border-(--stroke-color) bg-[#090A0B] text-white cursor-pointer",
          )}
       >
          {children}
@@ -58,7 +59,7 @@ export function Sidebar() {
       }
    }, [isMobile, mobileOpen])
 
-   useLayoutEffect(() => {
+   useGSAP(() => {
       const labels = labelRefs.current.filter(Boolean)
 
       timelineRef.current?.kill()
@@ -81,10 +82,6 @@ export function Sidebar() {
       tl.to([...labels, profileTextsRef.current], { opacity: isOpen ? 1 : 0, duration: 0.25 }, isOpen ? 0.12 : 0)
 
       timelineRef.current = tl
-
-      return () => {
-         tl.kill()
-      }
    }, [isOpen, isMobile])
 
    return (
