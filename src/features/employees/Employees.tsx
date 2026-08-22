@@ -8,7 +8,7 @@ import { AddEmployeeModal } from "./AddEmployeeModal"
 import { useState } from "react"
 
 export function Employees() {
-   const [isOpen, setIsOpen] = useState(true)
+   const [isOpen, setIsOpen] = useState(false)
    const openModal = () => setIsOpen(true)
    return (
       <>

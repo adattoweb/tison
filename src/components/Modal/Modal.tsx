@@ -18,7 +18,7 @@ const ModalContext = createContext<ModalContextValue | null>(null)
 type HeaderProps = WithClassName & PropsWithChildren
 
 function Header({ children, className = "" }: HeaderProps) {
-   return <h2 className={clsx(className, "text-xl font-medium")}>{children}</h2>
+   return <h2 className={clsx(className, "text-lg md:text-xl font-medium")}>{children}</h2>
 }
 
 type CommonProps = WithClassName & PropsWithChildren
@@ -108,7 +108,7 @@ function Modal({ isOpen, onClose, className, children }: ModalProps) {
                ref={modalBox}
                className={clsx(
                   className,
-                  "bg-(--bg-second-color) rounded-lg border-(--stroke-color) flex flex-col w-200 px-4 py-4 relative top-25 opacity-0",
+                  "bg-(--bg-second-color) sm:rounded-lg border-(--stroke-color) flex flex-col w-full sm:mx-8 md:mx-0 md:w-150 xl:w-175 2xl:w-200 px-4 py-4 relative top-25 opacity-0",
                )}
                onClick={e => e.stopPropagation()}
             >
