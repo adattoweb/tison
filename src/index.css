@@ -38,6 +38,11 @@
    --components-px: 24px;
 }
 
+.rdp-root {
+   --rdp-accent-color: var(--accent-color) !important;
+   --rdp-background-color: var(--bg-trans-hover-color) !important;
+}
+
 body {
    background-color: var(--bg-color);
    max-width: 100dvw;

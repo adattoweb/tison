@@ -1,12 +1,15 @@
 import PageDescription from "@/components/UI/PageDescription"
 import PageHeader from "@/components/UI/PageHeader"
 import Button from "@/components/UI/Button"
-import { mockClick } from "@/utils/mockClick"
 import { PlusIcon } from "lucide-react"
 import { SchedulingHeader } from "./SchedulingHeader"
 import { SchedulingTable } from "./SchedulingTable"
+import { useState } from "react"
+import { AddSchedulingModal } from "./AddSchedulingModal"
 
 export function Scheduling() {
+   const [isOpen, setIsOpen] = useState(false)
+   const openModal = () => setIsOpen(true)
    return (
       <>
          <div className="flex justify-between items-center">
@@ -14,7 +17,7 @@ export function Scheduling() {
                <PageHeader>Планування виробництва</PageHeader>
                <PageDescription>Створення та контроль виробничих планів</PageDescription>
             </div>
-            <Button onClick={mockClick} type="accent" className="h-min">
+            <Button onClick={openModal} type="accent" className="h-min">
                <Button.Icon Icon={PlusIcon} />
                <Button.Paragraph>Створити план</Button.Paragraph>
             </Button>
@@ -24,6 +27,7 @@ export function Scheduling() {
             <SchedulingHeader />
             <SchedulingTable />
          </div>
+         <AddSchedulingModal isOpen={isOpen} setIsOpen={setIsOpen} />
       </>
    )
 }

@@ -3,10 +3,13 @@ import PageHeader from "@/components/UI/PageHeader"
 import { StationsHeader } from "./StationsHeader"
 import { StationsTable } from "./StationsTable"
 import Button from "@/components/UI/Button"
-import { mockClick } from "@/utils/mockClick"
 import { MonitorCog } from "lucide-react"
+import { useState } from "react"
+import { AddStationModal } from "./AddStationModal"
 
 export function Stations() {
+   const [isOpen, setIsOpen] = useState(false)
+   const openModal = () => setIsOpen(true)
    return (
       <>
          <div className="flex justify-between items-center">
@@ -14,7 +17,7 @@ export function Stations() {
                <PageHeader>Робочі станції</PageHeader>
                <PageDescription>Моніторинг та управління робочими місцями</PageDescription>
             </div>
-            <Button onClick={mockClick} type="accent" className="h-min">
+            <Button onClick={openModal} type="accent" className="h-min">
                <Button.Icon Icon={MonitorCog} />
                <Button.Paragraph>Додати станцію</Button.Paragraph>
             </Button>
@@ -24,6 +27,7 @@ export function Stations() {
             <StationsHeader />
             <StationsTable />
          </div>
+         <AddStationModal isOpen={isOpen} setIsOpen={setIsOpen} />
       </>
    )
 }
