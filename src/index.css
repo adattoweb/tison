@@ -107,3 +107,9 @@ body {
 .scrollbar-hidden::-webkit-scrollbar {
    display: none;
 }
+
+input:autofill,
+input:-webkit-autofill {
+   background: transparent;
+   color: inherit;
+}

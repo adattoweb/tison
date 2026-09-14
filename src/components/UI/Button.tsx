@@ -8,6 +8,7 @@ type ButtonTheme = "transparent" | "accent" | "accentFilled"
 interface ButtonProps extends WithClassName, PropsWithChildren {
    onClick?: () => void
    type?: ButtonTheme
+   isSubmit?: boolean
 }
 
 const buttonClassName = "px-3 py-2 flex gap-2 border rounded-md cursor-pointer transition-colors duration-300"
@@ -23,12 +24,16 @@ const getTypeClassName = (type: ButtonTheme) => {
    return themes[type]
 }
 
-function Button({ className = "", children, onClick, type = "transparent" }: ButtonProps) {
+function Button({ className = "", children, onClick, type = "transparent", isSubmit = false }: ButtonProps) {
    const typeClassName = getTypeClassName(type)
    return (
-      <div className={`${className} ${buttonClassName} ${typeClassName}`} onClick={onClick}>
+      <button
+         className={`${className} ${buttonClassName} ${typeClassName}`}
+         onClick={onClick}
+         type={isSubmit ? "submit" : "button"}
+      >
          {children}
-      </div>
+      </button>
    )
 }
 

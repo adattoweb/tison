@@ -120,17 +120,21 @@ export function Sidebar() {
             </div>
 
             <nav onClick={() => isMobile && setMobileOpen(false)} className="my-6 flex w-full flex-col gap-1">
-               {routes.map((el, index) => (
-                  <NavItem
-                     key={el.path}
-                     to={el.path}
-                     label={el.handle.label}
-                     Icon={el.handle.Icon}
-                     labelRef={node => {
-                        labelRefs.current[index] = node
-                     }}
-                  />
-               ))}
+               {routes.map((el, index) => {
+                  return (
+                     el.handle.nav && (
+                        <NavItem
+                           key={el.path}
+                           to={el.path}
+                           label={el.handle.label}
+                           Icon={el.handle.Icon}
+                           labelRef={node => {
+                              labelRefs.current[index] = node
+                           }}
+                        />
+                     )
+                  )
+               })}
             </nav>
             <Profile ref={profileRef} textsRef={profileTextsRef} />
          </aside>
