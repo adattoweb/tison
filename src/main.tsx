@@ -12,6 +12,9 @@ import { ErrorPage } from "@/components/ErrorPage/ErrorPage"
 import gsap from "gsap"
 import { useGSAP } from "@gsap/react"
 
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
+
 gsap.registerPlugin(useGSAP)
 
 const router = createBrowserRouter([
@@ -23,8 +26,13 @@ const router = createBrowserRouter([
    },
 ])
 
+const queryClient = new QueryClient()
+
 createRoot(document.getElementById("root")!).render(
    <StrictMode>
-      <RouterProvider router={router} />
+      <QueryClientProvider client={queryClient}>
+         <ReactQueryDevtools initialIsOpen={false} />
+         <RouterProvider router={router} />
+      </QueryClientProvider>
    </StrictMode>,
 )
