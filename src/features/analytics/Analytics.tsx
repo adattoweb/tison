@@ -8,7 +8,7 @@ import { OperationsTime } from "./OperationsTime"
 import { AnalyticsPrediction } from "./AnalyticsPrediction"
 import { AnalyticsStagnation } from "./AnalyticsStagnation"
 import { AnalyticsEfficiency } from "./AnalyticsEfficiency"
-import { useLayoutMode, type LayoutMode } from "@/hooks/useLayoutMode"
+import { useLayoutMode, type LayoutMode } from "@/hooks/ui/useLayoutMode"
 
 const WIDE_AREAS = `
    "header header header header header header header header header header"

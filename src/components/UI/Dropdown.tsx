@@ -13,7 +13,7 @@ import { createPortal } from "react-dom"
 import clsx from "clsx"
 import { ChevronDownIcon } from "@heroicons/react/24/outline"
 import gsap from "gsap"
-import { useCheckContext } from "@/hooks/useCheckContext"
+import { useCheckContext } from "@/hooks/ui/useCheckContext"
 
 type Direction = "down" | "up"
 type Align = "left" | "right"

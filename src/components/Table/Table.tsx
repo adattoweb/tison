@@ -1,5 +1,5 @@
 import { STATUS } from "@/constants/status"
-import { useCheckContext } from "@/hooks/useCheckContext"
+import { useCheckContext } from "@/hooks/ui/useCheckContext"
 import type { WithClassName } from "@/types/common"
 import type { StatusType } from "@/types/status"
 import clsx from "clsx"

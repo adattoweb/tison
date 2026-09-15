@@ -1,5 +1,5 @@
 import { Navigate, Outlet } from "react-router"
-import { useCurrentUser } from "@/hooks/auth/useCurrentUser"
+import { useCurrentUser } from "@/hooks/api/auth/useCurrentUser"
 
 export default function ProtectedRoute() {
    const { data: user, isLoading, isError } = useCurrentUser()

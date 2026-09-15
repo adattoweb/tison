@@ -1,4 +1,4 @@
-import { useLogout } from "@/hooks/auth/useLogout"
+import { useLogout } from "@/hooks/api/auth/useLogout"
 
 export function Logout() {
    const { mutate: doLogout } = useLogout()

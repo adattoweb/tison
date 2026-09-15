@@ -1,3 +1,4 @@
+import { useCurrentProfile } from "@/hooks/api/profile/useCurrentProfile"
 import { UserCircleIcon } from "@heroicons/react/24/outline"
 
 interface ProfileProps {
@@ -6,6 +7,8 @@ interface ProfileProps {
 }
 
 export function Profile({ ref, textsRef }: ProfileProps) {
+   const { data: profile, isError } = useCurrentProfile()
+
    return (
       <div
          ref={ref}
@@ -13,8 +16,14 @@ export function Profile({ ref, textsRef }: ProfileProps) {
       >
          <UserCircleIcon className="size-9 shrink-0 stroke-(--accent-color)" />
          <div ref={textsRef} className="flex flex-col gap-0.5 overflow-hidden">
-            <p className="font-medium text-base whitespace-nowrap">Admin</p>
-            <p className="font-normal text-sm text-(--second-color) whitespace-nowrap">Керівник системи</p>
+            {isError ? (
+               <p className="font-normal text-sm text-(--second-color) whitespace-nowrap">Неавторизовано</p>
+            ) : (
+               <>
+                  <p className="font-medium text-base whitespace-nowrap">{profile?.first_name}</p>
+                  <p className="font-normal text-sm text-(--second-color) whitespace-nowrap">Керівник системи</p>
+               </>
+            )}
          </div>
       </div>
    )

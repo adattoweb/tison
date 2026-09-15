@@ -8,7 +8,7 @@ import { NavItem } from "./NavItem"
 import { Profile } from "./Profile"
 import type { WithClassName } from "@/types/common"
 import clsx from "clsx"
-import { useIsMobile } from "@/hooks/useIsMobile"
+import { useIsMobile } from "@/hooks/ui/useIsMobile"
 import { useGSAP } from "@gsap/react"
 
 const FIRST_LETTER = NAME.charAt(0)

@@ -8,12 +8,16 @@ export const api = axios.create({
    },
 })
 
-// api.interceptors.response.use(
-//    response => response,
-//    error => {
-//       if (error.response?.status === 401) {
-//          redirect("/login")
-//       }
-//       return Promise.reject(error)
-//    },
-// )
+api.interceptors.response.use(
+   response => response,
+   error => {
+      const status = error.response?.status
+      const isLoginPage = window.location.pathname === "/login"
+
+      if (status === 401 && !isLoginPage) {
+         window.location.href = "/login"
+      }
+
+      return Promise.reject(error)
+   },
+)

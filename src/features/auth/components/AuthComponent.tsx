@@ -4,7 +4,7 @@ import { ParagraphError } from "@/components/UI/ParagraphError"
 import { LockKeyholeOpen } from "lucide-react"
 import { useForm, type SubmitHandler } from "react-hook-form"
 import { Link } from "react-router"
-import { useLogin } from "@/hooks/auth/useLogin"
+import { useLogin } from "@/hooks/api/auth/useLogin"
 import type { LoginCredentials } from "@/api/types/auth"
 import { isAxiosError } from "axios"
 

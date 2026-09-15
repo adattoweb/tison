@@ -5,7 +5,7 @@ import { Info } from "./Info"
 import { History } from "./History"
 import { Chart } from "./Chart"
 import DashboardAnalysis from "@/features/dashboard/DashboardAnalysis"
-import { useLayoutMode, type LayoutMode } from "@/hooks/useLayoutMode"
+import { useLayoutMode, type LayoutMode } from "@/hooks/ui/useLayoutMode"
 import { OperationsHeatmap } from "./OperationsHeatmap"
 
 const WIDE_AREAS = `

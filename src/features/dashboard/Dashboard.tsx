@@ -5,7 +5,7 @@ import { DashboardStats } from "./DashboardStats"
 import { DashboardChart } from "./DashboardChart"
 import { DashboardPlanning } from "./DashboardPlanning"
 import DashboardAnalysis from "./DashboardAnalysis"
-import { useLayoutMode, type LayoutMode } from "@/hooks/useLayoutMode"
+import { useLayoutMode, type LayoutMode } from "@/hooks/ui/useLayoutMode"
 
 // >= 1600px: analysis(3/5) + stats(2/5) в один ряд, planning(3/5) + chart(2/5) в один ряд
 const WIDE_AREAS = `
