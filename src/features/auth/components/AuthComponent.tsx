@@ -1,10 +1,12 @@
 import Button from "@/components/UI/Button"
 import { Input } from "@/components/UI/Input"
 import { ParagraphError } from "@/components/UI/ParagraphError"
-import { login } from "@/api/endpoints/auth"
 import { LockKeyholeOpen } from "lucide-react"
-import { useForm } from "react-hook-form"
+import { useForm, type SubmitHandler } from "react-hook-form"
 import { Link } from "react-router"
+import { useLogin } from "@/hooks/auth/useLogin"
+import type { LoginCredentials } from "@/api/types/auth"
+import { isAxiosError } from "axios"
 
 interface IForm {
    email: string
@@ -15,16 +17,25 @@ interface Props {
    title: string
 }
 
-function onSubmit({ email, password }: IForm) {
-   login(email, password)
-}
-
 export function AuthComponent({ title }: Props) {
    const {
       register,
       handleSubmit,
       formState: { errors },
    } = useForm<IForm>({ mode: "onSubmit" })
+
+   const { mutate: doLogin, error } = useLogin()
+
+   const onSubmit: SubmitHandler<LoginCredentials> = data => {
+      doLogin(data)
+   }
+
+   const errorMessage = isAxiosError(error)
+      ? error.response?.data?.detail === "LOGIN_BAD_CREDENTIALS"
+         ? "Невірний email або пароль"
+         : "Помилка входу"
+      : null
+
    return (
       <div className="flex m-auto w-100 rounded-xl bg-(--bg-trans-color) border-(--stroke-color) border flex-col px-5 py-5">
          <h2 className="text-xl font-medium mx-auto mb-5">{title}</h2>
@@ -63,6 +74,7 @@ export function AuthComponent({ title }: Props) {
             <Link to="/reset-password" className="text-(--accent-color) underline ml-auto">
                Забули пароль?
             </Link>
+            {errorMessage && <ParagraphError>{errorMessage}</ParagraphError>}
             <Button type="accentFilled" className="gap-2 mt-4 justify-center py-3 h-11" isSubmit={true}>
                <Button.Icon Icon={LockKeyholeOpen} strokeWidth={1.5} className="size-5" />
                <Button.Paragraph className="font-medium">Увійти</Button.Paragraph>

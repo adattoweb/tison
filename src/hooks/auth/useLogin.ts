@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useNavigate } from "react-router"
-import { login } from "../api/endpoints/auth"
+import { login } from "@/api/endpoints/auth"
 import type { LoginCredentials } from "@/api/types/auth"
 
 export const useLogin = () => {
