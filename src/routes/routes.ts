@@ -12,6 +12,7 @@ import { control } from "./control"
 import { storage } from "./storage"
 import { models } from "./models"
 import { login } from "./login"
+import { logout } from "./logout"
 
 export const routes = [
    dashboard,
@@ -28,4 +29,5 @@ export const routes = [
    analysis,
    settings,
    login,
+   logout,
 ]
