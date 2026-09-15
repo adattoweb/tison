@@ -4,6 +4,7 @@ import { ParagraphError } from "@/components/UI/ParagraphError"
 import { login } from "@/api/endpoints/auth"
 import { LockKeyholeOpen } from "lucide-react"
 import { useForm } from "react-hook-form"
+import { Link } from "react-router"
 
 interface IForm {
    email: string
@@ -57,6 +58,9 @@ export function AuthComponent({ title }: Props) {
                })}
             />
             {errors.password && <ParagraphError>{errors.password.message}</ParagraphError>}
+            <Link to="/reset-password" className="text-(--accent-color) underline ml-auto">
+               Забули пароль?
+            </Link>
             <Button type="accentFilled" className="gap-2 mt-4 justify-center py-3 h-11" isSubmit={true}>
                <Button.Icon Icon={LockKeyholeOpen} strokeWidth={1.5} className="size-5" />
                <Button.Paragraph className="font-medium">Увійти</Button.Paragraph>
