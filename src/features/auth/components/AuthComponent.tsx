@@ -30,6 +30,7 @@ export function AuthComponent({ title }: Props) {
          <h2 className="text-xl font-medium mx-auto mb-5">{title}</h2>
          <form className="flex flex-col gap-2" onSubmit={handleSubmit(onSubmit)}>
             <Input
+               hasError={errors.email !== undefined}
                type="email"
                label="Електронна пошта"
                placeholder="your@gmail.com"
@@ -43,6 +44,7 @@ export function AuthComponent({ title }: Props) {
             />
             {errors.email && <ParagraphError>{errors.email.message}</ParagraphError>}
             <Input
+               hasError={errors.password !== undefined}
                type="password"
                label="Пароль"
                {...register("password", {
