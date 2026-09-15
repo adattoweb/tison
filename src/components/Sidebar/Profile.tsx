@@ -1,3 +1,5 @@
+import { roles } from "@/constants/role"
+import { useCurrentUser } from "@/hooks/api/auth/useCurrentUser"
 import { useCurrentProfile } from "@/hooks/api/profile/useCurrentProfile"
 import { UserCircleIcon } from "@heroicons/react/24/outline"
 
@@ -8,6 +10,7 @@ interface ProfileProps {
 
 export function Profile({ ref, textsRef }: ProfileProps) {
    const { data: profile, isError } = useCurrentProfile()
+   const { data: user } = useCurrentUser()
 
    return (
       <div
@@ -21,7 +24,7 @@ export function Profile({ ref, textsRef }: ProfileProps) {
             ) : (
                <>
                   <p className="font-medium text-base whitespace-nowrap">{profile?.first_name}</p>
-                  <p className="font-normal text-sm text-(--second-color) whitespace-nowrap">Керівник системи</p>
+                  <p className="font-normal text-sm text-(--second-color) whitespace-nowrap"></p>
                </>
             )}
          </div>

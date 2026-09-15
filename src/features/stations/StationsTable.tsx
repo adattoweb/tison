@@ -8,6 +8,8 @@ import { mockStations } from "./stations"
 import { STATUS } from "@/constants/status"
 import type { StatusType } from "@/types/status"
 
+import { useAllStations } from "@/hooks/api/station/useAllStations"
+
 const ALL = {
    section: "Всі дільниці",
    status: "Всі статуси",
@@ -40,6 +42,9 @@ export function StationsTable() {
    const [loadBucket, setLoadBucket] = useState<string>(ALL.load)
    const [page, setPage] = useState(1)
    const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE)
+
+   const { data: stations } = useAllStations()
+   console.log(stations)
 
    const taskOptions = useMemo(() => {
       const uniqueTasks = Array.from(new Set(mockStations.map(s => s.taskName)))
