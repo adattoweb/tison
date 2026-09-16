@@ -61,6 +61,7 @@ export function Sidebar() {
 
    useGSAP(() => {
       const labels = labelRefs.current.filter(Boolean)
+      const profileItems = document.getElementsByClassName("profile-item")
 
       timelineRef.current?.kill()
 
@@ -79,7 +80,11 @@ export function Sidebar() {
          { opacity: isOpen ? 1 : 0, width: isOpen ? titleRestRef.current?.scrollWidth : 0, duration: 0.3 },
          0,
       )
-      tl.to([...labels, profileTextsRef.current], { opacity: isOpen ? 1 : 0, duration: 0.25 }, isOpen ? 0.12 : 0)
+      tl.to(
+         [...labels, profileItems, profileTextsRef.current],
+         { opacity: isOpen ? 1 : 0, duration: 0.25 },
+         isOpen ? 0.12 : 0,
+      )
 
       timelineRef.current = tl
    }, [isOpen, isMobile])
