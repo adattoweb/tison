@@ -7,6 +7,6 @@ export const analysis = {
    handle: {
       label: "ШІ Аналіз",
       Icon: CpuChipIcon,
-      nav: true,
+      nav: false, // true
    },
 }

@@ -7,6 +7,6 @@ export const storage = {
    handle: {
       label: "Склад",
       Icon: WarehouseIcon,
-      nav: true,
+      nav: false, // true
    },
 }

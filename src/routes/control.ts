@@ -7,6 +7,6 @@ export const control = {
    handle: {
       label: "Контроль якості",
       Icon: GitCompareIcon,
-      nav: true,
+      nav: false, // true
    },
 }

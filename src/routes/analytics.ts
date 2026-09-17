@@ -7,6 +7,6 @@ export const analytics = {
    handle: {
       label: "Аналітика",
       Icon: ChartNoAxesCombined,
-      nav: true,
+      nav: false, // true
    },
 }
