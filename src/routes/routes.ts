@@ -11,7 +11,6 @@ import { employees } from "./employees"
 import { control } from "./control"
 import { storage } from "./storage"
 import { models } from "./models"
-import { login } from "./login"
 import { logout } from "./logout"
 
 export const routes = [
@@ -28,6 +27,5 @@ export const routes = [
    models,
    analysis,
    settings,
-   login,
    logout,
 ]

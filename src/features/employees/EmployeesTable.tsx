@@ -15,9 +15,7 @@ const ALL = {
 } as const
 
 const DEPARTMENT_OPTIONS = [ALL.department, "Виробництво", "Логістика", "Продажі"]
-const POSITION_OPTIONS = [ALL.position, "Тестувальник", "Інженер", "Оператор"]
 const SHIFT_OPTIONS = [ALL.shift, "Денна", "Нічна"]
-const EXPERIENCE_OPTIONS = [ALL.experience, "До 1 року", "1-3 роки", "3-5 років", "5+ років"]
 
 function getExperienceBucket(years: number): string {
    if (years < 1) return "До 1 року"
@@ -90,54 +88,12 @@ export function EmployeesTable() {
 
             <Dropdown>
                <Dropdown.Button>
-                  <span className="text-base font-normal text-white whitespace-nowrap">{department}</span>
-                  <Dropdown.Chevron />
-               </Dropdown.Button>
-               <Dropdown.Content>
-                  {DEPARTMENT_OPTIONS.map(option => (
-                     <Dropdown.Item key={option} onClick={() => withPageReset(setDepartment)(option)}>
-                        {option}
-                     </Dropdown.Item>
-                  ))}
-               </Dropdown.Content>
-            </Dropdown>
-
-            <Dropdown>
-               <Dropdown.Button>
-                  <span className="text-base font-normal text-white whitespace-nowrap">{position}</span>
-                  <Dropdown.Chevron />
-               </Dropdown.Button>
-               <Dropdown.Content>
-                  {POSITION_OPTIONS.map(option => (
-                     <Dropdown.Item key={option} onClick={() => withPageReset(setPosition)(option)}>
-                        {option}
-                     </Dropdown.Item>
-                  ))}
-               </Dropdown.Content>
-            </Dropdown>
-
-            <Dropdown>
-               <Dropdown.Button>
                   <span className="text-base font-normal text-white whitespace-nowrap">{shift}</span>
                   <Dropdown.Chevron />
                </Dropdown.Button>
                <Dropdown.Content>
                   {SHIFT_OPTIONS.map(option => (
                      <Dropdown.Item key={option} onClick={() => withPageReset(setShift)(option)}>
-                        {option}
-                     </Dropdown.Item>
-                  ))}
-               </Dropdown.Content>
-            </Dropdown>
-
-            <Dropdown>
-               <Dropdown.Button>
-                  <span className="text-base font-normal text-white whitespace-nowrap">{experience}</span>
-                  <Dropdown.Chevron />
-               </Dropdown.Button>
-               <Dropdown.Content>
-                  {EXPERIENCE_OPTIONS.map(option => (
-                     <Dropdown.Item key={option} onClick={() => withPageReset(setExperience)(option)}>
                         {option}
                      </Dropdown.Item>
                   ))}

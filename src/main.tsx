@@ -5,7 +5,7 @@ import "./index.css"
 import { createBrowserRouter } from "react-router"
 import { RouterProvider } from "react-router"
 
-import { AppLayout } from "@/layouts/AppLayout"
+import { AppLayout, AppLayoutWithoutSidebar } from "@/layouts/AppLayout"
 import { routes } from "./routes/routes"
 import { ErrorPage } from "@/components/ErrorPage/ErrorPage"
 
@@ -14,19 +14,12 @@ import { useGSAP } from "@gsap/react"
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
+import { protectedLoader } from "./routes/protectedLoader"
+import { login } from "./routes/login"
 
 gsap.registerPlugin(useGSAP)
 
-const router = createBrowserRouter([
-   {
-      path: "/",
-      Component: AppLayout,
-      errorElement: <ErrorPage />,
-      children: routes,
-   },
-])
-
-const queryClient = new QueryClient({
+export const queryClient = new QueryClient({
    defaultOptions: {
       queries: {
          retry: false,
@@ -34,6 +27,22 @@ const queryClient = new QueryClient({
       },
    },
 })
+
+const router = createBrowserRouter([
+   {
+      path: "/",
+      Component: AppLayout,
+      errorElement: <ErrorPage />,
+      children: routes,
+      loader: protectedLoader,
+   },
+   {
+      path: "/",
+      Component: AppLayoutWithoutSidebar,
+      errorElement: <ErrorPage />,
+      children: [login],
+   },
+])
 
 createRoot(document.getElementById("root")!).render(
    <StrictMode>

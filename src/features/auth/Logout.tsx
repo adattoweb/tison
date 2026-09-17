@@ -1,7 +1,10 @@
 import { useLogout } from "@/hooks/api/auth/useLogout"
+import { useEffect } from "react"
 
 export function Logout() {
    const { mutate: doLogout } = useLogout()
-   doLogout()
+   useEffect(() => {
+      doLogout()
+   }, [doLogout])
    return <div className=""></div>
 }

@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import { getAllProfiles } from "@/api/endpoints/profile"
+import { getAllProfiles } from "@/api/endpoints/profiles"
 
 export function useAllProfiles() {
    return useQuery({

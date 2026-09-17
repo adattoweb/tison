@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import { getCurrentProfile } from "@/api/endpoints/profile"
+import { getCurrentProfile } from "@/api/endpoints/profiles"
 
 export function useCurrentProfile() {
    return useQuery({
