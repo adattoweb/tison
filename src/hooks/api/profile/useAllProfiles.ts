@@ -1,10 +1,10 @@
 import { useQuery } from "@tanstack/react-query"
-import { getCurrentProfile } from "@/api/endpoints/profile"
+import { getAllProfiles } from "@/api/endpoints/profile"
 
-export function useCurrentProfile() {
+export function useAllProfiles() {
    return useQuery({
-      queryKey: ["profile", "current"],
-      queryFn: getCurrentProfile,
+      queryKey: ["profiles"],
+      queryFn: getAllProfiles,
       retry: false, // повторювати запит при помилці
       refetchOnWindowFocus: false, // рефетчити при поверненні на вкладку
       refetchOnReconnect: true, // рефетчити при відновленні зʼєднання

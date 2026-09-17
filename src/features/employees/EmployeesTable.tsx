@@ -5,6 +5,7 @@ import Button from "@/components/UI/Button"
 import Table from "@/components/Table/Table"
 import { TablePagination } from "@/components/Table/TablePagination"
 import { mockEmployees } from "./employees"
+import { useAllProfiles } from "@/hooks/api/profile/useAllProfiles"
 
 const ALL = {
    department: "Всі відділи",
@@ -39,6 +40,8 @@ export function EmployeesTable() {
    const [experience, setExperience] = useState<string>(ALL.experience)
    const [page, setPage] = useState(1)
    const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE)
+
+   const { data: profiles = [], isLoading } = useAllProfiles()
 
    const filtered = useMemo(() => {
       return mockEmployees.filter(employee => {
@@ -148,16 +151,16 @@ export function EmployeesTable() {
          </Table.Header>
 
          <Table columns={columns} tableClassNames={tableClassNames} className="">
-            {pageItems.map((employee, index) => (
-               <Table.Row key={employee.code ?? index} to={`/employees/${employee.id}`}>
-                  <Table.Person avatarUrl={employee.avatarUrl} name={employee.fullName} code={employee.code} />
+            {profiles.map((employee, index) => (
+               <Table.Row key={index} to={`/employees/${employee.id}`}>
+                  <Table.Person avatarUrl={"123"} name={employee.first_name} code={employee.code} />
                   <Table.Text text={employee.position} />
-                  <Table.TextGroup primary={employee.department} secondary={employee.departmentSub} />
-                  <Table.Shift name={employee.shiftName} time={employee.shiftTime} />
-                  <Table.Text text={`${employee.experienceYears} років`} className="text-(--second-color)" />
+                  <Table.TextGroup primary="1" secondary="1" />
+                  <Table.Shift shift={employee.shift} />
+                  <Table.Text text="1 рік" className="text-(--second-color)" />
                   <Table.Money value={employee.salary} className="font-medium" />
-                  <Table.Money value={employee.bonus} className="font-medium" />
-                  <Table.Percent value={employee.productivity} />
+                  <Table.Money value={employee.points} className="font-medium" />
+                  <Table.Percent value={123} />
                   <Table.MenuButton />
                </Table.Row>
             ))}

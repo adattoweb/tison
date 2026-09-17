@@ -1,4 +1,3 @@
-import { useCurrentUser } from "@/hooks/api/auth/useCurrentUser"
 import { useCurrentProfile } from "@/hooks/api/profile/useCurrentProfile"
 import { UserCircleIcon } from "@heroicons/react/24/outline"
 import clsx from "clsx"
@@ -35,7 +34,7 @@ function MenuItem({ text, Icon, to, onClick }: ItemProps) {
 
 export function Profile({ ref, textsRef }: ProfileProps) {
    const { data: profile, isError } = useCurrentProfile()
-   const { data: user } = useCurrentUser()
+   // const { data: user } = useCurrentUser()
    const [isOpen, setIsOpen] = useState(false)
    const menuRef = useRef<HTMLDivElement>(null)
 

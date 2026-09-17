@@ -7,6 +7,7 @@ import { Box, MoreVertical } from "lucide-react"
 import { createContext, type CSSProperties, type PropsWithChildren } from "react"
 import { Link } from "react-router"
 import { ProgressBar } from "../UI/ProgressBar"
+import type { ShiftRead } from "@/api/types/shift"
 
 const defaultTableClassNames = `min-w-225 grid items-center border-b border-(--stroke-color) last:border-b-0 py-4 px-8 gap-12`
 
@@ -82,11 +83,11 @@ function Name({ name, model }: NameProps) {
 }
 
 interface TextProps extends WithClassName {
-   text: string | number
+   text: string | number | null | undefined
 }
 
 function Text({ text, className = "" }: TextProps) {
-   return <p className={clsx("font-normal text-base text-white", className)}>{text}</p>
+   return <p className={clsx("font-normal text-base text-white", className)}>{text ?? "—"}</p>
 }
 
 interface StatusProps {
@@ -173,15 +174,19 @@ function MenuButton({ onClick }: { onClick?: () => void }) {
 }
 
 interface ShiftProps {
-   name: string
-   time: string
+   shift: ShiftRead
 }
 
-function Shift({ name, time }: ShiftProps) {
+function Shift({ shift }: ShiftProps) {
+   if (shift === null) {
+      return <div>—</div>
+   }
    return (
       <div>
-         <span className="inline-block rounded-lg bg-(--bg-trans-color) px-3 py-1.5 text-white">{name}</span>
-         <div className="mt-1 text-(--second-color)">{time}</div>
+         <span className="inline-block rounded-lg bg-(--bg-trans-color) px-3 py-1.5 text-white">{shift.name}</span>
+         <div className="mt-1 text-(--second-color)">
+            {shift.start_at} - {shift.end_at}
+         </div>
       </div>
    )
 }
