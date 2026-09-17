@@ -1,14 +1,17 @@
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, keepPreviousData } from "@tanstack/react-query"
 import { getAllProfiles } from "@/api/endpoints/profiles"
 
-export function useAllProfiles() {
+interface UseAllProfilesParams {
+   page: number
+   pageSize: number
+   search?: string
+   shiftId?: number
+}
+
+export const useAllProfiles = (params: UseAllProfilesParams) => {
    return useQuery({
-      queryKey: ["profiles"],
-      queryFn: getAllProfiles,
-      retry: false, // повторювати запит при помилці
-      refetchOnWindowFocus: false, // рефетчити при поверненні на вкладку
-      refetchOnReconnect: true, // рефетчити при відновленні зʼєднання
-      refetchOnMount: true, // рефетчити повторно при ремаунті компонента
-      staleTime: 60 * 1000,
+      queryKey: ["profiles", params],
+      queryFn: () => getAllProfiles(params),
+      placeholderData: keepPreviousData,
    })
 }

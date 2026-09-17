@@ -1,74 +1,61 @@
-import { useMemo, useState } from "react"
+import { useState } from "react"
 import { Search, RotateCcw } from "lucide-react"
 import Dropdown from "@/components/UI/Dropdown"
 import Button from "@/components/UI/Button"
 import Table from "@/components/Table/Table"
 import { TablePagination } from "@/components/Table/TablePagination"
-import { mockEmployees } from "./employees"
 import { useAllProfiles } from "@/hooks/api/profile/useAllProfiles"
+import { useShifts } from "@/hooks/api/shifts/useShifts"
+import { useDebouncedValue } from "@/hooks/api/useDebouncedValue"
 
-const ALL = {
-   department: "Всі відділи",
-   position: "Всі посади",
-   shift: "Всі зміни",
-   experience: "Стаж",
-} as const
+const ALL_SHIFT_LABEL = "Всі зміни"
 
-const DEPARTMENT_OPTIONS = [ALL.department, "Виробництво", "Логістика", "Продажі"]
-const SHIFT_OPTIONS = [ALL.shift, "Денна", "Нічна"]
+const columns = ["Працівник", "Посада", "Зміна", "Стаж", "Заробітна плата", "Бонуси", "Продуктивність", ""]
 
-function getExperienceBucket(years: number): string {
-   if (years < 1) return "До 1 року"
-   if (years < 3) return "1-3 роки"
-   if (years < 5) return "3-5 років"
-   return "5+ років"
-}
-
-const columns = ["Працівник", "Посада", "Відділ", "Зміна", "Стаж", "Заробітна плата", "Бонуси", "Продуктивність", ""]
-
-const tableClassNames = "min-w-300 grid-cols-[2fr_1.5fr_1.5fr_1.5fr_1fr_1fr_1fr_1fr_48px]"
+const tableClassNames = "min-w-300 grid-cols-[2fr_1.5fr_1.5fr_1fr_1fr_1fr_1fr_48px]"
 
 const DEFAULT_PAGE_SIZE = 10
 
 export function EmployeesTable() {
    const [search, setSearch] = useState("")
-   const [department, setDepartment] = useState<string>(ALL.department)
-   const [position, setPosition] = useState<string>(ALL.position)
-   const [shift, setShift] = useState<string>(ALL.shift)
-   const [experience, setExperience] = useState<string>(ALL.experience)
+   const [shiftId, setShiftId] = useState<number | undefined>(undefined)
+   const [shiftLabel, setShiftLabel] = useState(ALL_SHIFT_LABEL)
    const [page, setPage] = useState(1)
    const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE)
 
-   const { data: profiles = [], isLoading } = useAllProfiles()
+   const debouncedSearch = useDebouncedValue(search, 400)
 
-   const filtered = useMemo(() => {
-      return mockEmployees.filter(employee => {
-         if (search && !employee.fullName.toLowerCase().includes(search.toLowerCase())) return false
-         if (department !== ALL.department && employee.department !== department) return false
-         if (position !== ALL.position && employee.position !== position) return false
-         if (shift !== ALL.shift && employee.shiftName !== shift) return false
-         if (experience !== ALL.experience && getExperienceBucket(employee.experienceYears) !== experience) return false
-         return true
-      })
-   }, [search, department, position, shift, experience])
+   const { data: shifts } = useShifts()
 
-   const pageItems = filtered.slice((page - 1) * pageSize, page * pageSize)
+   const { data, isLoading, isFetching } = useAllProfiles({
+      page,
+      pageSize,
+      search: debouncedSearch || undefined,
+      shiftId,
+   })
 
-   function withPageReset<T>(setter: (value: T) => void) {
-      return (value: T) => {
-         setter(value)
-         setPage(1)
-      }
+   const profiles = data?.items ?? []
+   const total = data?.total ?? 0
+
+   function handleSearchChange(value: string) {
+      setSearch(value)
+      setPage(1)
+   }
+
+   function handleShiftChange(id: number | undefined, label: string) {
+      setShiftId(id)
+      setShiftLabel(label)
+      setPage(1)
    }
 
    function resetFilters() {
       setSearch("")
-      setDepartment(ALL.department)
-      setPosition(ALL.position)
-      setShift(ALL.shift)
-      setExperience(ALL.experience)
+      setShiftId(undefined)
+      setShiftLabel(ALL_SHIFT_LABEL)
       setPage(1)
    }
+
+   console.log(data)
 
    return (
       <Table.Wrapper>
@@ -80,7 +67,7 @@ export function EmployeesTable() {
                />
                <input
                   value={search}
-                  onChange={e => withPageReset(setSearch)(e.target.value)}
+                  onChange={e => handleSearchChange(e.target.value)}
                   placeholder="Пошук..."
                   className="w-full rounded-md border border-(--stroke-color) bg-(--bg-trans-color) py-2.5 pl-11 pr-4 text-sm text-white placeholder:text-(--second-color) outline-none focus:border-(--stroke-active-color)"
                />
@@ -88,13 +75,16 @@ export function EmployeesTable() {
 
             <Dropdown>
                <Dropdown.Button>
-                  <span className="text-base font-normal text-white whitespace-nowrap">{shift}</span>
+                  <span className="text-base font-normal text-white whitespace-nowrap">{shiftLabel}</span>
                   <Dropdown.Chevron />
                </Dropdown.Button>
                <Dropdown.Content>
-                  {SHIFT_OPTIONS.map(option => (
-                     <Dropdown.Item key={option} onClick={() => withPageReset(setShift)(option)}>
-                        {option}
+                  <Dropdown.Item onClick={() => handleShiftChange(undefined, ALL_SHIFT_LABEL)}>
+                     {ALL_SHIFT_LABEL}
+                  </Dropdown.Item>
+                  {shifts?.map(shift => (
+                     <Dropdown.Item key={shift.id} onClick={() => handleShiftChange(shift.id, shift.name)}>
+                        {shift.name}
                      </Dropdown.Item>
                   ))}
                </Dropdown.Content>
@@ -106,33 +96,40 @@ export function EmployeesTable() {
             </Button>
          </Table.Header>
 
-         <Table columns={columns} tableClassNames={tableClassNames} className="">
-            {profiles.map((employee, index) => (
-               <Table.Row key={index} to={`/employees/${employee.id}`}>
-                  <Table.Person avatarUrl={"123"} name={employee.first_name} code={employee.code} />
-                  <Table.Text text={employee.position} />
-                  <Table.TextGroup primary="1" secondary="1" />
-                  <Table.Shift shift={employee.shift} />
-                  <Table.Text text="1 рік" className="text-(--second-color)" />
-                  <Table.Money value={employee.salary} className="font-medium" />
-                  <Table.Money value={employee.points} className="font-medium" />
-                  <Table.Percent value={123} />
-                  <Table.MenuButton />
-               </Table.Row>
-            ))}
-            <TablePagination
-               page={page}
-               pageSize={pageSize}
-               total={filtered.length}
-               onPageChange={setPage}
-               onPageSizeChange={size => {
-                  setPageSize(size)
-                  setPage(1)
-               }}
-               entityLabel="працівників"
-               className="min-w-300"
-            />
-         </Table>
+         {isLoading ? (
+            <p className="py-8 text-center text-(--second-color)">Завантаження...</p>
+         ) : (
+            <Table
+               columns={columns}
+               tableClassNames={tableClassNames}
+               className={isFetching ? "opacity-60 transition-opacity" : ""}
+            >
+               {profiles.map(employee => (
+                  <Table.Row key={employee.id} to={`/employees/${employee.user_id}`}>
+                     <Table.Person avatarUrl={"123"} name={employee.first_name} code={employee.code} />
+                     <Table.Text text={employee.position} />
+                     <Table.Shift shift={employee.shift} />
+                     <Table.Text text="1 рік" className="text-(--second-color)" />
+                     <Table.Money value={employee.salary} className="font-medium" />
+                     <Table.Money value={employee.points} className="font-medium" />
+                     <Table.Percent value={123} />
+                     <Table.MenuButton />
+                  </Table.Row>
+               ))}
+               <TablePagination
+                  page={page}
+                  pageSize={pageSize}
+                  total={total}
+                  onPageChange={setPage}
+                  onPageSizeChange={size => {
+                     setPageSize(size)
+                     setPage(1)
+                  }}
+                  entityLabel="працівників"
+                  className="min-w-300"
+               />
+            </Table>
+         )}
       </Table.Wrapper>
    )
 }
