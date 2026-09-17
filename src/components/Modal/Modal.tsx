@@ -79,7 +79,7 @@ function Modal({ isOpen, onClose, className, children }: ModalProps) {
    )
 
    // eslint-disable-next-line react-hooks/refs
-   const closeModal = contextSafe(() => {
+   const animateOut = contextSafe((onFinished?: () => void) => {
       gsap.to(container.current, {
          opacity: 0,
          duration: 0.3,
@@ -90,10 +90,23 @@ function Modal({ isOpen, onClose, className, children }: ModalProps) {
          duration: 0.6,
          onComplete: () => {
             setIsMounted(false)
-            onClose()
+            onFinished?.()
          },
       })
    })
+
+   // клік по фону / X — внутрішнє джерело закриття: анімуємо і повідомляємо батька
+   const closeModal = () => animateOut(onClose)
+
+   // якщо батько сам змінив isOpen на false (наприклад, після успішного сабміту
+   // чи кліку "Скасувати") — модалка має самостійно програти анімацію закриття,
+   // не викликаючи onClose повторно (батько вже й так це ініціював)
+   useEffect(() => {
+      if (!isOpen && isMounted) {
+         animateOut()
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+   }, [isOpen, isMounted])
 
    if (!isMounted) return null
 

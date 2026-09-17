@@ -1,5 +1,6 @@
 import { DeparmtentBaseSchema, type DepartmentBaseInput } from "@/api/schemas/department"
 import Modal from "@/components/Modal/Modal"
+import { useToast } from "@/components/Toast/useToast"
 import Button from "@/components/UI/Button"
 import { FieldError } from "@/components/UI/FieldError"
 import { Input } from "@/components/UI/Input"
@@ -15,6 +16,7 @@ interface ModalProps {
 
 export function AddDepartmentModal({ isOpen, setIsOpen }: ModalProps) {
    const { mutate: doCreateDepartment, isPending } = useCreateDepartment()
+   const { addToast } = useToast()
 
    const {
       register,
@@ -36,7 +38,10 @@ export function AddDepartmentModal({ isOpen, setIsOpen }: ModalProps) {
 
    const onSubmit: SubmitHandler<DepartmentBaseInput> = data => {
       doCreateDepartment(data, {
-         onSuccess: onClose,
+         onSuccess: () => {
+            addToast("Успішно створено відділ!", { duration: 300000, type: "success" })
+            onClose()
+         },
       })
    }
    return (
