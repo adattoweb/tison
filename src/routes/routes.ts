@@ -12,19 +12,21 @@ import { control } from "./control"
 import { storage } from "./storage"
 import { models } from "./models"
 import { logout } from "./logout"
+import { departments } from "./departments"
 
 export const routes = [
    dashboard,
    employees,
    products,
+   models,
    operations,
+   defects,
    stations,
+   departments,
    analytics,
    scheduling,
-   defects,
    control,
    storage,
-   models,
    analysis,
    settings,
    logout,

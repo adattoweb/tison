@@ -55,8 +55,6 @@ export function EmployeesTable() {
       setPage(1)
    }
 
-   console.log(data)
-
    return (
       <Table.Wrapper>
          <Table.Header>
