@@ -1,4 +1,4 @@
-import PageDescription from "@/components/UI/PageDescription"
+import { useParams } from "react-router"
 import PageHeader from "@/components/UI/PageHeader"
 import { EmployeeHeader } from "./EmployeeHeader"
 import { Info } from "./Info"
@@ -7,6 +7,9 @@ import { Chart } from "./Chart"
 import DashboardAnalysis from "@/features/dashboard/DashboardAnalysis"
 import { useLayoutMode, type LayoutMode } from "@/hooks/ui/useLayoutMode"
 import { OperationsHeatmap } from "./OperationsHeatmap"
+import { useProfile } from "@/hooks/api/profile/useProfile"
+import { useProfileOperations } from "@/hooks/api/operations/useProfileOperations"
+import { useProfileOperationStats } from "@/hooks/api/operations/useProfileOperationStats"
 
 const WIDE_AREAS = `
    "header header header header header header header header header header"
@@ -40,11 +43,26 @@ const AREAS_BY_MODE: Record<LayoutMode, string> = {
 
 export function Employee() {
    const mode = useLayoutMode()
+   const { id } = useParams<{ id: string }>()
+
+   const { data: profile, isLoading: isProfileLoading } = useProfile(id)
+   const { data: operations, isLoading: isOperationsLoading } = useProfileOperations(id)
+   const { data: operationStats, isLoading: isStatsLoading } = useProfileOperationStats(id)
+
+   if (isProfileLoading) {
+      return <p className="py-8 text-center text-(--second-color)">Завантаження...</p>
+   }
+
+   if (!profile) {
+      return <p className="py-8 text-center text-(--second-color)">Працівника не знайдено</p>
+   }
+
    return (
       <div className="flex flex-col gap-(--components-gap)">
          <div>
-            <PageHeader>Іван Савченко</PageHeader>
-            <PageDescription>Оператор</PageDescription>
+            <PageHeader>
+               {profile.first_name} {profile.last_name}
+            </PageHeader>
          </div>
          <div
             className="grid grid-cols-[repeat(10,1fr)] gap-(--components-gap) w-full"
@@ -52,10 +70,10 @@ export function Employee() {
                gridTemplateAreas: AREAS_BY_MODE[mode],
             }}
          >
-            <EmployeeHeader />
-            <Info />
-            <History />
-            <Chart />
+            <EmployeeHeader profile={profile} />
+            <Info profile={profile} />
+            <History operations={operations ?? []} isLoading={isOperationsLoading} profile={profile} />
+            {/* <Chart stats={operationStats ?? []} isLoading={isStatsLoading} /> */}
             <DashboardAnalysis />
             <OperationsHeatmap />
          </div>

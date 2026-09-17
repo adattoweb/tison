@@ -25,3 +25,8 @@ export const getAllProfiles = async (params: GetAllProfilesParams): Promise<Pagi
    })
    return data
 }
+
+export const getProfileByUserId = async (userId: string): Promise<ProfileRead> => {
+   const { data } = await api.get<ProfileRead>(`/profile/${userId}`)
+   return data
+}

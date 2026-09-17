@@ -1,7 +1,12 @@
+import type { ProfileRead } from "@/api/types/profile"
 import InfoCard from "@/components/UI/InfoCard"
 import { Star, Wrench, TrendingUp, Coins, Award } from "lucide-react"
 
-export function EmployeeHeader() {
+interface HeaderProps {
+   profile: ProfileRead
+}
+
+export function EmployeeHeader({ profile }: HeaderProps) {
    return (
       <InfoCard.Wrapper style={{ gridArea: "header" }}>
          <InfoCard className="col-span-3 lg:col-span-2 4xl:col-span-1!">
@@ -34,7 +39,7 @@ export function EmployeeHeader() {
             <InfoCard.Icon Icon={Coins} />
             <InfoCard.TextWrapper>
                <InfoCard.Title>Нараховано бонусів</InfoCard.Title>
-               <InfoCard.Value>4500₴</InfoCard.Value>
+               <InfoCard.Value>{profile.points}</InfoCard.Value>
             </InfoCard.TextWrapper>
          </InfoCard>
 

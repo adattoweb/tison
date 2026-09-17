@@ -4,24 +4,7 @@ import type { WithClassName } from "@/types/common"
 import clsx from "clsx"
 import { titleClassName } from "@/utils/classNames"
 
-interface DefectItem {
-   name: string
-   value: number
-   fill: string
-}
-
-const mockDefects: DefectItem[] = [
-   { name: "Пайка", value: 20, fill: "#c0392b" },
-   { name: "Лакування", value: 12, fill: "#b5651d" },
-   { name: "Монтаж", value: 4, fill: "#e8ba6f" },
-   { name: "Прошивка", value: 7, fill: "#4a9d5c" },
-   { name: "Тестування", value: 7, fill: "#1f5c3a" },
-   { name: "Інші", value: 50, fill: "#5a5a5a" },
-]
-
 export function Chart({ className }: WithClassName) {
-   const total = useMemo(() => mockDefects.reduce((sum, item) => sum + item.value, 0), [])
-
    return (
       <div
          className={clsx(
