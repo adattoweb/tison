@@ -1,8 +1,12 @@
+import { DeparmtentBaseSchema, type DepartmentBaseInput } from "@/api/schemas/department"
 import Modal from "@/components/Modal/Modal"
 import Button from "@/components/UI/Button"
-import Dropdown from "@/components/UI/Dropdown"
-import { Toggle } from "@/components/UI/Toggle"
-import { useState } from "react"
+import { FieldError } from "@/components/UI/FieldError"
+import { Input } from "@/components/UI/Input"
+import { useCreateDepartment } from "@/hooks/api/departments/useCreateDepartment"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { NotebookPenIcon } from "lucide-react"
+import { useForm, type SubmitHandler } from "react-hook-form"
 
 interface ModalProps {
    isOpen: boolean
@@ -10,58 +14,70 @@ interface ModalProps {
 }
 
 export function AddDepartmentModal({ isOpen, setIsOpen }: ModalProps) {
-   const employees = ["Немає", "Василь Вишиваний", "Павло Шевченко", "Григорій Поліщук", "Данило Мельник"]
-   const types = ["Не обрано", "Паяльна станція", "Виробнича станція"]
-   const [selected, setSelected] = useState(employees[0])
-   const [type, setType] = useState(types[0])
-   const onClose = () => setIsOpen(false)
-   const [isChecked, setIsChecked] = useState(true)
+   const { mutate: doCreateDepartment, isPending } = useCreateDepartment()
+
+   const {
+      register,
+      handleSubmit,
+      reset,
+      formState: { errors },
+   } = useForm<DepartmentBaseInput>({
+      resolver: zodResolver(DeparmtentBaseSchema),
+      defaultValues: {
+         name: "",
+         description: "",
+      },
+   })
+
+   const onClose = () => {
+      reset()
+      setIsOpen(false)
+   }
+
+   const onSubmit: SubmitHandler<DepartmentBaseInput> = data => {
+      doCreateDepartment(data, {
+         onSuccess: onClose,
+      })
+   }
    return (
       <Modal isOpen={isOpen} onClose={onClose}>
          <Modal.Header>Створення департаменту</Modal.Header>
-         <Modal.Content className="flex flex-col  md:flex-row md:flex-wrap gap-4">
-            <div className="flex flex-col gap-1.5 flex-1">
-               <Modal.Label>Оберіть відповідального</Modal.Label>
-               <Dropdown className="w-full!">
-                  <Dropdown.Button className="w-full">
-                     {selected}
-                     <Dropdown.Chevron />
-                  </Dropdown.Button>
-                  <Dropdown.Content>
-                     {employees.map((el, id) => (
-                        <Dropdown.Item key={id} onClick={() => setSelected(el)}>
-                           {el}
-                        </Dropdown.Item>
-                     ))}
-                  </Dropdown.Content>
-               </Dropdown>
-            </div>
-            <div className="flex flex-col gap-1.5 flex-1">
-               <Modal.Label>Оберіть тип станції</Modal.Label>
-               <Dropdown className="w-full!">
-                  <Dropdown.Button className="w-full">
-                     {type}
-                     <Dropdown.Chevron />
-                  </Dropdown.Button>
-                  <Dropdown.Content>
-                     {types.map((el, id) => (
-                        <Dropdown.Item key={id} onClick={() => setType(el)}>
-                           {el}
-                        </Dropdown.Item>
-                     ))}
-                  </Dropdown.Content>
-               </Dropdown>
-            </div>
-            <Toggle label="Активна" checked={isChecked} onChange={setIsChecked} className="min-w-full" />
-         </Modal.Content>
-         <footer className="flex justify-end gap-4">
-            <Button type="transparent">
-               <Button.Paragraph>Скасувати</Button.Paragraph>
-            </Button>
-            <Button type="accentFilled">
-               <Button.Paragraph>Створити</Button.Paragraph>
-            </Button>
-         </footer>
+         <form onSubmit={handleSubmit(onSubmit)}>
+            <Modal.Content>
+               <div className="flex flex-col gap-4">
+                  <div className="flex flex-col sm:flex-row w-full gap-2">
+                     <div className="w-full">
+                        <Input
+                           label="Назва"
+                           Icon={NotebookPenIcon}
+                           placeholder="Відділ пайки"
+                           hasError={!!errors.name}
+                           {...register("name")}
+                        />
+                        <FieldError message={errors.name?.message} />
+                     </div>
+                     <div className="w-full">
+                        <Input
+                           label="Опис"
+                           Icon={NotebookPenIcon}
+                           placeholder="Опис"
+                           hasError={!!errors.description}
+                           {...register("description")}
+                        />
+                        <FieldError message={errors.description?.message} />
+                     </div>
+                  </div>
+               </div>
+            </Modal.Content>
+            <footer className="flex justify-end gap-4">
+               <Button type="transparent" onClick={onClose}>
+                  <Button.Paragraph>Скасувати</Button.Paragraph>
+               </Button>
+               <Button type="accentFilled" isSubmit={true}>
+                  <Button.Paragraph>{isPending ? "Створення..." : "Створити"}</Button.Paragraph>
+               </Button>
+            </footer>
+         </form>
       </Modal>
    )
 }

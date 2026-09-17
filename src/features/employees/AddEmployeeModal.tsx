@@ -13,15 +13,11 @@ import { AdminUserCreateSchema, type AdminUserCreateFormInput, type AdminUserCre
 import { useCreateUser } from "@/hooks/api/users/useCreateUser"
 import { useRoles } from "@/hooks/api/roles/useRoles"
 import { useShifts } from "@/hooks/api/shifts/useShifts"
+import { FieldError } from "@/components/UI/FieldError"
 
 interface ModalProps {
    isOpen: boolean
    setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
-}
-
-function FieldError({ message }: { message?: string }) {
-   if (!message) return null
-   return <p className="text-red-400 text-sm">{message}</p>
 }
 
 export function AddEmployeeModal({ isOpen, setIsOpen }: ModalProps) {
