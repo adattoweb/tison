@@ -39,7 +39,7 @@ export function AddDepartmentModal({ isOpen, setIsOpen }: ModalProps) {
    const onSubmit: SubmitHandler<DepartmentBaseInput> = data => {
       doCreateDepartment(data, {
          onSuccess: () => {
-            addToast("Успішно створено відділ!", { duration: 300000, type: "success" })
+            addToast("Успішно створено відділ!", { duration: 3000, type: "success" })
             onClose()
          },
       })

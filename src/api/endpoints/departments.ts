@@ -15,6 +15,11 @@ export const getAllDepartments = async (params: PaginationParams): Promise<Pagin
    return data
 }
 
+export const getDepartmentById = async (id: number): Promise<DepartmentRead> => {
+   const { data } = await api.get<DepartmentRead>(`/departments/${id}`)
+   return data
+}
+
 export const createDepartment = async (data: DepartmentBaseInput): Promise<DepartmentBaseInput> => {
    const { data: response } = await api.post<DepartmentBaseInput>("/departments", data)
    return response

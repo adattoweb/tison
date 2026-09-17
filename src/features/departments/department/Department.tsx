@@ -1,21 +1,22 @@
 import { useParams } from "react-router"
 import PageHeader from "@/components/UI/PageHeader"
 import PageDescription from "@/components/UI/PageDescription"
-import { useLayoutMode } from "@/hooks/ui/useLayoutMode"
 import { DepartmentHeader } from "./DepartmentHeader"
 import Button from "@/components/UI/Button"
 import { mockClick } from "@/utils/mockClick"
 import { EditIcon, EllipsisIcon } from "lucide-react"
+import { useDepartment } from "@/hooks/api/departments/useDepatment"
 
 export function Department() {
-   const mode = useLayoutMode()
    const { id } = useParams()
+   const { data } = useDepartment(Number(id))
+   console.log(data)
    return (
       <div className="flex flex-col gap-(--components-gap)">
          <div className="flex justify-between items-center">
             <div className="flex flex-col">
-               <PageHeader>Name</PageHeader>
-               <PageDescription>Паяльна станція</PageDescription>
+               <PageHeader>{data?.name}</PageHeader>
+               <PageDescription>{data?.description}</PageDescription>
             </div>
             <div className="flex gap-4">
                <Button onClick={mockClick} type="accent" className="h-min">
@@ -28,12 +29,7 @@ export function Department() {
                </Button>
             </div>
          </div>
-         <div
-            className="grid grid-cols-[repeat(10,1fr)] gap-(--components-gap) w-full"
-            style={{
-               gridTemplateAreas: AREAS_BY_MODE[mode],
-            }}
-         >
+         <div className="flex gap-(--components-gap) w-full">
             <DepartmentHeader />
          </div>
       </div>

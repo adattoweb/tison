@@ -1,10 +1,9 @@
-import { getAllStations } from "@/api/endpoints/stations"
 import { useQuery } from "@tanstack/react-query"
+import { getAllStations, type GetStationsParams } from "@/api/endpoints/stations"
 
-export const useAllStations = () => {
+export function useAllStations(params: GetStationsParams) {
    return useQuery({
-      queryKey: ["stations"],
-      queryFn: getAllStations,
-      retry: false,
+      queryKey: ["stations", params],
+      queryFn: () => getAllStations(params),
    })
 }

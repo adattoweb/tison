@@ -3,6 +3,7 @@ import { useGSAP } from "@gsap/react"
 import gsap from "gsap"
 import type { ToastData } from "./types"
 import clsx from "clsx"
+import { XMarkIcon } from "@heroicons/react/24/outline"
 
 gsap.registerPlugin(useGSAP)
 
@@ -49,16 +50,16 @@ export function Toast({ toast, onRemove }: ToastProps) {
       <div
          ref={toastRef}
          className={clsx(
-            "pointer-events-auto min-w-60 max-w-80 rounded-md bg-amber-300 p-4 shadow-md",
-            toast.type === "success" ? "bg-green-300" : "bg-red-300",
+            "pointer-events-auto min-w-60 max-w-80 rounded-md p-4 flex items-center justify-center gap-2",
+            toast.type === "success"
+               ? "bg-(--bg-trans-right-color)!"
+               : toast.type === "error"
+                 ? "bg-(--bg-trans-bad-color)!"
+                 : "bg-(--bg-trans-accent-color)!",
          )}
       >
-         <div className="flex items-start justify-between gap-2">
-            <p className={clsx("text-sm text-gray-800", toast.type === "success" && "text-white")}>{toast.message}</p>
-            <button onClick={dismiss} className="text-gray-400 hover:text-gray-600" aria-label="Закрити">
-               ×
-            </button>
-         </div>
+         <p className="text-white">{toast.message}</p>
+         <XMarkIcon onClick={dismiss} className="size-4 stroke-white cursor-pointer" />
       </div>
    )
 }

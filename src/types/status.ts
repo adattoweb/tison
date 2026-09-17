@@ -1,14 +1,4 @@
-export type StatusType =
-   | "inProgress"
-   | "completed"
-   | "waiting"
-   | "delayed"
-   | "active"
-   | "idle"
-   | "maintenance"
-   | "error"
-   | "open"
-   | "closed"
+export type StatusType = "DONE" | "ACTIVE" | "IDLE"
 
 export type ProductStatusType = "inProgress" | "completed" | "waiting" | "delayed"
 export type StationStatusType = "active" | "idle" | "maintenance" | "error"
