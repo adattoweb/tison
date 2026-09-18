@@ -56,7 +56,7 @@ export function OperationTypesTable() {
             className={isFetching ? "opacity-60 transition-opacity" : ""}
          >
             {operationTypes.map(type => (
-               <Table.Row key={type.id} to="#">
+               <Table.Row key={type.id} to={`/types/${type.id}`}>
                   <Table.Text text={type.name} />
                   <Table.MenuButton />
                </Table.Row>

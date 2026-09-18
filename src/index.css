@@ -125,3 +125,27 @@ input::-webkit-inner-spin-button {
 input[type="number"] {
    appearance: textfield;
 }
+input[type="color"] {
+   border: none !important;
+   outline: none !important;
+   appearance: none;
+   -webkit-appearance: none;
+   -moz-appearance: none;
+}
+input[type="color"]::-webkit-color-swatch-wrapper {
+   padding: 0;
+}
+
+input[type="color"]::-webkit-color-swatch {
+   border: none;
+   width: 20px;
+   height: 20px;
+   border-radius: 25%;
+}
+
+input[type="color"]::-moz-color-swatch {
+   border: none;
+   width: 20px;
+   height: 20px;
+   border-radius: 25%;
+}

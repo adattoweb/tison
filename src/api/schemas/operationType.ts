@@ -9,4 +9,4 @@ export const operationTypeSchema = z.object({
       .regex(/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/, "Некоректний формат кольору (напр. #61D381)"),
 })
 
-export type OperationTypeForm = z.infer<typeof operationTypeSchema>
+export type OperationTypeBaseInput = z.infer<typeof operationTypeSchema>

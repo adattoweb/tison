@@ -1,12 +1,12 @@
-import { DeparmtentBaseSchema, type DepartmentBaseInput } from "@/api/schemas/department"
+import { operationTypeSchema, type OperationTypeBaseInput } from "@/api/schemas/operationType"
 import Modal from "@/components/Modal/Modal"
 import { useToast } from "@/components/Toast/useToast"
 import Button from "@/components/UI/Button"
 import { FieldError } from "@/components/UI/FieldError"
 import { Input } from "@/components/UI/Input"
-import { useCreateDepartment } from "@/hooks/api/departments/useCreateDepartment"
+import { useCreateOperationType } from "@/hooks/api/operationTypes/useCreateOperationTypes"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { NotebookPenIcon } from "lucide-react"
+import { HandCoins, NotebookPenIcon, PaletteIcon } from "lucide-react"
 import { useForm, type SubmitHandler } from "react-hook-form"
 
 interface ModalProps {
@@ -15,7 +15,7 @@ interface ModalProps {
 }
 
 export function AddOperationTypesModal({ isOpen, setIsOpen }: ModalProps) {
-   const { mutate: doCreateDepartment, isPending } = useCreateDepartment()
+   const { mutate: doCreateOperationType, isPending } = useCreateOperationType()
    const { addToast } = useToast()
 
    const {
@@ -23,11 +23,13 @@ export function AddOperationTypesModal({ isOpen, setIsOpen }: ModalProps) {
       handleSubmit,
       reset,
       formState: { errors },
-   } = useForm<DepartmentBaseInput>({
-      resolver: zodResolver(DeparmtentBaseSchema),
+   } = useForm<OperationTypeBaseInput>({
+      resolver: zodResolver(operationTypeSchema),
       defaultValues: {
          name: "",
          description: "",
+         points: 0,
+         color: "",
       },
    })
 
@@ -36,8 +38,8 @@ export function AddOperationTypesModal({ isOpen, setIsOpen }: ModalProps) {
       setIsOpen(false)
    }
 
-   const onSubmit: SubmitHandler<DepartmentBaseInput> = data => {
-      doCreateDepartment(data, {
+   const onSubmit: SubmitHandler<OperationTypeBaseInput> = data => {
+      doCreateOperationType(data, {
          onSuccess: () => {
             addToast("Успішно створено відділ!", { duration: 3000, type: "success" })
             onClose()
@@ -46,11 +48,11 @@ export function AddOperationTypesModal({ isOpen, setIsOpen }: ModalProps) {
    }
    return (
       <Modal isOpen={isOpen} onClose={onClose}>
-         <Modal.Header>Створення департаменту</Modal.Header>
+         <Modal.Header>Створення типу операції</Modal.Header>
          <form onSubmit={handleSubmit(onSubmit)}>
             <Modal.Content>
                <div className="flex flex-col gap-4">
-                  <div className="flex flex-col sm:flex-row w-full gap-2">
+                  <div className="flex flex-col w-full gap-2">
                      <div className="w-full">
                         <Input
                            label="Назва"
@@ -70,6 +72,28 @@ export function AddOperationTypesModal({ isOpen, setIsOpen }: ModalProps) {
                            {...register("description")}
                         />
                         <FieldError message={errors.description?.message} />
+                     </div>
+                     <div className="w-full">
+                        <Input
+                           label="Кількість балів"
+                           Icon={HandCoins}
+                           placeholder="0.00"
+                           type="number"
+                           hasError={!!errors.points}
+                           {...register("points")}
+                        />
+                        <FieldError message={errors.points?.message} />
+                     </div>
+                     <div className="w-full">
+                        <Input
+                           label="Колір операції"
+                           Icon={PaletteIcon}
+                           placeholder="#fff"
+                           hasError={!!errors.color}
+                           type="color"
+                           {...register("color")}
+                        />
+                        <FieldError message={errors.color?.message} />
                      </div>
                   </div>
                </div>
