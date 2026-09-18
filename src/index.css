@@ -22,9 +22,9 @@
    --bg-trans-color: rgba(255, 255, 255, 0.03);
    --bg-second-color: rgb(33, 33, 33);
    --bg-trans-hover-color: rgba(255, 255, 255, 0.05);
-   --bg-trans-right-color: rgba(68, 144, 49, 0.799);
-   --bg-trans-accent-color: rgba(191, 136, 35, 0.826);
-   --bg-trans-bad-color: rgba(162, 51, 51, 0.866);
+   --bg-right-color: rgb(78, 150, 59);
+   --bg-accent-color: rgba(191, 136, 35, 0.826);
+   --bg-bad-color: rgba(189, 47, 47, 0.866);
    --accent-color: #e5a839;
    --accent-trans-color: rgba(229, 168, 57, 0.05);
    --accent-trans-hover-color: rgba(233, 205, 154, 0.05);

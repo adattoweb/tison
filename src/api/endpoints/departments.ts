@@ -24,3 +24,8 @@ export const createDepartment = async (data: DepartmentBaseInput): Promise<Depar
    const { data: response } = await api.post<DepartmentBaseInput>("/departments", data)
    return response
 }
+
+export const updateDepartment = async (id: number, data: DepartmentBaseInput): Promise<DepartmentBaseInput> => {
+   const { data: response } = await api.put<DepartmentBaseInput>(`/departments/${id}`, data)
+   return response
+}

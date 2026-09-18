@@ -52,10 +52,10 @@ export function Toast({ toast, onRemove }: ToastProps) {
          className={clsx(
             "pointer-events-auto min-w-60 max-w-80 rounded-md p-4 flex items-center justify-center gap-2",
             toast.type === "success"
-               ? "bg-(--bg-trans-right-color)!"
+               ? "bg-(--bg-right-color)!"
                : toast.type === "error"
-                 ? "bg-(--bg-trans-bad-color)!"
-                 : "bg-(--bg-trans-accent-color)!",
+                 ? "bg-(--bg-bad-color)!"
+                 : "bg-(--bg-accent-color)!",
          )}
       >
          <p className="text-white">{toast.message}</p>

@@ -3,7 +3,7 @@ import type { LucideIcon, LucideProps } from "lucide-react"
 import type { PropsWithChildren } from "react"
 import { Link, type LinkProps } from "react-router"
 
-type ButtonTheme = "transparent" | "accent" | "accentFilled"
+type ButtonTheme = "transparent" | "accent" | "accentFilled" | "danger"
 
 interface ButtonProps extends WithClassName, PropsWithChildren {
    onClick?: () => void
@@ -19,6 +19,7 @@ const themes = {
       "border-(--stroke-color) bg-(--bg-trans-color) text-white stroke-white hover:bg-(--bg-trans-hover-color)",
    accent: "border-(--accent-color) text-(--accent-color) stroke-(--accent-color)",
    accentFilled: "border-0 text-(--accent-color) bg-(--accent-trans-color) stroke-(--accent-color)",
+   danger: "bg-(--bg-bad-color) text-white border-none stroke-white",
 }
 
 const getTypeClassName = (type: ButtonTheme) => {

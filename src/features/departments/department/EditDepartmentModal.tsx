@@ -1,21 +1,24 @@
 import { DeparmtentBaseSchema, type DepartmentBaseInput } from "@/api/schemas/department"
+import type { DepartmentRead } from "@/api/types/department"
 import Modal from "@/components/Modal/Modal"
 import { useToast } from "@/components/Toast/useToast"
 import Button from "@/components/UI/Button"
 import { FieldError } from "@/components/UI/FieldError"
 import { Input } from "@/components/UI/Input"
-import { useCreateDepartment } from "@/hooks/api/departments/useCreateDepartment"
+import { useUpdateDepartment } from "@/hooks/api/departments/useUpdateDepartment"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { NotebookPenIcon } from "lucide-react"
+import { useEffect } from "react"
 import { useForm, type SubmitHandler } from "react-hook-form"
 
 interface ModalProps {
    isOpen: boolean
    setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
+   department: DepartmentRead | undefined
 }
 
-export function AddDepartmentModal({ isOpen, setIsOpen }: ModalProps) {
-   const { mutate: doCreateDepartment, isPending } = useCreateDepartment()
+export function EditDepartmentModal({ department, isOpen, setIsOpen }: ModalProps) {
+   const { mutate: doUpdate, isPending } = useUpdateDepartment()
    const { addToast } = useToast()
 
    const {
@@ -36,17 +39,35 @@ export function AddDepartmentModal({ isOpen, setIsOpen }: ModalProps) {
       setIsOpen(false)
    }
 
-   const onSubmit: SubmitHandler<DepartmentBaseInput> = data => {
-      doCreateDepartment(data, {
-         onSuccess: () => {
-            addToast("Успішно створено відділ!", { duration: 3000, type: "success" })
-            onClose()
-         },
+   useEffect(() => {
+      if (!department) return
+      reset({
+         name: department.name,
+         description: department.description,
       })
+   }, [department, reset])
+
+   const onSubmit: SubmitHandler<DepartmentBaseInput> = data => {
+      if (!department) return
+      doUpdate(
+         {
+            id: department.id,
+            payload: {
+               name: data.name,
+               description: data.description ?? null,
+            },
+         },
+         {
+            onSuccess: () => {
+               addToast("Успішно відредаговано відділ!", { duration: 3000, type: "success" })
+               onClose()
+            },
+         },
+      )
    }
    return (
       <Modal isOpen={isOpen} onClose={onClose}>
-         <Modal.Header>Створення департаменту</Modal.Header>
+         <Modal.Header>Редагування департаменту</Modal.Header>
          <form onSubmit={handleSubmit(onSubmit)}>
             <Modal.Content>
                <div className="flex flex-col gap-4">
@@ -79,7 +100,7 @@ export function AddDepartmentModal({ isOpen, setIsOpen }: ModalProps) {
                   <Button.Paragraph>Скасувати</Button.Paragraph>
                </Button>
                <Button type="accentFilled" isSubmit={true}>
-                  <Button.Paragraph>{isPending ? "Створення..." : "Створити"}</Button.Paragraph>
+                  <Button.Paragraph>{isPending ? "Збереження..." : "Зберегти"}</Button.Paragraph>
                </Button>
             </footer>
          </form>
