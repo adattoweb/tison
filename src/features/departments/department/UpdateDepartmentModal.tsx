@@ -17,7 +17,7 @@ interface ModalProps {
    department: DepartmentRead | undefined
 }
 
-export function EditDepartmentModal({ department, isOpen, setIsOpen }: ModalProps) {
+export function UpdateDepartmentModal({ department, isOpen, setIsOpen }: ModalProps) {
    const { mutate: doUpdate, isPending } = useUpdateDepartment()
    const { addToast } = useToast()
 

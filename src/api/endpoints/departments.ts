@@ -29,3 +29,8 @@ export const updateDepartment = async (id: number, data: DepartmentBaseInput): P
    const { data: response } = await api.put<DepartmentBaseInput>(`/departments/${id}`, data)
    return response
 }
+
+export const deleteDepartment = async (id: number): Promise<DepartmentRead> => {
+   const { data: response } = await api.delete<DepartmentRead>(`/departments/${id}`)
+   return response
+}

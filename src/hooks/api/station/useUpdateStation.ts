@@ -8,7 +8,7 @@ export function useUpdateStation(id: number) {
       mutationFn: (payload: StationUpdatePayload) => updateStation(id, payload),
       onSuccess: () => {
          queryClient.invalidateQueries({ queryKey: ["stations"] })
-         queryClient.invalidateQueries({ queryKey: ["station"] })
+         queryClient.invalidateQueries({ queryKey: ["station", id] })
       },
    })
 }

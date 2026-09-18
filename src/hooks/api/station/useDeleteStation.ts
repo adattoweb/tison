@@ -7,7 +7,7 @@ export function useDeleteStation(id: number) {
       mutationFn: () => deleteStation(id),
       onSuccess: () => {
          queryClient.invalidateQueries({ queryKey: ["stations"] })
-         queryClient.invalidateQueries({ queryKey: ["station"] })
+         queryClient.invalidateQueries({ queryKey: ["station", id] })
       },
    })
 }
