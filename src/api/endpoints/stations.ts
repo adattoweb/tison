@@ -24,6 +24,11 @@ export const getAllStations = async (params: GetStationsParams): Promise<Paginat
    return data
 }
 
+export const getStationById = async (id: number): Promise<StationListRead> => {
+   const { data } = await api.get<StationListRead>(`/stations/${id}`)
+   return data
+}
+
 export const createStation = async (payload: StationCreatePayload): Promise<StationCreatePayload> => {
    const { data } = await api.post<StationCreatePayload>("/stations/", payload)
    return data
@@ -34,7 +39,7 @@ export const updateStation = async (id: number, payload: StationUpdatePayload): 
    return data
 }
 
-export const getStationById = async (id: number): Promise<StationListRead> => {
-   const { data } = await api.get<StationListRead>(`/stations/${id}`)
+export const deleteStation = async (id: number): Promise<StationUpdatePayload> => {
+   const { data } = await api.delete<StationUpdatePayload>(`/stations/${id}`)
    return data
 }

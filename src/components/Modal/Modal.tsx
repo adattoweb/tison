@@ -32,7 +32,7 @@ function Content({ children, className = "" }: CommonProps) {
 }
 
 function Label({ children, className = "" }: CommonProps) {
-   return <p className={clsx(className, "text-white text-base font-medium")}>{children}</p>
+   return <p className={clsx(className, "text-white text-sm sm:text-base font-medium")}>{children}</p>
 }
 
 interface ModalProps extends PropsWithChildren, WithClassName {
@@ -95,12 +95,8 @@ function Modal({ isOpen, onClose, className, children }: ModalProps) {
       })
    })
 
-   // клік по фону / X — внутрішнє джерело закриття: анімуємо і повідомляємо батька
    const closeModal = () => animateOut(onClose)
 
-   // якщо батько сам змінив isOpen на false (наприклад, після успішного сабміту
-   // чи кліку "Скасувати") — модалка має самостійно програти анімацію закриття,
-   // не викликаючи onClose повторно (батько вже й так це ініціював)
    useEffect(() => {
       if (!isOpen && isMounted) {
          animateOut()

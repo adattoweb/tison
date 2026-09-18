@@ -132,8 +132,8 @@ export function StationsTable() {
          </Table.Header>
 
          <Table columns={columns} tableClassNames={tableClassNames} className="">
-            {stations.map(station => (
-               <Station station={station} />
+            {stations.map((station, id) => (
+               <Station key={id} station={station} />
             ))}
             <TablePagination
                page={page}

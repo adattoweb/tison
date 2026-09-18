@@ -13,6 +13,7 @@ import { storage } from "./storage"
 import { models } from "./models"
 import { logout } from "./logout"
 import { departments } from "./departments"
+import { operationTypes } from "./operationTypes"
 
 export const routes = [
    dashboard,
@@ -20,6 +21,7 @@ export const routes = [
    products,
    models,
    operations,
+   operationTypes,
    defects,
    stations,
    departments,

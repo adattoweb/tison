@@ -1,4 +1,4 @@
-import { useParams } from "react-router"
+import { redirect, useNavigate, useParams } from "react-router"
 import PageHeader from "@/components/UI/PageHeader"
 import { ErrorPage } from "@/components/ErrorPage/ErrorPage"
 import PageDescription from "@/components/UI/PageDescription"
@@ -9,11 +9,12 @@ import { History } from "@/features/employees/employee/History"
 import { StationTable } from "./StationTable"
 import HourlyLoadChart from "./Chart"
 import Button from "@/components/UI/Button"
-import { mockClick } from "@/utils/mockClick"
 import { EditIcon, Trash } from "lucide-react"
 import { useStation } from "@/hooks/api/station/useStation"
 import { useState } from "react"
 import { UpdateStationModal } from "./UpdateStationModal"
+import { useDeleteStation } from "@/hooks/api/station/useDeleteStation"
+import { ConfirmModal } from "@/components/Modal/ConfirmModal"
 
 const WIDE_AREAS = `
    "header header header header header header header header header header"
@@ -46,7 +47,14 @@ export function Station() {
    const mode = useLayoutMode()
    const { id } = useParams()
    const { data: station } = useStation(Number(id))
+   const { mutate: doDelete } = useDeleteStation(Number(id))
    const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false)
+   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false)
+   const navigate = useNavigate()
+   const onDelete = () => {
+      doDelete()
+      navigate("/stations")
+   }
    if (station === undefined) return <ErrorPage />
    return (
       <div className="flex flex-col gap-(--components-gap)">
@@ -60,7 +68,11 @@ export function Station() {
                   <Button.Icon Icon={EditIcon} />
                   <Button.Paragraph>Редагувати</Button.Paragraph>
                </Button>
-               <Button onClick={mockClick} type="accent" className="h-min bg-(--accent-color) text-black">
+               <Button
+                  onClick={() => setIsConfirmModalOpen(true)}
+                  type="accent"
+                  className="h-min bg-(--accent-color) text-black"
+               >
                   <Button.Icon Icon={Trash} className="stroke-black!" />
                   <Button.Paragraph>Видалити</Button.Paragraph>
                </Button>
@@ -79,6 +91,13 @@ export function Station() {
             <HourlyLoadChart />
          </div>
          <UpdateStationModal isOpen={isUpdateModalOpen} setIsOpen={setIsUpdateModalOpen} station={station} />
+         <ConfirmModal
+            isOpen={isConfirmModalOpen}
+            onClose={() => setIsConfirmModalOpen(false)}
+            onConfirm={onDelete}
+            title="Видалити станцію"
+            description="Ви впевнені, що хочете видалити станцію?"
+         />
       </div>
    )
 }
