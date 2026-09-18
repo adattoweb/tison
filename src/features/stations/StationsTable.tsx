@@ -10,6 +10,8 @@ import type { StatusType } from "@/types/status"
 import { useAllStations } from "@/hooks/api/station/useAllStations"
 import { useAllDepartments } from "@/hooks/api/departments/useAllDepartments"
 import type { DepartmentRead } from "@/api/types/department"
+import { useProfile } from "@/hooks/api/profile/useProfile"
+import type { StationListRead } from "@/api/types/station"
 
 const ALL = { department: "Всі дільниці", status: "Всі статуси" } as const
 const STATUS_OPTIONS = [ALL.status, ...Object.keys(STATUS)] as (typeof ALL.status | StatusType)[]
@@ -17,6 +19,26 @@ const STATUS_OPTIONS = [ALL.status, ...Object.keys(STATUS)] as (typeof ALL.statu
 const columns = ["ID Станції", "Дільниця", "Статус", "Час роботи", "Відповідальний", ""]
 const tableClassNames = "min-w-275 grid-cols-[1.3fr_1.6fr_1.3fr_1.8fr_1.8fr_48px]"
 const DEFAULT_PAGE_SIZE = 10
+
+function Station({ station }: { station: StationListRead }) {
+   const { data: responsible } = useProfile(station.responsible_id ?? undefined)
+   return (
+      <Table.Row key={station.id} to={`/stations/${station.id}`}>
+         <Table.Text text={station.code} className="font-medium" />
+         <Table.Text text={station.department.name} />
+         <Table.Status status={station.status} />
+         <Table.TextGroup primary={station.start_at} secondary={station.end_at} />
+         <Table.Text
+            text={
+               responsible === null || responsible === undefined
+                  ? "Немає"
+                  : `${responsible?.first_name} ${responsible?.last_name}`
+            }
+         />
+         <Table.MenuButton onClick={() => console.log("menu", station.id)} />
+      </Table.Row>
+   )
+}
 
 export function StationsTable() {
    const [search, setSearch] = useState("")
@@ -32,7 +54,7 @@ export function StationsTable() {
       status,
       search: search || undefined,
    })
-   const { data: departments } = useAllDepartments({ page: 1, pageSize: 30 })
+   const { data: departments } = useAllDepartments({ page: 1, pageSize: 100 })
    const stations = data?.items ?? []
 
    function withPageReset<T>(setter: (value: T) => void) {
@@ -111,14 +133,7 @@ export function StationsTable() {
 
          <Table columns={columns} tableClassNames={tableClassNames} className="">
             {stations.map(station => (
-               <Table.Row key={station.id} to={`/stations/${station.id}`}>
-                  <Table.Text text={station.code} className="font-medium" />
-                  <Table.Text text={station.department.name} />
-                  <Table.Status status={station.status} />
-                  <Table.TextGroup primary={station.start_at} secondary={station.end_at} />
-                  <Table.Text text={station.responsible_id ?? "Немає"} />
-                  <Table.MenuButton onClick={() => console.log("menu", station.id)} />
-               </Table.Row>
+               <Station station={station} />
             ))}
             <TablePagination
                page={page}
