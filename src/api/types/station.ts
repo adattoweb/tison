@@ -21,3 +21,5 @@ export interface StationCreatePayload {
    start_at?: string | null
    end_at?: string | null
 }
+
+export interface StationUpdatePayload extends StationCreatePayload {}

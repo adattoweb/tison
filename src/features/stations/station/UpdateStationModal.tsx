@@ -6,21 +6,23 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { stationCreateSchema, type StationCreateForm } from "@/api/schemas/station"
 import { useAllDepartments } from "@/hooks/api/departments/useAllDepartments"
 import { useAllProfiles } from "@/hooks/api/profile/useAllProfiles"
-import { useCreateStation } from "@/hooks/api/station/useCreateStation"
 import { TimeDropdown } from "@/components/UI/TimeDropdown"
 import { FieldError } from "@/components/UI/FieldError"
+import { useUpdateStation } from "@/hooks/api/station/useUpdateStation"
+import type { StationListRead } from "@/api/types/station"
 
 interface ModalProps {
    isOpen: boolean
    setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
+   station: StationListRead
 }
 
-export function EditStationModal({ isOpen, setIsOpen }: ModalProps) {
+export function UpdateStationModal({ isOpen, setIsOpen, station }: ModalProps) {
    const onClose = () => setIsOpen(false)
 
    const { data: departments } = useAllDepartments({ page: 1, pageSize: 100 })
    const { data: profilesPage } = useAllProfiles({ page: 1, pageSize: 100 })
-   const { mutate: createStation, isPending } = useCreateStation()
+   const { mutate: updateStation, isPending } = useUpdateStation(station.id)
 
    const {
       control,
@@ -29,11 +31,17 @@ export function EditStationModal({ isOpen, setIsOpen }: ModalProps) {
       formState: { errors },
    } = useForm<StationCreateForm>({
       resolver: zodResolver(stationCreateSchema),
-      defaultValues: { department_id: undefined, responsible_id: null },
+      defaultValues: {
+         department_id: station.department_id,
+         responsible_id: station.responsible_id,
+         description: station.description,
+         start_at: station.start_at,
+         end_at: station.end_at,
+      },
    })
 
    const onSubmit = (values: StationCreateForm) => {
-      createStation(values, {
+      updateStation(values, {
          onSuccess: () => {
             reset()
             onClose()
@@ -43,7 +51,7 @@ export function EditStationModal({ isOpen, setIsOpen }: ModalProps) {
 
    return (
       <Modal isOpen={isOpen} onClose={onClose}>
-         <Modal.Header>Створення станції</Modal.Header>
+         <Modal.Header>Редагування станції</Modal.Header>
          <Modal.Content className="flex flex-col md:flex-wrap gap-4">
             <div className="flex flex-col gap-1.5 flex-1">
                <Modal.Label>Оберіть дільницю</Modal.Label>
@@ -95,17 +103,18 @@ export function EditStationModal({ isOpen, setIsOpen }: ModalProps) {
                   }}
                />
             </div>
-
-            <div className="flex flex-col gap-1.5 flex-1">
-               <Modal.Label>Час початку роботи</Modal.Label>
-               <TimeDropdown control={control} name="start_at" />
-               <FieldError message={errors.start_at?.message} />
-            </div>
-
-            <div className="flex flex-col gap-1.5 flex-1">
-               <Modal.Label>Час закінчення роботи</Modal.Label>
-               <TimeDropdown control={control} name="end_at" />
-               <FieldError message={errors.end_at?.message} />
+            <div className="flex gap-1.5">
+               <div className="flex flex-col gap-1.5 flex-1">
+                  <Modal.Label>Час початку роботи</Modal.Label>
+                  <TimeDropdown control={control} name="start_at" />
+                  <FieldError message={errors.start_at?.message} />
+               </div>
+               <div className="h-px w-5 mx-2 bg-white mt-3"></div>
+               <div className="flex flex-col gap-1.5 flex-1">
+                  <Modal.Label>Час закінчення роботи</Modal.Label>
+                  <TimeDropdown control={control} name="end_at" />
+                  <FieldError message={errors.end_at?.message} />
+               </div>
             </div>
          </Modal.Content>
          <footer className="flex justify-end gap-4">
@@ -113,7 +122,7 @@ export function EditStationModal({ isOpen, setIsOpen }: ModalProps) {
                <Button.Paragraph>Скасувати</Button.Paragraph>
             </Button>
             <Button type="accentFilled" onClick={handleSubmit(onSubmit)} disabled={isPending}>
-               <Button.Paragraph>Створити</Button.Paragraph>
+               <Button.Paragraph>Зберегти</Button.Paragraph>
             </Button>
          </footer>
       </Modal>

@@ -12,6 +12,8 @@ import Button from "@/components/UI/Button"
 import { mockClick } from "@/utils/mockClick"
 import { EditIcon, Trash } from "lucide-react"
 import { useStation } from "@/hooks/api/station/useStation"
+import { useState } from "react"
+import { UpdateStationModal } from "./UpdateStationModal"
 
 const WIDE_AREAS = `
    "header header header header header header header header header header"
@@ -44,6 +46,7 @@ export function Station() {
    const mode = useLayoutMode()
    const { id } = useParams()
    const { data: station } = useStation(Number(id))
+   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false)
    if (station === undefined) return <ErrorPage />
    return (
       <div className="flex flex-col gap-(--components-gap)">
@@ -53,7 +56,7 @@ export function Station() {
                <PageDescription>{station.department.name}</PageDescription>
             </div>
             <div className="flex gap-4">
-               <Button onClick={mockClick} type="accent" className="h-min">
+               <Button onClick={() => setIsUpdateModalOpen(true)} type="accent" className="h-min">
                   <Button.Icon Icon={EditIcon} />
                   <Button.Paragraph>Редагувати</Button.Paragraph>
                </Button>
@@ -75,6 +78,7 @@ export function Station() {
             <StationTable station={station} />
             <HourlyLoadChart />
          </div>
+         <UpdateStationModal isOpen={isUpdateModalOpen} setIsOpen={setIsUpdateModalOpen} station={station} />
       </div>
    )
 }

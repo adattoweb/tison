@@ -1,6 +1,6 @@
 import { api } from "@/api/api"
 import type { PaginatedResponse } from "../types/pagination"
-import type { StationListRead, StationCreatePayload } from "../types/station"
+import type { StationListRead, StationCreatePayload, StationUpdatePayload } from "../types/station"
 import type { StatusType } from "@/types/status"
 
 export interface GetStationsParams {
@@ -29,8 +29,8 @@ export const createStation = async (payload: StationCreatePayload): Promise<Stat
    return data
 }
 
-export const editStation = async (payload: StationCreatePayload): Promise<StationCreatePayload> => {
-   const { data } = await api.post<StationCreatePayload>("/stations/", payload)
+export const updateStation = async (id: number, payload: StationUpdatePayload): Promise<StationUpdatePayload> => {
+   const { data } = await api.put<StationUpdatePayload>(`/stations/${id}`, payload)
    return data
 }
 

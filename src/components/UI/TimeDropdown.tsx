@@ -1,3 +1,4 @@
+import { useEffect } from "react"
 import Dropdown from "@/components/UI/Dropdown"
 import { useController, type Control, type FieldValues, type Path } from "react-hook-form"
 
@@ -6,6 +7,13 @@ const MINUTES = Array.from({ length: 12 }, (_, i) => i * 5)
 
 function pad(n: number) {
    return n.toString().padStart(2, "0")
+}
+
+function normalize(value: unknown): string | null {
+   if (typeof value !== "string") return null
+   const match = value.match(/^(\d{1,2}):(\d{1,2})/)
+   if (!match) return null
+   return `${pad(Number(match[1]))}:${pad(Number(match[2]))}`
 }
 
 interface TimeDropdownProps<T extends FieldValues> {
@@ -19,9 +27,16 @@ export function TimeDropdown<T extends FieldValues>({ control, name, className }
       field: { value, onChange },
    } = useController({ control, name })
 
-   const [hourStr, minuteStr] = typeof value === "string" && value ? value.split(":") : ["", ""]
-   const hour = hourStr !== "" ? Number(hourStr) : null
-   const minute = minuteStr !== "" ? Number(minuteStr) : null
+   const normalized = normalize(value)
+
+   useEffect(() => {
+      if (typeof value === "string" && value && normalized && value !== normalized) {
+         onChange(normalized)
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+   }, [value])
+
+   const [hour, minute] = normalized ? normalized.split(":").map(Number) : [null, null]
 
    const setHour = (h: number) => onChange(`${pad(h)}:${minute !== null ? pad(minute) : "00"}`)
    const setMinute = (m: number) => onChange(`${hour !== null ? pad(hour) : "00"}:${pad(m)}`)
