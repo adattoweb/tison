@@ -28,3 +28,13 @@ export const createStation = async (payload: StationCreatePayload): Promise<Stat
    const { data } = await api.post<StationCreatePayload>("/stations/", payload)
    return data
 }
+
+export const editStation = async (payload: StationCreatePayload): Promise<StationCreatePayload> => {
+   const { data } = await api.post<StationCreatePayload>("/stations/", payload)
+   return data
+}
+
+export const getStationById = async (id: number): Promise<StationListRead> => {
+   const { data } = await api.get<StationListRead>(`/stations/${id}`)
+   return data
+}

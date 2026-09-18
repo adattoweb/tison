@@ -1,5 +1,4 @@
 import { useParams } from "react-router"
-import { mockStations } from "../stations"
 import PageHeader from "@/components/UI/PageHeader"
 import { ErrorPage } from "@/components/ErrorPage/ErrorPage"
 import PageDescription from "@/components/UI/PageDescription"
@@ -11,7 +10,8 @@ import { StationTable } from "./StationTable"
 import HourlyLoadChart from "./Chart"
 import Button from "@/components/UI/Button"
 import { mockClick } from "@/utils/mockClick"
-import { EditIcon, EllipsisIcon } from "lucide-react"
+import { EditIcon, Trash } from "lucide-react"
+import { useStation } from "@/hooks/api/station/useStation"
 
 const WIDE_AREAS = `
    "header header header header header header header header header header"
@@ -43,14 +43,14 @@ const AREAS_BY_MODE: Record<LayoutMode, string> = {
 export function Station() {
    const mode = useLayoutMode()
    const { id } = useParams()
-   const station = mockStations.find(el => el.id === Number(id))
+   const { data: station } = useStation(Number(id))
    if (station === undefined) return <ErrorPage />
    return (
       <div className="flex flex-col gap-(--components-gap)">
          <div className="flex justify-between items-center">
             <div className="flex flex-col">
                <PageHeader>{station.code}</PageHeader>
-               <PageDescription>Паяльна станція</PageDescription>
+               <PageDescription>{station.department.name}</PageDescription>
             </div>
             <div className="flex gap-4">
                <Button onClick={mockClick} type="accent" className="h-min">
@@ -58,8 +58,8 @@ export function Station() {
                   <Button.Paragraph>Редагувати</Button.Paragraph>
                </Button>
                <Button onClick={mockClick} type="accent" className="h-min bg-(--accent-color) text-black">
-                  <Button.Icon Icon={EllipsisIcon} className="rotate-90 stroke-black!" />
-                  <Button.Paragraph>Дії</Button.Paragraph>
+                  <Button.Icon Icon={Trash} className="stroke-black!" />
+                  <Button.Paragraph>Видалити</Button.Paragraph>
                </Button>
             </div>
          </div>
@@ -71,8 +71,8 @@ export function Station() {
          >
             <StationHeader />
             <Info station={station} />
-            <History />
-            <StationTable />
+            {/* <History /> */}
+            <StationTable station={station} />
             <HourlyLoadChart />
          </div>
       </div>

@@ -1,5 +1,7 @@
+import type { StationListRead } from "@/api/types/station"
+import { STATUS } from "@/constants/status"
+import { useProfile } from "@/hooks/api/profile/useProfile"
 import { titleClassName } from "@/utils/classNames"
-import type { Station } from "../stations"
 
 interface ListItemProps {
    label: string
@@ -16,10 +18,11 @@ function ListItem({ label, value }: ListItemProps) {
 }
 
 interface InfoProps {
-   station: Station
+   station: StationListRead
 }
 
 export function Info({ station }: InfoProps) {
+   const { data: responsible } = useProfile(station.responsible_id ?? undefined)
    return (
       <div
          className="flex flex-col ibm-plex-sans bg-(--bg-trans-color) border border-(--stroke-color) rounded-xl py-(--components-py) px-(--components-py) gap-2"
@@ -28,12 +31,18 @@ export function Info({ station }: InfoProps) {
          <h2 className={`${titleClassName}`}>Інформація про станцію</h2>
          <ul className="flex flex-col gap-1 justify-between flex-1">
             <ListItem label="Серійний номер" value={station.code} />
-            <ListItem label="Завантаження" value={station.load} />
-            <ListItem label="Тип станції" value="Паяльна станція" />
-            <ListItem label="Статус" value="Активна" />
-            <ListItem label="Графік роботи" value="08:00 - 20:00" />
-            <ListItem label="Ефективність" value="95.2%" />
-            <ListItem label="Відповідальний" value="Іваненко Сергій" />
+            {/* <ListItem label="Завантаження" value={station.load} /> */}
+            <ListItem label="Відділ" value={station.department.name} />
+            <ListItem label="Статус" value={STATUS[station.status].label} />
+            <ListItem label="Графік роботи" value={`${station.start_at} - ${station.end_at}`} />
+            <ListItem
+               label="Відповідальний"
+               value={
+                  responsible === null || responsible === undefined
+                     ? "Немає"
+                     : `${responsible?.first_name} ${responsible?.last_name}`
+               }
+            />
          </ul>
       </div>
    )
