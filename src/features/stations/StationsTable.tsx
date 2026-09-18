@@ -8,6 +8,8 @@ import { STATUS } from "@/constants/status"
 import type { StatusType } from "@/types/status"
 
 import { useAllStations } from "@/hooks/api/station/useAllStations"
+import { useAllDepartments } from "@/hooks/api/departments/useAllDepartments"
+import type { DepartmentRead } from "@/api/types/department"
 
 const ALL = { department: "Всі дільниці", status: "Всі статуси" } as const
 const STATUS_OPTIONS = [ALL.status, ...Object.keys(STATUS)] as (typeof ALL.status | StatusType)[]
@@ -18,12 +20,19 @@ const DEFAULT_PAGE_SIZE = 10
 
 export function StationsTable() {
    const [search, setSearch] = useState("")
-   const [departmentId, setDepartmentId] = useState<number | undefined>(undefined)
+   const [department, setDepartment] = useState<DepartmentRead | null>(null)
    const [status, setStatus] = useState<StatusType | undefined>(undefined)
    const [page, setPage] = useState(1)
    const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE)
 
-   const { data } = useAllStations({ page, pageSize, departmentId, status, search: search || undefined })
+   const { data } = useAllStations({
+      page,
+      pageSize,
+      departmentId: department?.id,
+      status,
+      search: search || undefined,
+   })
+   const { data: departments } = useAllDepartments({ page: 1, pageSize: 30 })
    const stations = data?.items ?? []
 
    function withPageReset<T>(setter: (value: T) => void) {
@@ -35,7 +44,7 @@ export function StationsTable() {
 
    function resetFilters() {
       setSearch("")
-      setDepartmentId(undefined)
+      setDepartment(null)
       setStatus(undefined)
       setPage(1)
    }
@@ -58,14 +67,18 @@ export function StationsTable() {
 
             <Dropdown>
                <Dropdown.Button>
-                  <span className="text-base font-normal text-white whitespace-nowrap">1</span>
+                  <span className="text-base font-normal text-white whitespace-nowrap">
+                     {department?.name ?? ALL.department}
+                  </span>
                   <Dropdown.Chevron />
                </Dropdown.Button>
                <Dropdown.Content>
-                  <Dropdown.Item onClick={() => withPageReset(setDepartmentId)(undefined)}>
-                     {ALL.department}
-                  </Dropdown.Item>
-                  <Dropdown.Item onClick={() => withPageReset(setDepartmentId)(1)}>1</Dropdown.Item>
+                  <Dropdown.Item onClick={() => withPageReset(setDepartment)(null)}>{ALL.department}</Dropdown.Item>
+                  {departments?.items.map((el, id) => (
+                     <Dropdown.Item key={id} onClick={() => withPageReset(setDepartment)(el)}>
+                        {el.name}
+                     </Dropdown.Item>
+                  ))}
                </Dropdown.Content>
             </Dropdown>
 
@@ -103,7 +116,7 @@ export function StationsTable() {
                   <Table.Text text={station.department.name} />
                   <Table.Status status={station.status} />
                   <Table.TextGroup primary={station.start_at} secondary={station.end_at} />
-                  <Table.Text text={station.responsible_id ? "Призначено" : "Немає"} />
+                  <Table.Text text={station.responsible_id ?? "Немає"} />
                   <Table.MenuButton onClick={() => console.log("menu", station.id)} />
                </Table.Row>
             ))}
