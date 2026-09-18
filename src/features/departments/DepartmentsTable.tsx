@@ -19,7 +19,7 @@ export function DepartmentsTable() {
 
    const debouncedSearch = useDebouncedValue(search, 400)
 
-   const { data, isLoading, isFetching } = useAllDepartments({
+   const { data, isFetching } = useAllDepartments({
       page,
       pageSize,
       search: debouncedSearch || undefined,

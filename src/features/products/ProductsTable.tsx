@@ -172,7 +172,7 @@ export function ProductsTable() {
                      code={product.executorCode}
                   />
                   <Table.Percent value={product.progress} goodThreshold={100} />
-                  <Table.Status status={product.status} />
+                  {/* <Table.Status status={product.status} /> */}
                   <Table.MenuButton onClick={() => console.log("menu", product.id)} />
                </Table.Row>
             ))}

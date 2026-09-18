@@ -1,77 +1,109 @@
-import { useMemo, useState } from "react"
-import { Search, RotateCcw } from "lucide-react"
+import { useState } from "react"
+import { Search, RotateCcw, Pencil, Trash2, CheckCircle2 } from "lucide-react"
 import Dropdown from "@/components/UI/Dropdown"
 import Button from "@/components/UI/Button"
 import Table from "@/components/Table/Table"
 import { TablePagination } from "@/components/Table/TablePagination"
-import { mockOperations, type Operation } from "./operations"
+import { RowMenu } from "@/components/Table/RowMenu"
 import { STATUS } from "@/constants/status"
 import type { StatusType } from "@/types/status"
+import { formatDuration } from "@/utils/time"
 
-const ALL = {
-   type: "Всі типи",
-   duration: "За тривалістю",
-   section: "Всі дільниці",
-   status: "Статус",
-} as const
+import { useAllOperations } from "@/hooks/api/operations/useAllOperations"
+import { useDeleteOperation } from "@/hooks/api/operations/useDeleteOperation"
+import { useCompleteOperation } from "@/hooks/api/operations/useStartOperation"
+import { useAllStations } from "@/hooks/api/station/useAllStations"
+import type { OperationListRead } from "@/api/types/operation"
+import type { StationListRead } from "@/api/types/station"
 
-const SECTION_OPTIONS = [ALL.section, "Механічний цех", "Складальний цех", "Цех пайки", "Тестовий цех"]
-const DURATION_OPTIONS = [ALL.duration, "До 15 хв", "15-30 хв", "30-45 хв", "45+ хв"]
+const ALL = { status: "Всі статуси", station: "Всі станції", duration: "Будь-яка тривалість" } as const
 const STATUS_OPTIONS = [ALL.status, ...Object.keys(STATUS)] as (typeof ALL.status | StatusType)[]
 
-function getOperationMinutes(operation: Operation): number {
-   if (typeof operation.durationLabel === "number" && !Number.isNaN(operation.durationLabel)) {
-      return operation.durationLabel
-   }
-   const match = operation.durationLabel?.match(/\d+/)
-   return match ? Number(match[0]) : 0
+interface DurationOption {
+   label: string
+   min?: number
+   max?: number
 }
 
-function getDurationBucket(minutes: number): string {
-   if (minutes < 15) return "До 15 хв"
-   if (minutes < 30) return "15-30 хв"
-   if (minutes < 45) return "30-45 хв"
-   return "45+ хв"
-}
+/** Пресети фільтра за часом виконання (в секундах) */
+const DURATION_OPTIONS: DurationOption[] = [
+   { label: ALL.duration },
+   { label: "До 5 хвилин", max: 5 * 60 },
+   { label: "5–30 хвилин", min: 5 * 60, max: 30 * 60 },
+   { label: "30 хвилин – 2 години", min: 30 * 60, max: 2 * 3600 },
+   { label: "Понад 2 години", min: 2 * 3600 },
+]
 
-const columns = ["Операція", "Виріб", "Дільниця", "Виконавець", "Тривалість", "Статус", ""]
-
-const tableClassNames = "min-w-275 grid-cols-[1.8fr_1.6fr_1.6fr_1.8fr_1fr_1.3fr_48px]"
-
+const columns = ["Код", "Тип операції", "Продукт", "Замовлення", "Станція", "Час виконання", "Статус", ""]
+const tableClassNames = "min-w-320 grid-cols-[1.2fr_1.6fr_1.2fr_1.2fr_1.2fr_1.3fr_1.2fr_48px]"
 const DEFAULT_PAGE_SIZE = 10
 
-export function OperationsTable() {
+/** ключ активного статусу в STATUS — заміни, якщо в константах він називається інакше */
+const ACTIVE_STATUS = "ACTIVE" as StatusType
+
+interface OperationRowProps {
+   operation: OperationListRead
+   onEdit: (operation: OperationListRead) => void
+   onDelete: (operation: OperationListRead) => void
+   onComplete: (operation: OperationListRead) => void
+}
+
+function OperationRow({ operation, onEdit, onDelete, onComplete }: OperationRowProps) {
+   return (
+      <Table.Row to={`/operation/${operation.id}`}>
+         <Table.Text text={operation.code} className="font-medium" />
+         <Table.Text text={operation.operation_type?.name ?? "—"} />
+         <Table.Text text={operation.product?.code ?? `#${operation.product_id}`} />
+         <Table.Text text={operation.product?.order_id ? `#${operation.product.order_id}` : "Без замовлення"} />
+         <Table.Text text={operation.station?.code ?? "Не призначено"} />
+         <Table.Text text={formatDuration(operation.duration)} />
+         <Table.Status status={operation.status} />
+         <RowMenu
+            actions={[
+               { label: "Редагувати", Icon: Pencil, onClick: () => onEdit(operation) },
+               {
+                  label: "Завершити",
+                  Icon: CheckCircle2,
+                  onClick: () => onComplete(operation),
+                  disabled: operation.status !== ACTIVE_STATUS,
+               },
+               { label: "Видалити", Icon: Trash2, onClick: () => onDelete(operation), danger: true },
+            ]}
+         />
+      </Table.Row>
+   )
+}
+
+interface OperationsTableProps {
+   onEdit: (operation: OperationListRead) => void
+}
+
+export function OperationsTable({ onEdit }: OperationsTableProps) {
    const [search, setSearch] = useState("")
-   const [type, setType] = useState<string>(ALL.type)
-   const [durationBucket, setDurationBucket] = useState<string>(ALL.duration)
-   const [section, setSection] = useState<string>(ALL.section)
-   const [status, setStatus] = useState<string>(ALL.status)
+   const [status, setStatus] = useState<StatusType | undefined>(undefined)
+   const [station, setStation] = useState<StationListRead | null>(null)
+   const [orderId, setOrderId] = useState<string>("")
+   const [duration, setDuration] = useState<DurationOption>(DURATION_OPTIONS[0])
    const [page, setPage] = useState(1)
    const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE)
 
-   const typeOptions = useMemo(() => {
-      const uniqueTypes = Array.from(new Set(mockOperations.map(op => op.name)))
-      return [ALL.type, ...uniqueTypes]
-   }, [])
+   const parsedOrderId = orderId.trim() === "" ? undefined : Number(orderId)
 
-   const filtered = useMemo(() => {
-      return mockOperations.filter(operation => {
-         if (
-            search &&
-            !operation.name.toLowerCase().includes(search.toLowerCase()) &&
-            !operation.productCode.toLowerCase().includes(search.toLowerCase())
-         )
-            return false
-         if (type !== ALL.type && operation.name !== type) return false
-         if (durationBucket !== ALL.duration && getDurationBucket(getOperationMinutes(operation)) !== durationBucket)
-            return false
-         if (section !== ALL.section && operation.section !== section) return false
-         if (status !== ALL.status && operation.status !== status) return false
-         return true
-      })
-   }, [search, type, durationBucket, section, status])
+   const { data } = useAllOperations({
+      page,
+      pageSize,
+      search: search || undefined,
+      status,
+      stationId: station?.id,
+      orderId: Number.isFinite(parsedOrderId) ? parsedOrderId : undefined,
+      minDuration: duration.min,
+      maxDuration: duration.max,
+   })
+   const { data: stations } = useAllStations({ page: 1, pageSize: 100 })
+   const { mutate: deleteOperation } = useDeleteOperation()
+   const { mutate: completeOperation } = useCompleteOperation()
 
-   const pageItems = filtered.slice((page - 1) * pageSize, page * pageSize)
+   const operations = data?.items ?? []
 
    function withPageReset<T>(setter: (value: T) => void) {
       return (value: T) => {
@@ -82,11 +114,15 @@ export function OperationsTable() {
 
    function resetFilters() {
       setSearch("")
-      setType(ALL.type)
-      setDurationBucket(ALL.duration)
-      setSection(ALL.section)
-      setStatus(ALL.status)
+      setStatus(undefined)
+      setStation(null)
+      setOrderId("")
+      setDuration(DURATION_OPTIONS[0])
       setPage(1)
+   }
+
+   function handleDelete(operation: OperationListRead) {
+      if (window.confirm(`Видалити операцію ${operation.code}?`)) deleteOperation(operation.id)
    }
 
    return (
@@ -100,68 +136,70 @@ export function OperationsTable() {
                <input
                   value={search}
                   onChange={e => withPageReset(setSearch)(e.target.value)}
-                  placeholder="Пошук..."
+                  placeholder="Пошук за кодом..."
                   className="w-full rounded-md border border-(--stroke-color) bg-(--bg-trans-color) py-2.5 pl-11 pr-4 text-sm text-white placeholder:text-(--second-color) outline-none focus:border-(--stroke-active-color)"
                />
             </div>
 
             <Dropdown>
                <Dropdown.Button>
-                  <span className="text-base font-normal text-white whitespace-nowrap">{type}</span>
-                  <Dropdown.Chevron />
-               </Dropdown.Button>
-               <Dropdown.Content>
-                  {typeOptions.map(option => (
-                     <Dropdown.Item key={option} onClick={() => withPageReset(setType)(option)}>
-                        {option}
-                     </Dropdown.Item>
-                  ))}
-               </Dropdown.Content>
-            </Dropdown>
-
-            <Dropdown>
-               <Dropdown.Button>
-                  <span className="text-base font-normal text-white whitespace-nowrap">{durationBucket}</span>
-                  <Dropdown.Chevron />
-               </Dropdown.Button>
-               <Dropdown.Content>
-                  {DURATION_OPTIONS.map(option => (
-                     <Dropdown.Item key={option} onClick={() => withPageReset(setDurationBucket)(option)}>
-                        {option}
-                     </Dropdown.Item>
-                  ))}
-               </Dropdown.Content>
-            </Dropdown>
-
-            <Dropdown>
-               <Dropdown.Button>
-                  <span className="text-base font-normal text-white whitespace-nowrap">{section}</span>
-                  <Dropdown.Chevron />
-               </Dropdown.Button>
-               <Dropdown.Content>
-                  {SECTION_OPTIONS.map(option => (
-                     <Dropdown.Item key={option} onClick={() => withPageReset(setSection)(option)}>
-                        {option}
-                     </Dropdown.Item>
-                  ))}
-               </Dropdown.Content>
-            </Dropdown>
-
-            <Dropdown>
-               <Dropdown.Button>
-                  <span className="text-base font-normal text-white whitespace-nowrap">
-                     {status === ALL.status ? ALL.status : STATUS[status as StatusType].label}
+                  <span className="whitespace-nowrap text-base font-normal text-white">
+                     {status ? STATUS[status].label : ALL.status}
                   </span>
                   <Dropdown.Chevron />
                </Dropdown.Button>
                <Dropdown.Content>
                   {STATUS_OPTIONS.map(option => (
-                     <Dropdown.Item key={option} onClick={() => withPageReset(setStatus)(option)}>
+                     <Dropdown.Item
+                        key={option}
+                        onClick={() =>
+                           withPageReset(setStatus)(option === ALL.status ? undefined : (option as StatusType))
+                        }
+                     >
                         {option === ALL.status ? ALL.status : STATUS[option as StatusType].label}
                      </Dropdown.Item>
                   ))}
                </Dropdown.Content>
             </Dropdown>
+
+            <Dropdown>
+               <Dropdown.Button>
+                  <span className="whitespace-nowrap text-base font-normal text-white">
+                     {station?.code ?? ALL.station}
+                  </span>
+                  <Dropdown.Chevron />
+               </Dropdown.Button>
+               <Dropdown.Content>
+                  <Dropdown.Item onClick={() => withPageReset(setStation)(null)}>{ALL.station}</Dropdown.Item>
+                  {stations?.items.map(el => (
+                     <Dropdown.Item key={el.id} onClick={() => withPageReset(setStation)(el)}>
+                        {el.code}
+                     </Dropdown.Item>
+                  ))}
+               </Dropdown.Content>
+            </Dropdown>
+
+            <Dropdown>
+               <Dropdown.Button>
+                  <span className="whitespace-nowrap text-base font-normal text-white">{duration.label}</span>
+                  <Dropdown.Chevron />
+               </Dropdown.Button>
+               <Dropdown.Content>
+                  {DURATION_OPTIONS.map(option => (
+                     <Dropdown.Item key={option.label} onClick={() => withPageReset(setDuration)(option)}>
+                        {option.label}
+                     </Dropdown.Item>
+                  ))}
+               </Dropdown.Content>
+            </Dropdown>
+
+            <input
+               value={orderId}
+               inputMode="numeric"
+               onChange={e => withPageReset(setOrderId)(e.target.value.replace(/\D/g, ""))}
+               placeholder="ID замовлення"
+               className="w-full min-w-0 rounded-md border border-(--stroke-color) bg-(--bg-trans-color) px-4 py-2.5 text-sm text-white outline-none placeholder:text-(--second-color) focus:border-(--stroke-active-color) sm:w-40"
+            />
 
             <Button onClick={resetFilters} className="ml-auto sm:ml-0">
                <Button.Icon Icon={RotateCcw} strokeWidth={1.5} />
@@ -169,37 +207,27 @@ export function OperationsTable() {
             </Button>
          </Table.Header>
 
-         <Table columns={columns} tableClassNames={tableClassNames} className="">
-            {pageItems.map(operation => (
-               <Table.Row key={operation.id} to={`/products/${operation.productId}`}>
-                  <Table.TextGroup primary={operation.name} secondary={operation.code} />
-                  <Table.TextGroup primary={operation.productModel} secondary={operation.productCode} />
-                  <Table.Text text={operation.section} className="text-(--second-color)" />
-                  <Table.Person
-                     avatarUrl={operation.executorAvatarUrl}
-                     name={operation.executorName}
-                     code={operation.executorCode}
-                  />
-                  <Table.Duration
-                     label={operation.durationLabel}
-                     startTime={operation.startTime}
-                     endTime={operation.endTime}
-                  />
-                  <Table.Status status={operation.status} />
-                  <Table.MenuButton onClick={() => console.log("menu", operation.id)} />
-               </Table.Row>
+         <Table columns={columns} tableClassNames={tableClassNames}>
+            {operations.map(operation => (
+               <OperationRow
+                  key={operation.id}
+                  operation={operation}
+                  onEdit={onEdit}
+                  onDelete={handleDelete}
+                  onComplete={op => completeOperation(op.id)}
+               />
             ))}
             <TablePagination
                page={page}
                pageSize={pageSize}
-               total={filtered.length}
+               total={data?.total ?? 0}
                onPageChange={setPage}
                onPageSizeChange={size => {
                   setPageSize(size)
                   setPage(1)
                }}
                entityLabel="операцій"
-               className="min-w-275"
+               className="min-w-320"
             />
          </Table>
       </Table.Wrapper>
