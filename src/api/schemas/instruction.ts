@@ -20,7 +20,18 @@ export const InstructionUpdateSchema = InstructionBaseSchema.extend({
    steps: z.array(z.string()).nullable().optional(),
    checkpoints: z.array(z.string()).nullable().optional(),
 })
+export const InstructionEditFormSchema = InstructionBaseSchema.extend({
+   details: z.array(
+      z.object({
+         key: z.string().trim().min(1, "Введіть назву"),
+         value: z.string().trim().min(1, "Введіть значення"),
+      }),
+   ),
+   steps: z.array(z.object({ value: z.string().trim().min(1, "Введіть текст") })),
+   checkpoints: z.array(z.object({ value: z.string().trim().min(1, "Введіть текст") })),
+})
 
+export type InstructionEditFormInput = z.infer<typeof InstructionEditFormSchema>
 export type InstructionBaseInput = z.infer<typeof InstructionBaseSchema>
 export type InstructionCreateInput = z.infer<typeof InstructionCreateSchema>
 export type InstructionUpdateInput = z.infer<typeof InstructionUpdateSchema>

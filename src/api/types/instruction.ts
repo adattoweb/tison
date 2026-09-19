@@ -16,6 +16,9 @@ export interface InstructionListRead {
    checkpoints: InstructionCheckpoints
    operation_type_id: number
    operation_type: OperationTypeRead
+   title: string
+   description: string
+   planned_time: number | null
 }
 
 export interface InstructionRead extends InstructionListRead {}

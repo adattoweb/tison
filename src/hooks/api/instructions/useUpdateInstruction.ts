@@ -10,6 +10,7 @@ export function useUpdateInstruction() {
       onSuccess: (_data, variables) => {
          queryClient.invalidateQueries({ queryKey: ["instructions"] })
          queryClient.invalidateQueries({ queryKey: ["instruction", variables.id] })
+         queryClient.invalidateQueries({ queryKey: ["models"] })
       },
    })
 }
