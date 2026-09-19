@@ -35,7 +35,6 @@ export function UpdateDepartmentModal({ department, isOpen, setIsOpen }: ModalPr
    })
 
    const onClose = () => {
-      reset()
       setIsOpen(false)
    }
 

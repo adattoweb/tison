@@ -45,6 +45,6 @@ export const updateOperationType = async (
    return data
 }
 
-export const archiveOperationType = async (id: number): Promise<void> => {
+export const deleteOperationType = async (id: number): Promise<void> => {
    await api.delete(`/operation_types/${id}`)
 }

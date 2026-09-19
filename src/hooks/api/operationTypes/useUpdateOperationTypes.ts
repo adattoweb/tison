@@ -11,6 +11,9 @@ export function useUpdateOperationType() {
    const queryClient = useQueryClient()
    return useMutation({
       mutationFn: ({ id, payload }: UpdateOperationTypeVariables) => updateOperationType(id, payload),
-      onSuccess: () => queryClient.invalidateQueries({ queryKey: ["operationTypes"] }),
+      onSuccess: (_data, variables) => {
+         queryClient.invalidateQueries({ queryKey: ["operationTypes"] })
+         queryClient.invalidateQueries({ queryKey: ["operationType", variables.id] })
+      },
    })
 }

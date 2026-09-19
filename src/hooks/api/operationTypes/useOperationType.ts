@@ -3,7 +3,7 @@ import { getOperationTypeById } from "@/api/endpoints/operationTypes"
 
 export const useOperationType = (id: number) => {
    return useQuery({
-      queryKey: ["department", id],
+      queryKey: ["operationType", id],
       queryFn: () => getOperationTypeById(id),
    })
 }

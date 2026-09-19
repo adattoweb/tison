@@ -3,7 +3,6 @@ import PageHeader from "@/components/UI/PageHeader"
 import PageDescription from "@/components/UI/PageDescription"
 import { DepartmentHeader } from "./DepartmentHeader"
 import Button from "@/components/UI/Button"
-import { mockClick } from "@/utils/mockClick"
 import { EditIcon, TrashIcon } from "lucide-react"
 import { useDepartment } from "@/hooks/api/departments/useDepatment"
 import { UpdateDepartmentModal } from "./UpdateDepartmentModal"
@@ -11,6 +10,7 @@ import { useState } from "react"
 import { ConfirmModal } from "@/components/Modal/ConfirmModal"
 import { useDeleteDepartment } from "@/hooks/api/departments/useDeleteDepartment"
 import { ErrorPage } from "@/components/ErrorPage/ErrorPage"
+import { departments } from "@/routes/departments"
 
 export function Department() {
    const { id } = useParams()
@@ -19,9 +19,10 @@ export function Department() {
    const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false)
    const { mutate: doDelete } = useDeleteDepartment(Number(id))
    const navigate = useNavigate()
-   function onDelete() {
-      setIsConfirmModalOpen(false)
-      navigate("/departments")
+   const onClose = () => setIsConfirmModalOpen(false)
+   const onDelete = () => {
+      navigate(`/${departments.path}`)
+      doDelete()
    }
    if (department === undefined) return <ErrorPage />
    return (
@@ -53,8 +54,8 @@ export function Department() {
                title="Видалити департамент"
                description="Ви впевнені, що хочете видалити департамент?"
                isOpen={isConfirmModalOpen}
-               onClose={onDelete}
-               onConfirm={doDelete}
+               onClose={onClose}
+               onConfirm={onDelete}
             />
          </div>
       </div>
