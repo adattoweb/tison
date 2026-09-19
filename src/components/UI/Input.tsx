@@ -24,11 +24,10 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
                <input
                   {...props}
                   ref={ref}
-                  type={type === "color" ? "string" : type}
+                  type={type}
                   className="flex-1 focus:outline-0 w-full appearance-none rounded-md"
                   placeholder={placeholder}
                />
-               {type === "color" && <input type="color" ref={ref} {...props} className="w-5 h-5" />}
             </div>
          </div>
       )

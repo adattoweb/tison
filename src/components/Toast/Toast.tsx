@@ -50,7 +50,7 @@ export function Toast({ toast, onRemove }: ToastProps) {
       <div
          ref={toastRef}
          className={clsx(
-            "pointer-events-auto min-w-60 max-w-80 rounded-md p-4 flex items-center justify-center gap-2",
+            "pointer-events-auto min-w-60 max-w-100 rounded-md p-4 flex items-center justify-center gap-2",
             toast.type === "success"
                ? "bg-(--bg-right-color)!"
                : toast.type === "error"

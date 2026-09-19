@@ -2,12 +2,13 @@ import { operationTypeSchema, type OperationTypeBaseInput } from "@/api/schemas/
 import Modal from "@/components/Modal/Modal"
 import { useToast } from "@/components/Toast/useToast"
 import Button from "@/components/UI/Button"
+import { ColorInput } from "@/components/UI/ColorInput"
 import { FieldError } from "@/components/UI/FieldError"
 import { Input } from "@/components/UI/Input"
 import { useCreateOperationType } from "@/hooks/api/operationTypes/useCreateOperationTypes"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { HandCoins, NotebookPenIcon, PaletteIcon } from "lucide-react"
-import { useForm, type SubmitHandler } from "react-hook-form"
+import { Controller, useForm, type SubmitHandler } from "react-hook-form"
 
 interface ModalProps {
    isOpen: boolean
@@ -22,6 +23,7 @@ export function AddOperationTypesModal({ isOpen, setIsOpen }: ModalProps) {
       register,
       handleSubmit,
       reset,
+      control,
       formState: { errors },
    } = useForm<OperationTypeBaseInput>({
       resolver: zodResolver(operationTypeSchema),
@@ -29,7 +31,7 @@ export function AddOperationTypesModal({ isOpen, setIsOpen }: ModalProps) {
          name: "",
          description: "",
          points: 0,
-         color: "",
+         color: "#000000",
       },
    })
 
@@ -41,7 +43,7 @@ export function AddOperationTypesModal({ isOpen, setIsOpen }: ModalProps) {
    const onSubmit: SubmitHandler<OperationTypeBaseInput> = data => {
       doCreateOperationType(data, {
          onSuccess: () => {
-            addToast("Успішно створено відділ!", { duration: 3000, type: "success" })
+            addToast("Успішно створено тип операції!", { duration: 3000, type: "success" })
             onClose()
          },
       })
@@ -57,7 +59,7 @@ export function AddOperationTypesModal({ isOpen, setIsOpen }: ModalProps) {
                         <Input
                            label="Назва"
                            Icon={NotebookPenIcon}
-                           placeholder="Відділ пайки"
+                           placeholder="Пайка"
                            hasError={!!errors.name}
                            {...register("name")}
                         />
@@ -77,21 +79,29 @@ export function AddOperationTypesModal({ isOpen, setIsOpen }: ModalProps) {
                         <Input
                            label="Кількість балів"
                            Icon={HandCoins}
-                           placeholder="0.00"
+                           placeholder="0"
                            type="number"
                            hasError={!!errors.points}
-                           {...register("points")}
+                           {...register("points", { valueAsNumber: true })}
                         />
                         <FieldError message={errors.points?.message} />
                      </div>
                      <div className="w-full">
-                        <Input
-                           label="Колір операції"
-                           Icon={PaletteIcon}
-                           placeholder="#fff"
-                           hasError={!!errors.color}
-                           type="color"
-                           {...register("color")}
+                        <Controller
+                           name="color"
+                           control={control}
+                           render={({ field }) => (
+                              <ColorInput
+                                 label="Колір операції"
+                                 Icon={PaletteIcon}
+                                 value={field.value}
+                                 onChange={field.onChange}
+                                 onBlur={field.onBlur}
+                                 name={field.name}
+                                 ref={field.ref}
+                                 hasError={!!errors.color}
+                              />
+                           )}
                         />
                         <FieldError message={errors.color?.message} />
                      </div>
