@@ -1,11 +1,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { deleteDepartment } from "@/api/endpoints/departments"
+import { deleteProductModel } from "@/api/endpoints/product_models"
 
-export function useDeleteDepartment(id: number) {
+export function useDeleteProductModel(id: number) {
    const queryClient = useQueryClient()
 
    return useMutation({
-      mutationFn: () => deleteDepartment(id),
+      mutationFn: () => deleteProductModel(id),
       onSuccess: product_model => {
          queryClient.invalidateQueries({ queryKey: ["models"] })
          queryClient.invalidateQueries({ queryKey: ["model", product_model.id] })

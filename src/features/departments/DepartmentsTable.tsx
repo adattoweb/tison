@@ -5,12 +5,11 @@ import { TablePagination } from "@/components/Table/TablePagination"
 
 import { useAllDepartments } from "@/hooks/api/departments/useAllDepartments"
 import { useDebouncedValue } from "@/hooks/api/useDebouncedValue"
+import { DEFAULT_PAGE_SIZE } from "@/constants/pagination"
 
 const columns = ["Назва", ""]
 
 const tableClassNames = "min-w-275 grid-cols-[1.3fr_48px]"
-
-const DEFAULT_PAGE_SIZE = 10
 
 export function DepartmentsTable() {
    const [search, setSearch] = useState("")

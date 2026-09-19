@@ -4,6 +4,7 @@ import { ChevronDownIcon, EditIcon, PlusIcon } from "lucide-react"
 import { useLayoutEffect, useRef, useState } from "react"
 import clsx from "clsx"
 import gsap from "gsap"
+import type { ProductModelListRead } from "@/api/types/product_model"
 
 interface ItemProps {
    isActive: boolean
@@ -135,7 +136,11 @@ const EASE_OPEN = "cubic-bezier(0.16, 1, 0.3, 1)"
 const EASE_CLOSE = "cubic-bezier(0.4, 0, 0.2, 1)"
 const GAP_PX = 16 // те саме значення, що й gap-4 / --components-gap: 16px
 
-export function Model() {
+interface ModelProps {
+   model: ProductModelListRead
+}
+
+export function Model({ model }: ModelProps) {
    const [isOpen, setIsOpen] = useState(false)
    const [shouldRender, setShouldRender] = useState(false)
 
@@ -234,8 +239,8 @@ export function Model() {
             <div className="flex gap-4 h-20">
                <img src={product} className="h-full w-auto rounded-lg object-contain" />
                <div className="flex flex-col gap-1">
-                  <h2 className={titleClassName}>Плата керування V5</h2>
-                  <p className="text-(--second-color)">Модуль керування</p>
+                  <h2 className={titleClassName}>{model.title}</h2>
+                  <p className="text-(--second-color)">{model.type}</p>
                </div>
             </div>
             <div ref={chevronRef}>
