@@ -5,17 +5,9 @@ import type {
    OperationTypeCreatePayload,
    OperationTypeUpdatePayload,
 } from "@/api/types/operationType"
+import type { ParamsWithActive } from "@/types/api"
 
-export interface GetOperationTypesParams {
-   page: number
-   pageSize: number
-   isActive?: boolean
-   search: string
-}
-
-export const getAllOperationTypes = async (
-   params: GetOperationTypesParams,
-): Promise<PaginatedResponse<OperationTypeRead>> => {
+export const getAllOperationTypes = async (params: ParamsWithActive): Promise<PaginatedResponse<OperationTypeRead>> => {
    const { data } = await api.get<PaginatedResponse<OperationTypeRead>>("/operation_types/", {
       params: {
          page: params.page,

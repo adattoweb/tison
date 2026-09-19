@@ -17,3 +17,5 @@ export interface InstructionListRead {
    operation_type_id: number
    operation_type: OperationTypeRead
 }
+
+export interface InstructionRead extends InstructionListRead {}

@@ -9,5 +9,5 @@ export interface ParamsWithShift extends PaginationParams {
 }
 
 export interface ParamsWithActive extends PaginationParams {
-   is_active: boolean
+   isActive: boolean
 }

@@ -9,6 +9,7 @@ import { titleClassName } from "@/utils/classNames"
 import clsx from "clsx"
 import { EditIcon, PlusIcon } from "lucide-react"
 import { useState } from "react"
+import { AddInstructionModal } from "./AddInstructionModal"
 
 interface ItemProps {
    isActive: boolean
@@ -40,9 +41,16 @@ function ListItem({ isActive, step, setActiveStep }: ItemProps) {
    )
 }
 
-function AddItem() {
+interface AddItemProps {
+   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+function AddItem({ setIsOpen }: AddItemProps) {
    return (
-      <li className="flex flex-1 gap-2 items-center hover:bg-(--bg-trans-color) py-2 px-2 rounded-lg duration-200">
+      <li
+         className="flex flex-1 gap-2 items-center hover:bg-(--bg-trans-color) py-2 px-2 rounded-lg duration-200 cursor-pointer"
+         onClick={() => setIsOpen(true)}
+      >
          <div className="size-8 text-center flex justify-center items-center rounded-full border border-(--stroke-color) text-lg font-medium text-(--second-color)">
             <PlusIcon strokeWidth={1.5} className="size-5" />
          </div>
@@ -131,8 +139,8 @@ interface ContnentProps {
 
 export function Content({ model }: ContnentProps) {
    const [activeStep, setActiveStep] = useState<InstructionListRead>(model.steps[0])
+   const [isInstructionModalOpen, setIsInstructionModalOpen] = useState(false)
 
-   const checkpoints = ["Температура профілю", "Час оплавлення", "Якість пайки"]
    return (
       <main className="flex flex-col lg:flex-row gap-4">
          <div className="flex flex-col rounded-lg border-(--stroke-color) border px-(--components-py) py-(--components-py)">
@@ -141,7 +149,7 @@ export function Content({ model }: ContnentProps) {
                {model.steps.map(step => (
                   <ListItem key={step.id} isActive={false} step={step} setActiveStep={setActiveStep} />
                ))}
-               <AddItem />
+               <AddItem setIsOpen={setIsInstructionModalOpen} />
             </ul>
          </div>
          <div className="flex flex-col gap-(--components-gap) ibm-plex-sans border border-(--stroke-color) rounded-lg px-(--components-py) py-(--components-py) flex-1">
@@ -163,6 +171,11 @@ export function Content({ model }: ContnentProps) {
             </div>
             <Checkpoints checkpoints={activeStep.checkpoints} />
          </div>
+         <AddInstructionModal
+            isOpen={isInstructionModalOpen}
+            setIsOpen={setIsInstructionModalOpen}
+            modelId={model.id}
+         />
       </main>
    )
 }
