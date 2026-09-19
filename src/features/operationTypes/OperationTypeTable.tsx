@@ -6,9 +6,9 @@ import { TablePagination } from "@/components/Table/TablePagination"
 import { useDebouncedValue } from "@/hooks/api/useDebouncedValue"
 import { useAllOperationTypes } from "@/hooks/api/operationTypes/useAllOperationTypes"
 
-const columns = ["Назва", ""]
+const columns = ["Назва", "Бали", ""]
 
-const tableClassNames = "min-w-275 grid-cols-[1.3fr_48px]"
+const tableClassNames = "min-w-275 grid-cols-[1fr_1fr_48px]"
 
 const DEFAULT_PAGE_SIZE = 10
 
@@ -19,7 +19,7 @@ export function OperationTypesTable() {
 
    const debouncedSearch = useDebouncedValue(search, 400)
 
-   const { data, isLoading, isFetching } = useAllOperationTypes({
+   const { data, isFetching } = useAllOperationTypes({
       page,
       pageSize,
       search: debouncedSearch,
@@ -58,6 +58,7 @@ export function OperationTypesTable() {
             {operationTypes.map(type => (
                <Table.Row key={type.id} to={`/types/${type.id}`}>
                   <Table.Text text={type.name} />
+                  <Table.Text text={type.points} />
                   <Table.MenuButton />
                </Table.Row>
             ))}

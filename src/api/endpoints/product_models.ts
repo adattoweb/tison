@@ -1,5 +1,5 @@
 import { api } from "@/api/api"
-import type { ProductModelListRead } from "../types/product_model"
+import type { ProductModelListRead, ProductModelRead } from "../types/product_model"
 import type { PaginatedResponse } from "../types/pagination"
 import type { ParamsWithActive } from "@/types/api"
 import type { ProductBaseInput } from "../schemas/product_model"
@@ -18,8 +18,8 @@ export const getAllProductModels = async (
    return data
 }
 
-export const getProductModelById = async (id: number): Promise<ProductModelListRead> => {
-   const { data } = await api.get<ProductModelListRead>(`/models/${id}`)
+export const getProductModelById = async (id: number): Promise<ProductModelRead> => {
+   const { data } = await api.get<ProductModelRead>(`/models/${id}`)
    return data
 }
 

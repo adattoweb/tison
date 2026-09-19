@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Model } from "./Model"
+import { Model } from "./Model/Model"
 import { DEFAULT_PAGE_SIZE } from "@/constants/pagination"
 import { useDebouncedValue } from "@/hooks/api/useDebouncedValue"
 import { useAllProductModels } from "@/hooks/api/product_models/useAllProductModels"
@@ -17,7 +17,7 @@ export function ModelList() {
 
    const debouncedSearch = useDebouncedValue(search, 400)
 
-   const { data, isFetching } = useAllProductModels({
+   const { data } = useAllProductModels({
       page,
       pageSize,
       search: debouncedSearch || undefined,
