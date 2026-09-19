@@ -1,4 +1,4 @@
-import { Models } from "@/features/types/Models"
+import { Models } from "@/features/models/Models"
 import { PackagePlus } from "lucide-react"
 
 export const models = {

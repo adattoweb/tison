@@ -4,6 +4,10 @@ export interface PaginationParams {
    search?: string
 }
 
-export interface ProfileParams extends PaginationParams {
+export interface ParamsWithShift extends PaginationParams {
    shiftId?: number
+}
+
+export interface ParamsWithActive extends PaginationParams {
+   is_active: boolean
 }

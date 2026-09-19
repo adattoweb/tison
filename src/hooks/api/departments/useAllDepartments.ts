@@ -1,14 +1,8 @@
 import { useQuery, keepPreviousData } from "@tanstack/react-query"
 import { getAllDepartments } from "@/api/endpoints/departments"
+import type { ParamsWithShift } from "@/types/api"
 
-interface UseAllDepartmentsParams {
-   page: number
-   pageSize: number
-   search?: string
-   shiftId?: number
-}
-
-export const useAllDepartments = (params: UseAllDepartmentsParams) => {
+export const useAllDepartments = (params: ParamsWithShift) => {
    return useQuery({
       queryKey: ["departments", params],
       queryFn: () => getAllDepartments(params),

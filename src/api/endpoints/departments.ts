@@ -1,10 +1,10 @@
 import { api } from "@/api/api"
 import type { DepartmentRead } from "../types/department"
 import type { PaginatedResponse } from "../types/pagination"
-import type { PaginationParams } from "@/types/api"
+import type { ParamsWithShift } from "@/types/api"
 import type { DepartmentBaseInput } from "../schemas/department"
 
-export const getAllDepartments = async (params: PaginationParams): Promise<PaginatedResponse<DepartmentRead>> => {
+export const getAllDepartments = async (params: ParamsWithShift): Promise<PaginatedResponse<DepartmentRead>> => {
    const { data } = await api.get<PaginatedResponse<DepartmentRead>>("/departments", {
       params: {
          page: params.page,
