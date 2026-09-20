@@ -125,7 +125,7 @@ export function Model({ model }: ModelProps) {
                   <div className="flex items-center gap-2 w-full">
                      <h2 className={titleClassName}>{model.title}</h2>
                      <RowMenu
-                        className="ml-auto [&_svg]:!rotate-0"
+                        className="ml-auto [&_svg]:rotate-0!"
                         actions={[
                            { label: "Редагувати", Icon: PencilIcon, onClick: () => setIsEditing(true) },
                            { label: "Видалити", Icon: Trash2Icon, danger: true, onClick: () => setIsDeleting(true) },

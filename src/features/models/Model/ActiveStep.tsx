@@ -21,7 +21,7 @@ import { useState } from "react"
 import { Controller, useFieldArray, useForm, type SubmitHandler } from "react-hook-form"
 
 interface InstructionProps {
-   steps: InstructionSteps
+   steps: InstructionSteps | undefined
 }
 
 function Instructions({ steps }: InstructionProps) {
@@ -46,7 +46,7 @@ function Instructions({ steps }: InstructionProps) {
 }
 
 interface ParametersProps {
-   details: InstructionDetails
+   details: InstructionDetails | undefined
 }
 
 function Parameters({ details }: ParametersProps) {
@@ -71,7 +71,7 @@ function Parameters({ details }: ParametersProps) {
 }
 
 interface CheckpointsProps {
-   checkpoints: InstructionCheckpoints
+   checkpoints: InstructionCheckpoints | undefined
 }
 
 function Checkpoints({ checkpoints }: CheckpointsProps) {
@@ -104,7 +104,7 @@ const fieldClassName =
    "w-full rounded-md border border-(--stroke-color) focus:border-(--stroke-light-color) bg-(--bg-trans-color) py-2 px-2.5 focus:outline-0"
 
 interface ActiveStepProps {
-   step: InstructionListRead
+   step: InstructionListRead | undefined
 }
 
 export function ActiveStep({ step }: ActiveStepProps) {
@@ -133,11 +133,13 @@ export function ActiveStep({ step }: ActiveStepProps) {
                   <h2 className={titleClassName}>Немає інструкцій</h2>
                )}
             </div>
-            <EditIcon
-               strokeWidth={1.5}
-               className="cursor-pointer shrink-0"
-               onClick={() => setEditingStepId(step?.id)}
-            />
+            {step !== undefined && (
+               <EditIcon
+                  strokeWidth={1.5}
+                  className="cursor-pointer shrink-0"
+                  onClick={() => setEditingStepId(step?.id)}
+               />
+            )}
          </div>
 
          <div className="flex flex-col gap-(--components-gap)">
