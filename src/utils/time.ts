@@ -60,3 +60,14 @@ export const endOfDay = (date: Date) => {
 
 // const startOfDay = (date: string) => (date ? new Date(`${date}T00:00:00`).toISOString() : undefined)
 // const endOfDay = (date: string) => (date ? new Date(`${date}T23:59:59.999`).toISOString() : undefined)
+
+const pad = (n: number) => String(n).padStart(2, "0")
+
+// ISO з бекенду -> значення для <input type="datetime-local"> (локальний час)
+export const toLocalInput = (iso: string) => {
+   const d = new Date(iso)
+   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
+}
+
+// значення з <input type="datetime-local"> -> ISO (UTC) для бекенду
+export const fromLocalInput = (value: string) => new Date(value).toISOString()

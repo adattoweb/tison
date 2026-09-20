@@ -15,6 +15,10 @@ import { useCompleteOperation } from "@/hooks/api/operations/useStartOperation"
 import { useAllStations } from "@/hooks/api/station/useAllStations"
 import type { OperationListRead } from "@/api/types/operation"
 import type { StationListRead } from "@/api/types/station"
+import { DEFAULT_PAGE_SIZE } from "@/constants/pagination"
+import { useToast } from "@/components/Toast/useToast"
+import { UpdateOperationModal } from "./UpdateOperationModal"
+import { ConfirmModal } from "@/components/Modal/ConfirmModal"
 
 const ALL = { status: "Всі статуси", station: "Всі станції", duration: "Будь-яка тривалість" } as const
 const STATUS_OPTIONS = [ALL.status, ...Object.keys(STATUS)] as (typeof ALL.status | StatusType)[]
@@ -36,7 +40,6 @@ const DURATION_OPTIONS: DurationOption[] = [
 
 const columns = ["Код", "Тип операції", "Продукт", "Замовлення", "Станція", "Час виконання", "Статус", ""]
 const tableClassNames = "min-w-320 grid-cols-[1.2fr_1.6fr_1.2fr_1.2fr_1.2fr_1.3fr_1.2fr_48px]"
-const DEFAULT_PAGE_SIZE = 10
 
 /** ключ активного статусу в STATUS — заміни, якщо в константах він називається інакше */
 const ACTIVE_STATUS = "ACTIVE" as StatusType
@@ -74,11 +77,7 @@ function OperationRow({ operation, onEdit, onDelete, onComplete }: OperationRowP
    )
 }
 
-interface OperationsTableProps {
-   onEdit: (operation: OperationListRead) => void
-}
-
-export function OperationsTable({ onEdit }: OperationsTableProps) {
+export function OperationsTable() {
    const [search, setSearch] = useState("")
    const [status, setStatus] = useState<StatusType | undefined>(undefined)
    const [station, setStation] = useState<StationListRead | null>(null)
@@ -86,6 +85,9 @@ export function OperationsTable({ onEdit }: OperationsTableProps) {
    const [duration, setDuration] = useState<DurationOption>(DURATION_OPTIONS[0])
    const [page, setPage] = useState(1)
    const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE)
+   const [editingOperation, setEditingOperation] = useState<OperationListRead | null>(null)
+   const [deletingOperation, setDeletingOperation] = useState<OperationListRead | null>(null)
+   const { addToast } = useToast()
 
    const parsedOrderId = orderId.trim() === "" ? undefined : Number(orderId)
 
@@ -121,115 +123,146 @@ export function OperationsTable({ onEdit }: OperationsTableProps) {
       setPage(1)
    }
 
-   function handleDelete(operation: OperationListRead) {
-      if (window.confirm(`Видалити операцію ${operation.code}?`)) deleteOperation(operation.id)
-   }
-
    return (
-      <Table.Wrapper>
-         <Table.Header>
-            <div className="relative w-full min-w-0 sm:w-auto sm:min-w-55 sm:max-w-100">
-               <Search
-                  size={18}
-                  className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-(--second-color)"
-               />
+      <>
+         <Table.Wrapper>
+            <Table.Header>
+               <div className="relative w-full min-w-0 sm:w-auto sm:min-w-55 sm:max-w-100">
+                  <Search
+                     size={18}
+                     className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-(--second-color)"
+                  />
+                  <input
+                     value={search}
+                     onChange={e => withPageReset(setSearch)(e.target.value)}
+                     placeholder="Пошук за кодом..."
+                     className="w-full rounded-md border border-(--stroke-color) bg-(--bg-trans-color) py-2.5 pl-11 pr-4 text-sm text-white placeholder:text-(--second-color) outline-none focus:border-(--stroke-active-color)"
+                  />
+               </div>
+
+               <Dropdown>
+                  <Dropdown.Button>
+                     <span className="whitespace-nowrap text-base font-normal text-white">
+                        {status ? STATUS[status].label : ALL.status}
+                     </span>
+                     <Dropdown.Chevron />
+                  </Dropdown.Button>
+                  <Dropdown.Content>
+                     {STATUS_OPTIONS.map(option => (
+                        <Dropdown.Item
+                           key={option}
+                           onClick={() =>
+                              withPageReset(setStatus)(option === ALL.status ? undefined : (option as StatusType))
+                           }
+                        >
+                           {option === ALL.status ? ALL.status : STATUS[option as StatusType].label}
+                        </Dropdown.Item>
+                     ))}
+                  </Dropdown.Content>
+               </Dropdown>
+
+               <Dropdown>
+                  <Dropdown.Button>
+                     <span className="whitespace-nowrap text-base font-normal text-white">
+                        {station?.code ?? ALL.station}
+                     </span>
+                     <Dropdown.Chevron />
+                  </Dropdown.Button>
+                  <Dropdown.Content>
+                     <Dropdown.Item onClick={() => withPageReset(setStation)(null)}>{ALL.station}</Dropdown.Item>
+                     {stations?.items.map(el => (
+                        <Dropdown.Item key={el.id} onClick={() => withPageReset(setStation)(el)}>
+                           {el.code}
+                        </Dropdown.Item>
+                     ))}
+                  </Dropdown.Content>
+               </Dropdown>
+
+               <Dropdown>
+                  <Dropdown.Button>
+                     <span className="whitespace-nowrap text-base font-normal text-white">{duration.label}</span>
+                     <Dropdown.Chevron />
+                  </Dropdown.Button>
+                  <Dropdown.Content>
+                     {DURATION_OPTIONS.map(option => (
+                        <Dropdown.Item key={option.label} onClick={() => withPageReset(setDuration)(option)}>
+                           {option.label}
+                        </Dropdown.Item>
+                     ))}
+                  </Dropdown.Content>
+               </Dropdown>
+
                <input
-                  value={search}
-                  onChange={e => withPageReset(setSearch)(e.target.value)}
-                  placeholder="Пошук за кодом..."
-                  className="w-full rounded-md border border-(--stroke-color) bg-(--bg-trans-color) py-2.5 pl-11 pr-4 text-sm text-white placeholder:text-(--second-color) outline-none focus:border-(--stroke-active-color)"
+                  value={orderId}
+                  inputMode="numeric"
+                  onChange={e => withPageReset(setOrderId)(e.target.value.replace(/\D/g, ""))}
+                  placeholder="ID замовлення"
+                  className="w-full min-w-0 rounded-md border border-(--stroke-color) bg-(--bg-trans-color) px-4 py-2.5 text-sm text-white outline-none placeholder:text-(--second-color) focus:border-(--stroke-active-color) sm:w-40"
                />
-            </div>
 
-            <Dropdown>
-               <Dropdown.Button>
-                  <span className="whitespace-nowrap text-base font-normal text-white">
-                     {status ? STATUS[status].label : ALL.status}
-                  </span>
-                  <Dropdown.Chevron />
-               </Dropdown.Button>
-               <Dropdown.Content>
-                  {STATUS_OPTIONS.map(option => (
-                     <Dropdown.Item
-                        key={option}
-                        onClick={() =>
-                           withPageReset(setStatus)(option === ALL.status ? undefined : (option as StatusType))
-                        }
-                     >
-                        {option === ALL.status ? ALL.status : STATUS[option as StatusType].label}
-                     </Dropdown.Item>
-                  ))}
-               </Dropdown.Content>
-            </Dropdown>
+               <Button onClick={resetFilters} className="ml-auto sm:ml-0">
+                  <Button.Icon Icon={RotateCcw} strokeWidth={1.5} />
+                  <Button.Paragraph>Скинути фільтри</Button.Paragraph>
+               </Button>
+            </Table.Header>
 
-            <Dropdown>
-               <Dropdown.Button>
-                  <span className="whitespace-nowrap text-base font-normal text-white">
-                     {station?.code ?? ALL.station}
-                  </span>
-                  <Dropdown.Chevron />
-               </Dropdown.Button>
-               <Dropdown.Content>
-                  <Dropdown.Item onClick={() => withPageReset(setStation)(null)}>{ALL.station}</Dropdown.Item>
-                  {stations?.items.map(el => (
-                     <Dropdown.Item key={el.id} onClick={() => withPageReset(setStation)(el)}>
-                        {el.code}
-                     </Dropdown.Item>
-                  ))}
-               </Dropdown.Content>
-            </Dropdown>
-
-            <Dropdown>
-               <Dropdown.Button>
-                  <span className="whitespace-nowrap text-base font-normal text-white">{duration.label}</span>
-                  <Dropdown.Chevron />
-               </Dropdown.Button>
-               <Dropdown.Content>
-                  {DURATION_OPTIONS.map(option => (
-                     <Dropdown.Item key={option.label} onClick={() => withPageReset(setDuration)(option)}>
-                        {option.label}
-                     </Dropdown.Item>
-                  ))}
-               </Dropdown.Content>
-            </Dropdown>
-
-            <input
-               value={orderId}
-               inputMode="numeric"
-               onChange={e => withPageReset(setOrderId)(e.target.value.replace(/\D/g, ""))}
-               placeholder="ID замовлення"
-               className="w-full min-w-0 rounded-md border border-(--stroke-color) bg-(--bg-trans-color) px-4 py-2.5 text-sm text-white outline-none placeholder:text-(--second-color) focus:border-(--stroke-active-color) sm:w-40"
-            />
-
-            <Button onClick={resetFilters} className="ml-auto sm:ml-0">
-               <Button.Icon Icon={RotateCcw} strokeWidth={1.5} />
-               <Button.Paragraph>Скинути фільтри</Button.Paragraph>
-            </Button>
-         </Table.Header>
-
-         <Table columns={columns} tableClassNames={tableClassNames}>
-            {operations.map(operation => (
-               <OperationRow
-                  key={operation.id}
-                  operation={operation}
-                  onEdit={onEdit}
-                  onDelete={handleDelete}
-                  onComplete={op => completeOperation(op.id)}
+            <Table columns={columns} tableClassNames={tableClassNames}>
+               {operations.map(operation => (
+                  <OperationRow
+                     key={operation.id}
+                     operation={operation}
+                     onEdit={setEditingOperation}
+                     onDelete={setDeletingOperation}
+                     onComplete={op => completeOperation(op.id)}
+                  />
+               ))}
+               <TablePagination
+                  page={page}
+                  pageSize={pageSize}
+                  total={data?.total ?? 0}
+                  onPageChange={setPage}
+                  onPageSizeChange={size => {
+                     setPageSize(size)
+                     setPage(1)
+                  }}
+                  entityLabel="операцій"
+                  className="min-w-7xl"
                />
-            ))}
-            <TablePagination
-               page={page}
-               pageSize={pageSize}
-               total={data?.total ?? 0}
-               onPageChange={setPage}
-               onPageSizeChange={size => {
-                  setPageSize(size)
-                  setPage(1)
+            </Table>
+         </Table.Wrapper>
+         {editingOperation && (
+            <UpdateOperationModal
+               key={editingOperation.id}
+               isOpen
+               operation={editingOperation}
+               onClose={() => setEditingOperation(null)}
+               onDelete={() => {
+                  setDeletingOperation(editingOperation)
+                  setEditingOperation(null)
                }}
-               entityLabel="операцій"
-               className="min-w-320"
             />
-         </Table>
-      </Table.Wrapper>
+         )}
+
+         <ConfirmModal
+            isOpen={deletingOperation !== null}
+            onClose={() => setDeletingOperation(null)}
+            onConfirm={() => {
+               if (!deletingOperation) return
+               deleteOperation(deletingOperation.id, {
+                  onSuccess: () => {
+                     addToast("Успішно видалено операцію!", { duration: 3000, type: "success" })
+                     // видалили останній запис на сторінці, повертаємось на попередню
+                     if (operations.length === 1 && page > 1) setPage(page - 1)
+                  },
+               })
+            }}
+            title="Видалити операцію?"
+            description={
+               deletingOperation ? `Операцію ${deletingOperation.code} буде видалено безповоротно.` : undefined
+            }
+            confirmLabel="Видалити"
+            cancelLabel="Скасувати"
+         />
+      </>
    )
 }
