@@ -57,3 +57,6 @@ export const endOfDay = (date: Date) => {
    d.setHours(23, 59, 59, 999)
    return d.toISOString()
 }
+
+// const startOfDay = (date: string) => (date ? new Date(`${date}T00:00:00`).toISOString() : undefined)
+// const endOfDay = (date: string) => (date ? new Date(`${date}T23:59:59.999`).toISOString() : undefined)

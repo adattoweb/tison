@@ -45,6 +45,57 @@
    --rdp-accent-color: var(--accent-color) !important;
    --rdp-background-color: var(--bg-trans-hover-color) !important;
 }
+.rdp-root.rdp-custom {
+   /* Акцент. Замініть на вашу змінну, якщо вона є, напр. var(--accent-color) */
+   --rdp-accent-color: #e8a83a;
+   /* Смуга діапазону: напівпрозорий акцент замість світло-лавандового */
+   --rdp-accent-background-color: color-mix(in srgb, var(--rdp-accent-color) 18%, transparent);
+   --rdp-range_middle-background-color: var(--rdp-accent-background-color);
+   --rdp-range_middle-color: #fff;
+
+   /* Текст на помаранчевих кружечках: темний контрастніший за білий */
+   --rdp-range_start-color: #121212;
+   --rdp-range_end-color: #121212;
+
+   /* Компактніші клітинки */
+   --rdp-day-width: 40px;
+   --rdp-day-height: 40px;
+   --rdp-day_button-width: 38px;
+   --rdp-day_button-height: 38px;
+
+   --rdp-weekday-opacity: 0.6;
+   --rdp-disabled-opacity: 0.3;
+}
+
+/* За замовчуванням вибрані дні bold і збільшені */
+.rdp-custom .rdp-selected {
+   font-size: inherit;
+   font-weight: 600;
+}
+
+/* Заголовок місяця з великої літери: date-fns віддає "вересень 2026" */
+.rdp-custom .rdp-caption_label {
+   font-size: 1.05rem;
+   font-weight: 600;
+   text-transform: capitalize;
+}
+
+/* Hover лише для невибраних днів */
+.rdp-custom .rdp-day:not(.rdp-selected) .rdp-day_button:hover:not(:disabled) {
+   background-color: rgb(255 255 255 / 0.08);
+}
+
+/* Одиночний вибір (single) теж заливаємо акцентом, а не лише обводкою */
+.rdp-custom .rdp-selected:not(.rdp-range_middle) .rdp-day_button {
+   background-color: var(--rdp-accent-color);
+   color: #121212;
+}
+
+.rdp-my-root {
+   display: flex;
+   justify-content: center;
+   align-items: center;
+}
 
 body {
    background-color: var(--bg-color);
