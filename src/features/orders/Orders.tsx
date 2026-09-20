@@ -2,12 +2,12 @@ import PageDescription from "@/components/UI/PageDescription"
 import PageHeader from "@/components/UI/PageHeader"
 import Button from "@/components/UI/Button"
 import { PlusIcon } from "lucide-react"
-import { SchedulingHeader } from "./SchedulingHeader"
-import { SchedulingTable } from "./SchedulingTable"
+import { OrderHeader } from "./OrderHeader"
+import { OrderTable } from "./OrderTable"
 import { useState } from "react"
-import { AddSchedulingModal } from "./AddSchedulingModal"
+import { AddOrderModal } from "./AddOrderModal"
 
-export function Scheduling() {
+export function Orders() {
    const [isOpen, setIsOpen] = useState(false)
    const openModal = () => setIsOpen(true)
    return (
@@ -24,10 +24,10 @@ export function Scheduling() {
          </div>
 
          <div className="flex flex-col gap-(--components-gap)">
-            <SchedulingHeader />
-            <SchedulingTable />
+            <OrderHeader />
+            <OrderTable />
          </div>
-         <AddSchedulingModal isOpen={isOpen} setIsOpen={setIsOpen} />
+         <AddOrderModal isOpen={isOpen} setIsOpen={setIsOpen} />
       </>
    )
 }

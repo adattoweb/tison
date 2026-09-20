@@ -8,7 +8,7 @@ export function useDeleteDepartment(id: number) {
       mutationFn: () => deleteDepartment(id),
       onSuccess: department => {
          queryClient.invalidateQueries({ queryKey: ["departments"] })
-         queryClient.invalidateQueries({ queryKey: ["department", department.id] })
+         queryClient.removeQueries({ queryKey: ["department", department.id] })
       },
    })
 }

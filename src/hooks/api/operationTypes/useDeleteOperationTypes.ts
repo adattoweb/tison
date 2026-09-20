@@ -7,7 +7,7 @@ export function useDeleteOperationType(id: number) {
       mutationFn: () => deleteOperationType(id),
       onSuccess: () => {
          queryClient.invalidateQueries({ queryKey: ["operationTypes"] })
-         queryClient.invalidateQueries({ queryKey: ["operationType", id] })
+         queryClient.removeQueries({ queryKey: ["operationType", id] })
       },
    })
 }

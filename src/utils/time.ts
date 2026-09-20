@@ -44,3 +44,16 @@ export function fromDateTimeLocal(value: string | null | undefined): string | nu
    if (Number.isNaN(date.getTime())) return null
    return date.toISOString()
 }
+
+// Бекенд вимагає дату з часовим поясом, тому локальний день перетворюємо в ISO (UTC)
+export const startOfDay = (date: Date) => {
+   const d = new Date(date)
+   d.setHours(0, 0, 0, 0)
+   return d.toISOString()
+}
+
+export const endOfDay = (date: Date) => {
+   const d = new Date(date)
+   d.setHours(23, 59, 59, 999)
+   return d.toISOString()
+}

@@ -8,7 +8,7 @@ export function useDeleteProductModel(id: number) {
       mutationFn: () => deleteProductModel(id),
       onSuccess: product_model => {
          queryClient.invalidateQueries({ queryKey: ["models"] })
-         queryClient.invalidateQueries({ queryKey: ["model", product_model.id] })
+         queryClient.removeQueries({ queryKey: ["model", product_model.id] })
       },
    })
 }

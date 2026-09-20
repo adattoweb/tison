@@ -8,7 +8,7 @@ export function useDeleteInstruction(id: number) {
       mutationFn: () => deleteInstruction(id),
       onSuccess: instructions => {
          queryClient.invalidateQueries({ queryKey: ["instructions"] })
-         queryClient.invalidateQueries({ queryKey: ["instruction", instructions.id] })
+         queryClient.removeQueries({ queryKey: ["instruction", instructions.id] })
       },
    })
 }

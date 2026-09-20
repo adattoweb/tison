@@ -4,7 +4,7 @@ import { dashboard } from "./dashboard"
 import { defects } from "./defects"
 import { operations } from "./operations"
 import { products } from "./products"
-import { scheduling } from "./scheduling"
+import { orders } from "./scheduling"
 import { settings } from "./settings"
 import { stations } from "./stations"
 import { employees } from "./employees"
@@ -26,7 +26,7 @@ export const routes = [
    stations,
    departments,
    analytics,
-   scheduling,
+   orders,
    control,
    storage,
    analysis,

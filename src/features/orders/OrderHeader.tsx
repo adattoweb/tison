@@ -2,7 +2,7 @@ import InfoCard from "@/components/UI/InfoCard"
 import type { WithClassName } from "@/types/common"
 import { PackageSearchIcon, TargetIcon, CheckCircle2Icon, MonitorCogIcon, ClockIcon } from "lucide-react"
 
-export function SchedulingHeader({ className = "" }: WithClassName) {
+export function OrderHeader({ className = "" }: WithClassName) {
    return (
       <InfoCard.Wrapper className={className} style={{ gridArea: "header" }}>
          <InfoCard className="col-span-3 lg:col-span-2 4xl:col-span-1!">

@@ -1,9 +1,9 @@
-import { Scheduling } from "@/features/scheduling/Scheduling"
+import { Orders } from "@/features/orders/Orders"
 import { CalendarDaysIcon } from "@heroicons/react/24/outline"
 
-export const scheduling = {
-   path: "scheduling",
-   Component: Scheduling,
+export const orders = {
+   path: "orders",
+   Component: Orders,
    handle: {
       label: "Планування",
       Icon: CalendarDaysIcon,

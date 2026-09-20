@@ -13,7 +13,7 @@ interface ModalProps {
    setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-export function AddSchedulingModal({ isOpen, setIsOpen }: ModalProps) {
+export function AddOrderModal({ isOpen, setIsOpen }: ModalProps) {
    const types = ["Не обрано", "Плата керування V4", "Плата керування V5", "Плата керування V6"]
    const [type, setType] = useState(types[0])
    const onClose = () => setIsOpen(false)
