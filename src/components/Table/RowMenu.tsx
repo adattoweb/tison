@@ -1,5 +1,7 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import { Ellipsis, type LucideIcon } from "lucide-react"
+import clsx from "clsx"
+import Dropdown from "@/components/UI/Dropdown"
 
 export interface RowMenuAction {
    label: string
@@ -16,77 +18,67 @@ interface RowMenuProps {
 }
 
 /**
- * Меню дій у рядку таблиці. Кнопка з іконкою Ellipsis відкриває випадний список.
- * stopPropagation + preventDefault — щоб клік не тягнув за собою навігацію Table.Row.
+ * Меню дій у рядку таблиці на базі Dropdown.
+ * Список рендериться в порталі, тому його не обрізає overflow таблиці.
+ * preventDefault + stopPropagation потрібні, щоб клік не запускав навігацію Table.Row:
+ * React-події з порталу спливають по React-дереву, тобто аж до посилання рядка.
  */
-export function RowMenu({ actions, className = "" }: RowMenuProps) {
-   const [isOpen, setIsOpen] = useState(false)
-   const ref = useRef<HTMLDivElement>(null)
+export function RowMenu({ actions, className }: RowMenuProps) {
+   const [open, setOpen] = useState(false)
 
+   // Dropdown сам не закривається по Escape, додаємо це через керований режим
    useEffect(() => {
-      if (!isOpen) return
-
-      const onPointerDown = (event: MouseEvent) => {
-         if (ref.current && !ref.current.contains(event.target as Node)) setIsOpen(false)
-      }
+      if (!open) return
       const onKeyDown = (event: KeyboardEvent) => {
-         if (event.key === "Escape") setIsOpen(false)
+         if (event.key === "Escape") setOpen(false)
       }
-
-      document.addEventListener("mousedown", onPointerDown)
       document.addEventListener("keydown", onKeyDown)
-      return () => {
-         document.removeEventListener("mousedown", onPointerDown)
-         document.removeEventListener("keydown", onKeyDown)
-      }
-   }, [isOpen])
+      return () => document.removeEventListener("keydown", onKeyDown)
+   }, [open])
 
    return (
-      <div ref={ref} className={`relative flex items-center justify-center ${className}`}>
-         <button
-            type="button"
+      <Dropdown open={open} onOpenChange={setOpen} className={clsx("flex items-center justify-center", className)}>
+         <Dropdown.Button
             aria-haspopup="menu"
-            aria-expanded={isOpen}
+            aria-expanded={open}
             aria-label="Дії"
             onClick={event => {
                event.preventDefault()
                event.stopPropagation()
-               setIsOpen(prev => !prev)
             }}
-            className="rounded-md p-1.5 text-(--second-color) transition-colors hover:bg-(--bg-trans-color) hover:text-white focus-visible:outline focus-visible:outline-(--stroke-active-color)"
+            className="border-0! bg-transparent! p-1.5! text-(--second-color) transition-colors hover:bg-(--bg-trans-color)! hover:text-white focus-visible:outline focus-visible:outline-(--stroke-active-color)"
          >
-            <Ellipsis size={18} />
-         </button>
+            <Ellipsis size={18} className="rotate-90" />
+         </Dropdown.Button>
 
-         {isOpen && (
-            <div
-               role="menu"
-               className="absolute right-0 top-full z-30 mt-1 min-w-48 overflow-hidden rounded-md border border-(--stroke-color) bg-(--bg-color) py-1 shadow-lg"
-            >
-               {actions.map(action => (
-                  <button
-                     key={action.label}
-                     type="button"
-                     role="menuitem"
-                     disabled={action.disabled}
-                     onClick={event => {
-                        event.preventDefault()
-                        event.stopPropagation()
-                        setIsOpen(false)
-                        action.onClick()
-                     }}
-                     className={`flex w-full items-center gap-2 px-3 py-2 text-left text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
-                        action.danger
-                           ? "text-[#E06767] hover:bg-[#E06767]/10"
-                           : "text-white hover:bg-(--bg-trans-color)"
-                     }`}
-                  >
-                     {action.Icon && <action.Icon size={16} strokeWidth={1.5} />}
-                     {action.label}
-                  </button>
-               ))}
-            </div>
-         )}
-      </div>
+         <Dropdown.Content
+            role="menu"
+            onClick={event => {
+               event.preventDefault()
+               event.stopPropagation()
+            }}
+            className="w-max! min-w-48 overflow-y-auto! py-1"
+         >
+            {actions.map(action => (
+               <Dropdown.Item
+                  key={action.label}
+                  role="menuitem"
+                  disabled={action.disabled}
+                  onClick={event => {
+                     event.preventDefault()
+                     event.stopPropagation()
+                     action.onClick()
+                  }}
+                  className={clsx(
+                     "flex items-center gap-2 text-sm md:text-sm disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent",
+                     action.danger && "text-[#E06767]! hover:bg-[#E06767]/10!",
+                  )}
+               >
+                  {action.Icon && <action.Icon size={16} strokeWidth={1.5} />}
+                  {action.label}
+               </Dropdown.Item>
+            ))}
+         </Dropdown.Content>
+      </Dropdown>
    )
 }

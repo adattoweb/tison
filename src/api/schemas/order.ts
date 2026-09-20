@@ -25,6 +25,15 @@ export const OrderUpdateSchema = OrderBaseSchema.extend({
    status: z.custom<StatusType>(v => typeof v === "string" && v.length > 0, "Оберіть статус"),
 })
 
+export const OrderUpdateFormSchema = OrderBaseSchema.refine(d => d.fact <= d.plan, {
+   message: "Факт не може перевищувати план",
+   path: ["fact"],
+}).refine(d => new Date(d.planned_end_at) >= new Date(d.planned_start_at), {
+   message: "Кінець не може бути раніше за початок",
+   path: ["planned_end_at"],
+})
+
 export type OrderBaseInput = z.infer<typeof OrderBaseSchema>
 export type OrderCreateInput = z.infer<typeof OrderCreateSchema>
 export type OrderUpdateInput = z.infer<typeof OrderUpdateSchema>
+export type OrderUpdateFormInput = z.infer<typeof OrderUpdateFormSchema>

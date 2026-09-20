@@ -3,6 +3,7 @@ import type { ProductModelListRead } from "./product_model"
 
 export interface OrderListRead {
    id: number
+   product_model_id: number
 
    start_at: string | null
    end_at: string | null

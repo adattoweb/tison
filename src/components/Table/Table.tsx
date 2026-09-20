@@ -192,21 +192,25 @@ function Shift({ shift }: ShiftProps) {
 }
 
 interface RowProps extends PropsWithChildren {
-   to: string
+   to?: string
 }
 
 function Row({ children, to }: RowProps) {
    const { tableClassNames } = useCheckContext(TableContext)
+   const classNames = clsx(
+      "transition-colors transition-300 hover:bg-(--bg-trans-hover-color) flex-1",
+      tableClassNames,
+      defaultTableClassNames,
+   )
+   if (to === undefined) {
+      return (
+         <div className={classNames} draggable={false}>
+            {children}
+         </div>
+      )
+   }
    return (
-      <Link
-         to={to}
-         className={clsx(
-            "transition-colors transition-300 hover:bg-(--bg-trans-hover-color) flex-1",
-            tableClassNames,
-            defaultTableClassNames,
-         )}
-         draggable={false}
-      >
+      <Link to={to} className={classNames} draggable={false}>
          {children}
       </Link>
    )

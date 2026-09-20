@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { RotateCcw } from "lucide-react"
+import { PencilIcon, RotateCcw, Trash2Icon } from "lucide-react"
 import clsx from "clsx"
 import Dropdown from "@/components/UI/Dropdown"
 import Button from "@/components/UI/Button"
@@ -12,6 +12,11 @@ import type { StatusType } from "@/types/status"
 import type { DateRange } from "@daypicker/react"
 import { DateRangeFilter } from "@/components/UI/DateRangeFilter"
 import { endOfDay, startOfDay } from "@/utils/time"
+import { useToast } from "@/components/Toast/useToast"
+import { useDeleteOrder } from "@/hooks/api/orders/useDeleteOrder"
+import { ConfirmModal } from "@/components/Modal/ConfirmModal"
+import { UpdateOrderModal } from "./UpdateOrderModal"
+import { RowMenu } from "@/components/Table/RowMenu"
 
 interface StatusOption {
    value: StatusType | undefined
@@ -67,6 +72,10 @@ export function OrderTable() {
    const [filters, setFilters] = useState<Filters>(INITIAL_FILTERS)
    const [page, setPage] = useState(1)
    const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE)
+   const [editingOrder, setEditingOrder] = useState<OrderListRead | null>(null)
+   const [deletingOrder, setDeletingOrder] = useState<OrderListRead | null>(null)
+   const { mutate: doDeleteOrder } = useDeleteOrder()
+   const { addToast } = useToast()
 
    const { data, isLoading, isError, isPlaceholderData } = useAllOrders({
       page,
@@ -104,103 +113,151 @@ export function OrderTable() {
          : (modelTitleById.get(filters.productModelId) ?? `Виріб #${filters.productModelId}`)
 
    return (
-      <Table.Wrapper>
-         <Table.Header>
-            <Dropdown>
-               <Dropdown.Button>
-                  <span className="max-w-48 truncate text-base font-normal text-white whitespace-nowrap">
-                     {modelLabel}
-                  </span>
-                  <Dropdown.Chevron />
-               </Dropdown.Button>
-               <Dropdown.Content>
-                  <Dropdown.Item onClick={() => setFilter("productModelId", undefined)}>
-                     {ALL_MODELS_LABEL}
-                  </Dropdown.Item>
-                  {productModels.map(model => (
-                     <Dropdown.Item key={model.id} onClick={() => setFilter("productModelId", model.id)}>
-                        {model.title}
+      <>
+         <Table.Wrapper>
+            <Table.Header>
+               <Dropdown>
+                  <Dropdown.Button>
+                     <span className="max-w-48 truncate text-base font-normal text-white whitespace-nowrap">
+                        {modelLabel}
+                     </span>
+                     <Dropdown.Chevron />
+                  </Dropdown.Button>
+                  <Dropdown.Content>
+                     <Dropdown.Item onClick={() => setFilter("productModelId", undefined)}>
+                        {ALL_MODELS_LABEL}
                      </Dropdown.Item>
-                  ))}
-               </Dropdown.Content>
-            </Dropdown>
+                     {productModels.map(model => (
+                        <Dropdown.Item key={model.id} onClick={() => setFilter("productModelId", model.id)}>
+                           {model.title}
+                        </Dropdown.Item>
+                     ))}
+                  </Dropdown.Content>
+               </Dropdown>
 
-            <Dropdown>
-               <Dropdown.Button>
-                  <span className="text-base font-normal text-white whitespace-nowrap">{statusLabel}</span>
-                  <Dropdown.Chevron />
-               </Dropdown.Button>
-               <Dropdown.Content>
-                  {STATUS_OPTIONS.map(option => (
-                     <Dropdown.Item key={option.label} onClick={() => setFilter("status", option.value)}>
-                        {option.label}
-                     </Dropdown.Item>
-                  ))}
-               </Dropdown.Content>
-            </Dropdown>
+               <Dropdown>
+                  <Dropdown.Button>
+                     <span className="text-base font-normal text-white whitespace-nowrap">{statusLabel}</span>
+                     <Dropdown.Chevron />
+                  </Dropdown.Button>
+                  <Dropdown.Content>
+                     {STATUS_OPTIONS.map(option => (
+                        <Dropdown.Item key={option.label} onClick={() => setFilter("status", option.value)}>
+                           {option.label}
+                        </Dropdown.Item>
+                     ))}
+                  </Dropdown.Content>
+               </Dropdown>
 
-            <DateRangeFilter
-               label="Початок"
-               value={filters.plannedStart}
-               onChange={range => setFilter("plannedStart", range)}
-            />
+               <DateRangeFilter
+                  label="Початок"
+                  value={filters.plannedStart}
+                  onChange={range => setFilter("plannedStart", range)}
+               />
 
-            <DateRangeFilter
-               label="Кінець"
-               value={filters.plannedEnd}
-               onChange={range => setFilter("plannedEnd", range)}
-            />
+               <DateRangeFilter
+                  label="Кінець"
+                  value={filters.plannedEnd}
+                  onChange={range => setFilter("plannedEnd", range)}
+               />
 
-            <Button onClick={resetFilters} className="ml-auto sm:ml-0">
-               <Button.Icon Icon={RotateCcw} strokeWidth={1.5} />
-               <Button.Paragraph>Скинути фільтри</Button.Paragraph>
-            </Button>
-         </Table.Header>
+               <Button onClick={resetFilters} className="ml-auto sm:ml-0">
+                  <Button.Icon Icon={RotateCcw} strokeWidth={1.5} />
+                  <Button.Paragraph>Скинути фільтри</Button.Paragraph>
+               </Button>
+            </Table.Header>
 
-         <Table
-            columns={columns}
-            tableClassNames={tableClassNames}
-            className={clsx("transition-opacity", isPlaceholderData && "opacity-50")}
-         >
-            {isLoading && <p className="min-w-300 px-4 py-8 text-center text-(--second-color)">Завантаження...</p>}
+            <Table
+               columns={columns}
+               tableClassNames={tableClassNames}
+               className={clsx("transition-opacity", isPlaceholderData && "opacity-50")}
+            >
+               {isLoading && <p className="min-w-300 px-4 py-8 text-center text-(--second-color)">Завантаження...</p>}
 
-            {isError && (
-               <p className="min-w-300 px-4 py-8 text-center text-red-400">Не вдалося завантажити замовлення</p>
-            )}
+               {isError && (
+                  <p className="min-w-300 px-4 py-8 text-center text-red-400">Не вдалося завантажити замовлення</p>
+               )}
 
-            {!isLoading && !isError && orders.length === 0 && (
-               <p className="min-w-300 px-4 py-8 text-center text-(--second-color)">Замовлень не знайдено</p>
-            )}
+               {!isLoading && !isError && orders.length === 0 && (
+                  <p className="min-w-300 px-4 py-8 text-center text-(--second-color)">Замовлень не знайдено</p>
+               )}
 
-            {orders.map(order => (
-               <Table.Row key={order.id} to={`/orders/${order.id}`}>
-                  <Table.Text
-                     text={modelTitleById.get(order.product_model_id) ?? `#${order.product_model_id}`}
-                     className="font-medium"
-                  />
-                  <Table.Text text={order.plan} className="font-medium" />
-                  <Table.Text text={order.fact} className="font-medium" />
-                  <Table.Percent value={getProgress(order)} goodThreshold={100} />
-                  <Table.Text text={getStatusLabel(order.status)} className="font-medium" />
-                  <Table.Text text={formatDate(order.planned_start_at)} className="font-medium" />
-                  <Table.Text text={formatDate(order.planned_end_at)} className="font-medium" />
-                  <Table.MenuButton onClick={() => console.log("menu", order.id)} />
-               </Table.Row>
-            ))}
+               {orders.map(order => (
+                  <Table.Row key={order.id}>
+                     <Table.Text
+                        text={modelTitleById.get(order.product_model_id) ?? `#${order.product_model_id}`}
+                        className="font-medium"
+                     />
+                     <Table.Text text={order.plan} className="font-medium" />
+                     <Table.Text text={order.fact} className="font-medium" />
+                     <Table.Percent value={getProgress(order)} goodThreshold={100} />
+                     <Table.Text text={getStatusLabel(order.status)} className="font-medium" />
+                     <Table.Text text={formatDate(order.planned_start_at)} className="font-medium" />
+                     <Table.Text text={formatDate(order.planned_end_at)} className="font-medium" />
+                     <RowMenu
+                        actions={[
+                           { label: "Редагувати", Icon: PencilIcon, onClick: () => setEditingOrder(order) },
+                           {
+                              label: "Видалити",
+                              Icon: Trash2Icon,
+                              danger: true,
+                              onClick: () => setDeletingOrder(order),
+                           },
+                        ]}
+                     />
+                  </Table.Row>
+               ))}
 
-            <TablePagination
-               page={page}
-               pageSize={pageSize}
-               total={data?.total ?? 0}
-               onPageChange={setPage}
-               onPageSizeChange={size => {
-                  setPageSize(size)
-                  setPage(1)
+               <TablePagination
+                  page={page}
+                  pageSize={pageSize}
+                  total={data?.total ?? 0}
+                  onPageChange={setPage}
+                  onPageSizeChange={size => {
+                     setPageSize(size)
+                     setPage(1)
+                  }}
+                  entityLabel="замовлень"
+                  className="min-w-300"
+               />
+            </Table>
+         </Table.Wrapper>
+
+         {editingOrder && (
+            <UpdateOrderModal
+               key={editingOrder.id}
+               isOpen
+               order={editingOrder}
+               onClose={() => setEditingOrder(null)}
+               onDelete={() => {
+                  setDeletingOrder(editingOrder)
+                  setEditingOrder(null)
                }}
-               entityLabel="замовлень"
-               className="min-w-300"
             />
-         </Table>
-      </Table.Wrapper>
+         )}
+
+         <ConfirmModal
+            isOpen={deletingOrder !== null}
+            onClose={() => setDeletingOrder(null)}
+            onConfirm={() => {
+               if (!deletingOrder) return
+               doDeleteOrder(deletingOrder.id, {
+                  onSuccess: () => {
+                     addToast("Успішно видалено замовлення!", { duration: 3000, type: "success" })
+                     // видалили останній запис на сторінці, повертаємось на попередню
+                     if (orders.length === 1 && page > 1) setPage(page - 1)
+                  },
+               })
+            }}
+            title="Видалити замовлення?"
+            description={
+               deletingOrder
+                  ? `Замовлення «${modelTitleById.get(deletingOrder.product_model_id) ?? `#${deletingOrder.product_model_id}`}» буде видалено безповоротно.`
+                  : undefined
+            }
+            confirmLabel="Видалити"
+            cancelLabel="Скасувати"
+         />
+      </>
    )
 }
