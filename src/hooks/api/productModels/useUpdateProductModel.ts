@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { updateProductModel } from "@/api/endpoints/product_models"
+import { updateProductModel } from "@/api/endpoints/productModels"
 import type { ProductModelUpdatePayload } from "@/api/types/product_model"
 
 export function useUpdateProductModel() {

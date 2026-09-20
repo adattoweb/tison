@@ -1,6 +1,6 @@
 import { useQuery, keepPreviousData } from "@tanstack/react-query"
 import type { ParamsWithActive } from "@/types/api"
-import { getAllProductModels } from "@/api/endpoints/product_models"
+import { getAllProductModels } from "@/api/endpoints/productModels"
 
 export const useAllProductModels = (params: ParamsWithActive) => {
    return useQuery({

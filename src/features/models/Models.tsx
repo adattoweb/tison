@@ -4,8 +4,11 @@ import Button from "@/components/UI/Button"
 import { FilePlus } from "lucide-react"
 import { ModelList } from "./ModelList"
 import { ModelHeader } from "./ModelHeader"
+import { AddModelModal } from "./AddModelModal"
+import { useState } from "react"
 
 export function Models() {
+   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
    return (
       <>
          <div className="flex justify-between items-center">
@@ -13,7 +16,7 @@ export function Models() {
                <PageHeader>Моделі виробів</PageHeader>
                <PageDescription>Створення та редагування моделей та інструкцій до них</PageDescription>
             </div>
-            <Button type="accent" className="h-min">
+            <Button type="accent" className="h-min" onClick={() => setIsAddModalOpen(true)}>
                <Button.Icon Icon={FilePlus} />
                <Button.Paragraph>Додати нову модель</Button.Paragraph>
             </Button>
@@ -23,6 +26,7 @@ export function Models() {
             <ModelHeader />
             <ModelList />
          </div>
+         <AddModelModal isOpen={isAddModalOpen} setIsOpen={setIsAddModalOpen} />
       </>
    )
 }

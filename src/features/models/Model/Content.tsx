@@ -9,7 +9,7 @@ import { ActiveStep } from "./ActiveStep"
 interface ItemProps {
    isActive: boolean
    step: InstructionListRead
-   setActiveStep: React.Dispatch<React.SetStateAction<InstructionListRead>>
+   setActiveStep: React.Dispatch<React.SetStateAction<InstructionListRead | undefined>>
 }
 
 export function ListItem({ isActive, step, setActiveStep }: ItemProps) {
@@ -59,13 +59,14 @@ interface ContnentProps {
 }
 
 export function Content({ model }: ContnentProps) {
-   const [activeStep, setActiveStep] = useState<InstructionListRead>(model.steps[0])
+   const [activeStep, setActiveStep] = useState<InstructionListRead | undefined>(model.steps[0])
    const [isInstructionModalOpen, setIsInstructionModalOpen] = useState(false)
+   console.log(model)
 
    return (
       <main className="flex flex-col lg:flex-row gap-4">
          <div className="flex flex-col rounded-lg border-(--stroke-color) border px-(--components-py) py-(--components-py)">
-            <p className="text-(--second-color)">Інструкція (6) операцій</p>
+            <p className="text-(--second-color)">Інструкції, {model.steps.length} операції</p>
             <ul className="flex flex-col gap-2 mt-2">
                {model.steps.map(step => (
                   <ListItem key={step.id} isActive={false} step={step} setActiveStep={setActiveStep} />

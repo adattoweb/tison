@@ -1,10 +1,14 @@
 import { titleClassName } from "@/utils/classNames"
-import product from "@/assets/images/product.jpg"
-import { ChevronDownIcon } from "lucide-react"
+import { ChevronDownIcon, PencilIcon, Trash2Icon } from "lucide-react"
 import { useLayoutEffect, useRef, useState } from "react"
 import gsap from "gsap"
 import type { ProductModelListRead } from "@/api/types/product_model"
 import { Content } from "./Content"
+import { UpdateProductModelModal } from "./UpdateModelModal"
+import { useToast } from "@/components/Toast/useToast"
+import { useDeleteProductModel } from "@/hooks/api/productModels/useDeleteProductModel"
+import { RowMenu } from "@/components/Table/RowMenu"
+import { ConfirmModal } from "@/components/Modal/ConfirmModal"
 
 const EASE_OPEN = "cubic-bezier(0.16, 1, 0.3, 1)"
 const EASE_CLOSE = "cubic-bezier(0.4, 0, 0.2, 1)"
@@ -17,6 +21,10 @@ interface ModelProps {
 export function Model({ model }: ModelProps) {
    const [isOpen, setIsOpen] = useState(false)
    const [shouldRender, setShouldRender] = useState(false)
+   const [isEditing, setIsEditing] = useState(false)
+   const [isDeleting, setIsDeleting] = useState(false)
+   const { mutate: doDeleteProductModel } = useDeleteProductModel(model.id)
+   const { addToast } = useToast()
 
    const clipRef = useRef<HTMLDivElement>(null)
    const innerRef = useRef<HTMLDivElement>(null)
@@ -107,27 +115,55 @@ export function Model({ model }: ModelProps) {
    }, [isOpen])
 
    return (
-      <div className="flex flex-col bg-(--bg-trans-color) border-(--stroke-color) border py-(--components-py) px-(--components-py) rounded-lg ibm-plex-sans">
-         <header className="flex flex-1 justify-between h-20 items-center cursor-pointer" onClick={switchOpen}>
-            <div className="flex gap-4 h-20">
-               <img src={product} className="h-full w-auto rounded-lg object-contain" />
-               <div className="flex flex-col gap-1">
-                  <h2 className={titleClassName}>{model.title}</h2>
-                  <p className="text-(--second-color)">{model.type}</p>
+      <>
+         <div className="flex flex-col bg-(--bg-trans-color) border-(--stroke-color) border py-(--components-py) px-(--components-py) rounded-lg ibm-plex-sans">
+            <header
+               className="flex flex-1 justify-between h-20 items-center cursor-pointer relative"
+               onClick={switchOpen}
+            >
+               <div className="flex flex-col gap-1 min-w-0 w-full">
+                  <div className="flex items-center gap-2 w-full">
+                     <h2 className={titleClassName}>{model.title}</h2>
+                     <RowMenu
+                        className="ml-auto [&_svg]:!rotate-0"
+                        actions={[
+                           { label: "Редагувати", Icon: PencilIcon, onClick: () => setIsEditing(true) },
+                           { label: "Видалити", Icon: Trash2Icon, danger: true, onClick: () => setIsDeleting(true) },
+                        ]}
+                     />
+                  </div>
+                  {model.type !== undefined && <p className="text-(--second-color)">{model?.type}</p>}
+                  {model.description !== undefined && <p>{model?.description}</p>}
                </div>
-            </div>
-            <div ref={chevronRef}>
-               <ChevronDownIcon className="size-7" strokeWidth={1.5} />
-            </div>
-         </header>
+               <div ref={chevronRef} className="absolute right-0 bottom-0">
+                  <ChevronDownIcon className="size-7" strokeWidth={1.5} />
+               </div>
+            </header>
 
-         {shouldRender && (
-            <div ref={clipRef} style={{ height: 0, marginTop: 0, overflow: "hidden" }}>
-               <div ref={innerRef}>
-                  <Content model={model} />
+            {shouldRender && (
+               <div ref={clipRef} style={{ height: 0, marginTop: 0, overflow: "hidden" }}>
+                  <div ref={innerRef}>
+                     <Content model={model} />
+                  </div>
                </div>
-            </div>
+            )}
+         </div>
+         {isEditing && (
+            <UpdateProductModelModal key={model.id} isOpen model={model} onClose={() => setIsEditing(false)} />
          )}
-      </div>
+         <ConfirmModal
+            isOpen={isDeleting}
+            onClose={() => setIsDeleting(false)}
+            onConfirm={() =>
+               doDeleteProductModel(undefined, {
+                  onSuccess: () => addToast("Успішно видалено модель виробу!", { duration: 3000, type: "success" }),
+               })
+            }
+            title="Видалити модель?"
+            description={`Модель «${model.title}» буде видалено безповоротно.`}
+            confirmLabel="Видалити"
+            cancelLabel="Скасувати"
+         />
+      </>
    )
 }

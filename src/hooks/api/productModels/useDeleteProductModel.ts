@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { deleteProductModel } from "@/api/endpoints/product_models"
+import { deleteProductModel } from "@/api/endpoints/productModels"
 
 export function useDeleteProductModel(id: number) {
    const queryClient = useQueryClient()

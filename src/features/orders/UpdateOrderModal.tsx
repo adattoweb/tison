@@ -216,7 +216,7 @@ export function UpdateOrderModal({ isOpen, order, onClose, onDelete }: UpdateOrd
                <button
                   type="button"
                   onClick={onDelete}
-                  className="flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm text-[#E06767] transition-colors hover:bg-[#E06767]/10 cursor-pointer sm:mr-auto"
+                  className="flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm text-[#E06767] transition-colors bg-[#E06767]/10 hover:bg-[#E06767]/10 cursor-pointer sm:mr-auto"
                >
                   <Trash2Icon size={16} strokeWidth={1.5} />
                   Видалити

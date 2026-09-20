@@ -25,6 +25,7 @@ interface InstructionProps {
 }
 
 function Instructions({ steps }: InstructionProps) {
+   if (steps === undefined) return
    return (
       <div className="flex flex-col gap-3 flex-1">
          <h3 className="text-white font-medium text-base xl:text-lg">Інструкція виконання</h3>
@@ -49,7 +50,7 @@ interface ParametersProps {
 }
 
 function Parameters({ details }: ParametersProps) {
-   console.log(details)
+   if (details === undefined) return
    return (
       <div className="flex flex-col gap-3 flex-1">
          <h3 className="text-white font-medium text-base xl:text-lg">Параметри операції</h3>
@@ -74,6 +75,7 @@ interface CheckpointsProps {
 }
 
 function Checkpoints({ checkpoints }: CheckpointsProps) {
+   if (checkpoints === undefined) return
    return (
       <div className="flex flex-col gap-3">
          <h3 className="text-white font-medium text-base xl:text-lg">Контрольні точки</h3>
@@ -106,10 +108,8 @@ interface ActiveStepProps {
 }
 
 export function ActiveStep({ step }: ActiveStepProps) {
-   // Зберігаємо id кроку, який редагується, а не boolean: при переході на інший крок
-   // режим редагування вимикається сам, без useEffect
    const [editingStepId, setEditingStepId] = useState<number | null>(null)
-   const isEditing = editingStepId === step.id
+   const isEditing = editingStepId === step?.id
 
    if (isEditing) {
       return <ActiveStepForm key={step.id} step={step} onClose={() => setEditingStepId(null)} />
@@ -119,24 +119,34 @@ export function ActiveStep({ step }: ActiveStepProps) {
       <div className={cardClassName}>
          <div className="flex justify-between gap-4">
             <div className="flex flex-col gap-1 min-w-0">
-               <h2 className={titleClassName}>{step.title}</h2>
-               <p className="text-(--second-color)">Тип операції: {step.operation_type.name}</p>
-               <p className="text-(--second-color)">{step.operation_type.description}</p>
-               {step.planned_time != null && (
-                  <p className="text-(--second-color)">Запланований час: {step.planned_time} хв</p>
+               {step !== undefined ? (
+                  <>
+                     <h2 className={titleClassName}>{step?.title}</h2>
+                     <p className="text-(--second-color)">Тип операції: {step?.operation_type.name ?? null}</p>
+                     <p className="text-(--second-color)">{step?.operation_type?.description ?? null}</p>
+                     {step?.planned_time !== null && (
+                        <p className="text-(--second-color)">Запланований час: {step?.planned_time ?? null} хв</p>
+                     )}
+                     {step.description && <p className="wrap-break-word whitespace-pre-line">{step.description}</p>}
+                  </>
+               ) : (
+                  <h2 className={titleClassName}>Немає інструкцій</h2>
                )}
-               {step.description && <p className="wrap-break-word whitespace-pre-line">{step.description}</p>}
             </div>
-            <EditIcon strokeWidth={1.5} className="cursor-pointer shrink-0" onClick={() => setEditingStepId(step.id)} />
+            <EditIcon
+               strokeWidth={1.5}
+               className="cursor-pointer shrink-0"
+               onClick={() => setEditingStepId(step?.id)}
+            />
          </div>
 
          <div className="flex flex-col gap-(--components-gap)">
             <div className="flex flex-col xl:flex-row gap-(--components-gap)">
-               <Parameters details={step.details} />
-               <Instructions steps={step.steps} />
+               <Parameters details={step?.details} />
+               <Instructions steps={step?.steps} />
             </div>
          </div>
-         <Checkpoints checkpoints={step.checkpoints} />
+         <Checkpoints checkpoints={step?.checkpoints} />
       </div>
    )
 }

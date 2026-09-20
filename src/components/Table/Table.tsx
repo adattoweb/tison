@@ -198,7 +198,7 @@ interface RowProps extends PropsWithChildren {
 function Row({ children, to }: RowProps) {
    const { tableClassNames } = useCheckContext(TableContext)
    const classNames = clsx(
-      "transition-colors transition-300 hover:bg-(--bg-trans-hover-color) flex-1",
+      "transition-colors transition-300 hover:bg-(--bg-trans-hover-color) flex-1 min-h-16!",
       tableClassNames,
       defaultTableClassNames,
    )
