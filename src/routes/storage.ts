@@ -1,4 +1,5 @@
 import { Storage } from "@/features/storage/Storage"
+import type { AppRoute } from "@/types/routes"
 import { WarehouseIcon } from "lucide-react"
 
 export const storage = {
@@ -9,4 +10,4 @@ export const storage = {
       Icon: WarehouseIcon,
       nav: false, // true
    },
-}
+} satisfies AppRoute

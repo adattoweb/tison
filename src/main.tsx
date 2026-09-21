@@ -5,7 +5,7 @@ import "./index.css"
 import { createBrowserRouter } from "react-router"
 import { RouterProvider } from "react-router"
 
-import { AppLayout, AppLayoutWithoutSidebar } from "@/layouts/AppLayout"
+import { AppLayoutWithoutSidebar } from "@/layouts/AppLayout"
 import { routes } from "./routes/routes"
 import { ErrorPage } from "@/components/ErrorPage/ErrorPage"
 
@@ -17,6 +17,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 import { protectedLoader } from "./routes/protectedLoader"
 import { login } from "./routes/login"
 import { ToastProvider } from "./components/Toast/ToastProvider"
+import { ProtectedLayout } from "./layouts/ProtectedLayout"
 
 gsap.registerPlugin(useGSAP)
 
@@ -32,7 +33,7 @@ export const queryClient = new QueryClient({
 const router = createBrowserRouter([
    {
       path: "/",
-      Component: AppLayout,
+      Component: ProtectedLayout,
       errorElement: <ErrorPage />,
       children: routes,
       loader: protectedLoader,

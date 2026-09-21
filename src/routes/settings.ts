@@ -1,4 +1,5 @@
 import { Dashboard } from "@/features/dashboard/Dashboard"
+import type { AppRoute } from "@/types/routes"
 import { Cog6ToothIcon } from "@heroicons/react/24/outline"
 
 export const settings = {
@@ -9,4 +10,4 @@ export const settings = {
       Icon: Cog6ToothIcon,
       nav: true,
    },
-}
+} satisfies AppRoute

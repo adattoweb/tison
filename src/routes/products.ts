@@ -1,5 +1,6 @@
 import { Product } from "@/features/products/product/Product"
 import { Products } from "@/features/products/Products"
+import type { AppRoute } from "@/types/routes"
 import { PackageSearch } from "lucide-react"
 
 export const products = {
@@ -19,4 +20,4 @@ export const products = {
          Component: Product,
       },
    ],
-}
+} satisfies AppRoute

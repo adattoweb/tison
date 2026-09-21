@@ -1,4 +1,5 @@
 import { Analytics } from "@/features/analytics/Analytics"
+import type { AppRoute } from "@/types/routes"
 import { ChartNoAxesCombined } from "lucide-react"
 
 export const analytics = {
@@ -9,4 +10,4 @@ export const analytics = {
       Icon: ChartNoAxesCombined,
       nav: false, // true
    },
-}
+} satisfies AppRoute

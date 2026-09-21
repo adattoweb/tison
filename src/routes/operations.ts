@@ -1,4 +1,5 @@
 import { Operations } from "@/features/operations/Operations"
+import type { AppRoute } from "@/types/routes"
 import { WrenchScrewdriverIcon } from "@heroicons/react/24/outline"
 
 export const operations = {
@@ -9,4 +10,4 @@ export const operations = {
       Icon: WrenchScrewdriverIcon,
       nav: true,
    },
-}
+} satisfies AppRoute

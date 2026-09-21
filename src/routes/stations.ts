@@ -1,5 +1,6 @@
 import { Station } from "@/features/stations/station/Station"
 import { Stations } from "@/features/stations/Stations"
+import type { AppRoute } from "@/types/routes"
 import { MonitorCog } from "lucide-react"
 
 export const stations = {
@@ -19,4 +20,4 @@ export const stations = {
          Component: Station,
       },
    ],
-}
+} satisfies AppRoute

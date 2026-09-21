@@ -1,4 +1,5 @@
 import { Models } from "@/features/models/Models"
+import type { AppRoute } from "@/types/routes"
 import { PackagePlus } from "lucide-react"
 
 export const models = {
@@ -9,4 +10,4 @@ export const models = {
       Icon: PackagePlus,
       nav: true,
    },
-}
+} satisfies AppRoute

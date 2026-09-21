@@ -1,5 +1,5 @@
 import { api } from "@/api/api"
-import type { UserRead } from "@/api/types/auth"
+import type { MeRead, UserRead } from "@/api/types/auth"
 
 export const login = async (email: string, password: string): Promise<void> => {
    const formData = new URLSearchParams()
@@ -17,5 +17,10 @@ export const logout = async (): Promise<void> => {
 
 export const getCurrentUser = async (): Promise<UserRead> => {
    const { data } = await api.get<UserRead>("/users/me")
+   return data
+}
+
+export const getMe = async (): Promise<MeRead> => {
+   const { data } = await api.get<MeRead>("/auth/me")
    return data
 }

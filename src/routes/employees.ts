@@ -1,5 +1,6 @@
 import { Employees } from "@/features/employees/Employees"
 import { Employee } from "@/features/employees/employee/Employee"
+import type { AppRoute } from "@/types/routes"
 import { UserIcon } from "@heroicons/react/24/outline"
 
 export const employees = {
@@ -19,4 +20,4 @@ export const employees = {
          Component: Employee,
       },
    ],
-}
+} satisfies AppRoute

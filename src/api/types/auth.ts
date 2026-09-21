@@ -1,3 +1,5 @@
+import type { PermissionRead } from "./permission"
+
 // Юзери, логіни - все тут
 export interface LoginCredentials {
    email: string
@@ -10,4 +12,12 @@ export interface UserRead {
    is_active: boolean
    is_superuser: boolean
    is_verified: boolean
+}
+
+export interface MeRead {
+   id: string
+   email: string
+   is_superuser: boolean
+   role: string | null
+   permissions: PermissionRead[]
 }
