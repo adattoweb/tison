@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import { getOrderById } from "@/api/endpoints/order"
+import { getOrderById } from "@/api/endpoints/orders"
 
 export function useOrder(id: number | undefined) {
    return useQuery({

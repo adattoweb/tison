@@ -1,5 +1,5 @@
 import { useQuery, keepPreviousData } from "@tanstack/react-query"
-import { getAllOrders } from "@/api/endpoints/order"
+import { getAllOrders } from "@/api/endpoints/orders"
 import type { OrdersParams } from "@/types/api"
 
 export const useAllOrders = (params: OrdersParams) => {

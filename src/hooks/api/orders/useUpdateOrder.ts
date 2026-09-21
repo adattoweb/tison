@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { updateOrder } from "@/api/endpoints/order"
+import { updateOrder } from "@/api/endpoints/orders"
 import type { OrderUpdateInput } from "@/api/schemas/order"
 
 export function useUpdateOrder() {

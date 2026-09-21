@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { createOrder } from "@/api/endpoints/order"
+import { createOrder } from "@/api/endpoints/orders"
 
 export function useCreateOrder() {
    const queryClient = useQueryClient()

@@ -1,84 +1,99 @@
-import { useMemo, useState } from "react"
+import { useState } from "react"
 import { Search, RotateCcw } from "lucide-react"
+import clsx from "clsx"
+import type { DateRange } from "@daypicker/react"
 import Dropdown from "@/components/UI/Dropdown"
 import Button from "@/components/UI/Button"
+import { DateRangeFilter } from "@/components/UI/DateRangeFilter"
 import Table from "@/components/Table/Table"
 import { TablePagination } from "@/components/Table/TablePagination"
-import { mockDefects } from "./defects"
-import { STATUS } from "@/constants/status"
-import type { StatusType } from "@/types/status"
-import { defects } from "@/routes/defects"
+import { defects as defectsRoute } from "@/routes/defects"
+import { DEFAULT_PAGE_SIZE } from "@/constants/pagination"
+import placeholderImg from "@/assets/images/product.jpg"
+import type { DefectStatusType } from "@/api/types/defect"
+import { useAllDefects } from "@/hooks/api/defects/useAllDefects"
+import { useAllOperations } from "@/hooks/api/operations/useAllOperations"
+import { useDebouncedValue } from "@/hooks/api/useDebouncedValue"
+import { endOfDay, formatDate, startOfDay } from "@/utils/time"
 
-const ALL = {
-   type: "Всі типи",
-   period: "За сьогодні",
-   section: "Всі дільниці",
-   status: "Статус",
-} as const
+const ALL_OPERATIONS_LABEL = "Всі операції"
 
-const TYPE_OPTIONS = [ALL.type, "Пайка", "Складання", "Електроніка", "Калібрування"]
-const PERIOD_OPTIONS = [ALL.period, "За тиждень", "За місяць", "За весь час"]
-const SECTION_OPTIONS = [ALL.section, "Механічний цех", "Складальний цех", "Цех пайки", "Тестовий цех"]
-const STATUS_OPTIONS = [ALL.status, "open", "closed"] as (typeof ALL.status | StatusType)[]
+const DEFECT_STATUS: Record<DefectStatusType, { label: string; className: string }> = {
+   OPEN: { label: "Відкритий", className: "text-[#E06767]" },
+   CLOSE: { label: "Закритий", className: "text-[#4a9d5c]" },
+}
 
-const columns = [
-   "Фото",
-   "ID дефекту",
-   "Виріб",
-   "Тип дефекту",
-   "Дільниця",
-   "Дата виявлення",
-   "Статус",
-   "Відповідальний",
-   "",
-]
+const columns = ["Фото", "Код дефекту", "Операція", "Дефект", "Виявлено", "Закрито", "Статус", ""]
 
-const tableClassNames = "min-w-320 grid-cols-[100px_1.3fr_1.3fr_1.5fr_1.6fr_1.3fr_1fr_1.8fr_48px]"
+const tableClassNames = "min-w-320 grid-cols-[100px_1.3fr_1.2fr_2fr_1.3fr_1.3fr_1fr_48px]"
 
-const DEFAULT_PAGE_SIZE = 10
+interface Filters {
+   operationId: number | undefined
+   detected: DateRange | undefined
+   closed: DateRange | undefined
+}
+
+const INITIAL_FILTERS: Filters = {
+   operationId: undefined,
+   detected: undefined,
+   closed: undefined,
+}
+
+// Якщо обрано лише одну дату, фільтруємо по цьому дню
+const rangeFrom = (range: DateRange | undefined) => (range?.from ? startOfDay(range.from) : undefined)
+const rangeTo = (range: DateRange | undefined) => {
+   const to = range?.to ?? range?.from
+   return to ? endOfDay(to) : undefined
+}
+
+const formatTime = (iso: string) => new Date(iso).toLocaleTimeString("uk-UA", { hour: "2-digit", minute: "2-digit" })
 
 export function DefectsTable() {
    const [search, setSearch] = useState("")
-   const [type, setType] = useState<string>(ALL.type)
-   const [period, setPeriod] = useState<string>(ALL.period)
-   const [section, setSection] = useState<string>(ALL.section)
-   const [status, setStatus] = useState<string>(ALL.status)
+   const [filters, setFilters] = useState<Filters>(INITIAL_FILTERS)
    const [page, setPage] = useState(1)
    const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE)
 
-   const filtered = useMemo(() => {
-      return mockDefects.filter(defect => {
-         if (
-            search &&
-            !defect.code.toLowerCase().includes(search.toLowerCase()) &&
-            !defect.productCode.toLowerCase().includes(search.toLowerCase())
-         )
-            return false
-         if (type !== ALL.type && defect.defectType !== type) return false
-         if (section !== ALL.section && defect.section !== section) return false
-         if (status !== ALL.status && defect.status !== status) return false
-         // TODO: period фільтрація по реальних датах, коли з'явиться справжнє API
-         return true
-      })
-   }, [search, type, section, status])
+   const debouncedSearch = useDebouncedValue(search, 400)
 
-   const pageItems = filtered.slice((page - 1) * pageSize, page * pageSize)
+   const { data, isLoading, isError, isPlaceholderData } = useAllDefects({
+      page,
+      pageSize,
+      search: debouncedSearch.trim() || undefined,
+      operationId: filters.operationId,
+      startFrom: rangeFrom(filters.detected),
+      startTo: rangeTo(filters.detected),
+      endFrom: rangeFrom(filters.closed),
+      endTo: rangeTo(filters.closed),
+   })
 
-   function withPageReset<T>(setter: (value: T) => void) {
-      return (value: T) => {
-         setter(value)
-         setPage(1)
-      }
+   const { data: operationsData } = useAllOperations({ page: 1, pageSize: 100 })
+   const operations = operationsData?.items ?? []
+   const operationCodeById = new Map(operations.map(operation => [operation.id, operation.code]))
+
+   const defects = data?.items ?? []
+
+   function handleSearchChange(value: string) {
+      setSearch(value)
+      setPage(1)
+   }
+
+   // Будь-яка зміна фільтра повертає на першу сторінку
+   function setFilter<K extends keyof Filters>(key: K, value: Filters[K]) {
+      setFilters(prev => ({ ...prev, [key]: value }))
+      setPage(1)
    }
 
    function resetFilters() {
       setSearch("")
-      setType(ALL.type)
-      setPeriod(ALL.period)
-      setSection(ALL.section)
-      setStatus(ALL.status)
+      setFilters(INITIAL_FILTERS)
       setPage(1)
    }
+
+   const operationLabel =
+      filters.operationId === undefined
+         ? ALL_OPERATIONS_LABEL
+         : (operationCodeById.get(filters.operationId) ?? `Операція #${filters.operationId}`)
 
    return (
       <Table.Wrapper>
@@ -90,69 +105,38 @@ export function DefectsTable() {
                />
                <input
                   value={search}
-                  onChange={e => withPageReset(setSearch)(e.target.value)}
-                  placeholder="Пошук..."
+                  onChange={e => handleSearchChange(e.target.value)}
+                  placeholder="Пошук за кодом..."
                   className="w-full rounded-md border border-(--stroke-color) bg-(--bg-trans-color) py-2.5 pl-11 pr-4 text-sm text-white placeholder:text-(--second-color) outline-none focus:border-(--stroke-active-color)"
                />
             </div>
 
             <Dropdown>
                <Dropdown.Button>
-                  <span className="text-base font-normal text-white whitespace-nowrap">{type}</span>
-                  <Dropdown.Chevron />
-               </Dropdown.Button>
-               <Dropdown.Content>
-                  {TYPE_OPTIONS.map(option => (
-                     <Dropdown.Item key={option} onClick={() => withPageReset(setType)(option)}>
-                        {option}
-                     </Dropdown.Item>
-                  ))}
-               </Dropdown.Content>
-            </Dropdown>
-
-            <Dropdown>
-               <Dropdown.Button>
-                  <span className="text-base font-normal text-white whitespace-nowrap">{period}</span>
-                  <Dropdown.Chevron />
-               </Dropdown.Button>
-               <Dropdown.Content>
-                  {PERIOD_OPTIONS.map(option => (
-                     <Dropdown.Item key={option} onClick={() => withPageReset(setPeriod)(option)}>
-                        {option}
-                     </Dropdown.Item>
-                  ))}
-               </Dropdown.Content>
-            </Dropdown>
-
-            <Dropdown>
-               <Dropdown.Button>
-                  <span className="text-base font-normal text-white whitespace-nowrap">{section}</span>
-                  <Dropdown.Chevron />
-               </Dropdown.Button>
-               <Dropdown.Content>
-                  {SECTION_OPTIONS.map(option => (
-                     <Dropdown.Item key={option} onClick={() => withPageReset(setSection)(option)}>
-                        {option}
-                     </Dropdown.Item>
-                  ))}
-               </Dropdown.Content>
-            </Dropdown>
-
-            <Dropdown>
-               <Dropdown.Button>
-                  <span className="text-base font-normal text-white whitespace-nowrap">
-                     {status === ALL.status ? ALL.status : STATUS[status as StatusType].label}
+                  <span className="max-w-48 truncate text-base font-normal text-white whitespace-nowrap">
+                     {operationLabel}
                   </span>
                   <Dropdown.Chevron />
                </Dropdown.Button>
                <Dropdown.Content>
-                  {STATUS_OPTIONS.map(option => (
-                     <Dropdown.Item key={option} onClick={() => withPageReset(setStatus)(option)}>
-                        {option === ALL.status ? ALL.status : STATUS[option as StatusType].label}
+                  <Dropdown.Item onClick={() => setFilter("operationId", undefined)}>
+                     {ALL_OPERATIONS_LABEL}
+                  </Dropdown.Item>
+                  {operations.map(operation => (
+                     <Dropdown.Item key={operation.id} onClick={() => setFilter("operationId", operation.id)}>
+                        {operation.code}
                      </Dropdown.Item>
                   ))}
                </Dropdown.Content>
             </Dropdown>
+
+            <DateRangeFilter
+               label="Виявлено"
+               value={filters.detected}
+               onChange={range => setFilter("detected", range)}
+            />
+
+            <DateRangeFilter label="Закрито" value={filters.closed} onChange={range => setFilter("closed", range)} />
 
             <Button onClick={resetFilters} className="ml-auto sm:ml-0">
                <Button.Icon Icon={RotateCcw} strokeWidth={1.5} />
@@ -160,34 +144,49 @@ export function DefectsTable() {
             </Button>
          </Table.Header>
 
-         <Table columns={columns} tableClassNames={tableClassNames} className="">
-            {pageItems.map(defect => (
-               <Table.Row key={defect.id} to={`/${defects.path}/${defect.id}`}>
-                  <Table.Photo src={defect.photoUrl} alt={defect.code} />
-                  <Table.Text text={defect.code} className="font-medium" />
-                  <Table.Text text={defect.productCode} />
-                  <Table.TextGroup primary={defect.defectType} secondary={defect.defectDetail} />
-                  <Table.TextGroup primary={defect.department} secondary={defect.section} />
-                  <Table.TextGroup primary={defect.detectedDate} secondary={defect.detectedTime} />
-                  <Table.Status status={defect.status} />
-                  <Table.Person
-                     avatarUrl={defect.responsibleAvatarUrl}
-                     name={defect.responsibleName}
-                     code={defect.responsibleCode}
-                  />
-                  <Table.MenuButton onClick={() => console.log("menu", defect.id)} />
-               </Table.Row>
-            ))}
+         <Table
+            columns={columns}
+            tableClassNames={tableClassNames}
+            className={clsx("transition-opacity", isPlaceholderData && "opacity-50")}
+         >
+            {isLoading && <p className="min-w-320 px-4 py-8 text-center text-(--second-color)">Завантаження...</p>}
+
+            {isError && <p className="min-w-320 px-4 py-8 text-center text-red-400">Не вдалося завантажити дефекти</p>}
+
+            {!isLoading && !isError && defects.length === 0 && (
+               <p className="min-w-320 px-4 py-8 text-center text-(--second-color)">Дефектів не знайдено</p>
+            )}
+
+            {defects.map(defect => {
+               const status = DEFECT_STATUS[defect.status]
+
+               return (
+                  <Table.Row key={defect.id} to={`/${defectsRoute.path}/${defect.id}`}>
+                     <Table.Photo src={defect.images?.[0] ?? placeholderImg} alt={defect.code} />
+                     <Table.Text text={defect.code} className="font-medium" />
+                     <Table.Text text={operationCodeById.get(defect.operation_id) ?? `#${defect.operation_id}`} />
+                     <Table.TextGroup primary={defect.title} secondary={defect.description} />
+                     <Table.TextGroup
+                        primary={formatDate(defect.start_at) ?? "—"}
+                        secondary={formatTime(defect.start_at)}
+                     />
+                     <Table.Text text={formatDate(defect.end_at) ?? "—"} />
+                     <Table.Text text={status.label} className={clsx("font-medium", status.className)} />
+                     <Table.MenuButton onClick={() => console.log("menu", defect.id)} />
+                  </Table.Row>
+               )
+            })}
+
             <TablePagination
                page={page}
                pageSize={pageSize}
-               total={filtered.length}
+               total={data?.total ?? 0}
                onPageChange={setPage}
                onPageSizeChange={size => {
                   setPageSize(size)
                   setPage(1)
                }}
-               entityLabel="фото"
+               entityLabel="дефектів"
                className="min-w-7xl"
             />
          </Table>
