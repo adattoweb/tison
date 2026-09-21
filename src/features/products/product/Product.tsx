@@ -17,6 +17,7 @@ import { useState } from "react"
 import { ConfirmModal } from "@/components/Modal/ConfirmModal"
 import { useDeleteProduct } from "@/hooks/api/products/useDeleteProduct"
 import { UpdateProductModal } from "./UpdateProductModal"
+import { useToast } from "@/components/Toast/useToast"
 
 const WIDE_AREAS = `
    "header header header header header header header header header header"
@@ -51,10 +52,13 @@ export function Product() {
    const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false)
    const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false)
    const { mutate: doDelete } = useDeleteProduct()
+   const { addToast } = useToast()
 
    const navigate = useNavigate()
    const onDelete = () => {
-      doDelete(Number(id))
+      doDelete(Number(id), {
+         onSuccess: () => addToast("Виріб успішно видалено!", { type: "success", duration: 4000 }),
+      })
       navigate("/products")
    }
 
@@ -111,8 +115,8 @@ export function Product() {
             isOpen={isConfirmModalOpen}
             onClose={() => setIsConfirmModalOpen(false)}
             onConfirm={onDelete}
-            title="Видалити станцію"
-            description="Ви впевнені, що хочете видалити станцію?"
+            title="Видалити продукт"
+            description="Ви впевнені, що хочете видалити продукт?"
          />
       </div>
    )

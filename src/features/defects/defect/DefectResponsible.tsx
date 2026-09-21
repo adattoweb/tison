@@ -1,6 +1,7 @@
-import { avatarUrl } from "@/constants/global"
+import type { DefectRead } from "@/api/types/defect"
+import type { OperationListRead } from "@/api/types/operation"
 import { titleClassName } from "@/utils/classNames"
-import { MonitorCogIcon, WrenchIcon } from "lucide-react"
+import { MonitorCogIcon, UserIcon } from "lucide-react"
 import type { ReactNode } from "react"
 
 interface ItemProps {
@@ -16,46 +17,47 @@ function ListItem({ description, component, name, code }: ItemProps) {
          <p className="text-(--second-color)">{description}</p>
          <div className="flex gap-2 items-center">
             {component}
-            <div className="flex flex-col gap-1">
-               <p className="font-medium text-white">{name}</p>
-               <p className="text-(--second-color)">{code}</p>
+            <div className="flex flex-col gap-1 min-w-0">
+               <p className="font-medium text-white truncate">{name}</p>
+               <p className="text-(--second-color) truncate">{code}</p>
             </div>
          </div>
       </li>
    )
 }
 
-export function DefectResponsible() {
+const shortId = (id: string) => `ID ${id.slice(0, 8)}`
+
+interface DefectResponsibleProps {
+   defect: DefectRead
+   operation?: OperationListRead
+}
+
+export function DefectResponsible({ defect, operation }: DefectResponsibleProps) {
    return (
       <div
          className="flex flex-col flex-1 ibm-plex-sans bg-(--bg-trans-color) border border-(--stroke-color) rounded-xl py-(--components-py) px-(--components-py) gap-2"
          style={{ gridArea: "responsible" }}
       >
          <h2 className={titleClassName}>Відповідальні</h2>
-         <ul className=" flex flex-col gap-2 mt-2 flex-1">
+         <ul className="flex flex-col gap-2 mt-2 flex-1">
             <ListItem
-               description="Виконавець операції"
-               component={<img src={avatarUrl} className="size-11 rounded-full" />}
-               name="Шевченко Тарас"
-               code="EMP-1018"
+               description="Виявив дефект"
+               component={<UserIcon className="stroke-(--second-color) size-8" />}
+               name="Оператор"
+               code={shortId(defect.operator_id)}
             />
             <ListItem
-               description="Попередня операція"
-               component={<img src={avatarUrl} className="size-11 rounded-full" />}
-               name="Шевченко Тарас"
-               code="EMP-1018"
+               description="Виконавець операції"
+               component={<UserIcon className="stroke-(--second-color) size-8" />}
+               name={operation?.operator_id ? "Оператор" : "Не призначено"}
+               code={operation?.operator_id ? shortId(operation.operator_id) : "—"}
             />
             <ListItem
                description="Робоча станція"
                component={<MonitorCogIcon className="stroke-(--second-color) size-8" />}
-               name="STATION-05"
-               code="Станція прошивки"
-            />
-            <ListItem
-               description="Тестування"
-               component={<WrenchIcon className="stroke-(--second-color) size-8" />}
-               name="Тестування"
-               code="Тестувальна зона"
+               name={operation?.station?.code ?? "Не призначено"}
+               code={operation?.operation_type?.name ?? "—"}
             />
          </ul>
       </div>

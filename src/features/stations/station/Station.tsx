@@ -14,6 +14,7 @@ import { useState } from "react"
 import { UpdateStationModal } from "./UpdateStationModal"
 import { useDeleteStation } from "@/hooks/api/station/useDeleteStation"
 import { ConfirmModal } from "@/components/Modal/ConfirmModal"
+import { useToast } from "@/components/Toast/useToast"
 
 const WIDE_AREAS = `
    "header header header header header header header header header header"
@@ -49,9 +50,12 @@ export function Station() {
    const { mutate: doDelete } = useDeleteStation(Number(id))
    const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false)
    const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false)
+   const { addToast } = useToast()
    const navigate = useNavigate()
    const onDelete = () => {
-      doDelete()
+      doDelete(undefined, {
+         onSuccess: () => addToast("Виріб успішно видалено!", { type: "success", duration: 4000 }),
+      })
       navigate("/stations")
    }
    if (station === undefined) return <ErrorPage />

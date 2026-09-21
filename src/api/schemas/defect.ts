@@ -19,7 +19,10 @@ export const DefectFormSchema = DefectCreateSchema.omit({ images: true }).extend
    images: z.array(z.object({ value: z.url("Некоректне посилання") })),
 })
 
-export type DefectFormInput = z.infer<typeof DefectFormSchema>
-
+export const DefectUpdateFormSchema = DefectUpdateSchema.omit({ images: true, end_at: true }).extend({
+   images: z.array(z.object({ value: z.url("Некоректне посилання") })),
+})
 export type DefectCreateInput = z.infer<typeof DefectCreateSchema>
 export type DefectUpdateInput = z.infer<typeof DefectUpdateSchema>
+export type DefectUpdateFormInput = z.infer<typeof DefectUpdateFormSchema>
+export type DefectFormInput = z.infer<typeof DefectFormSchema>

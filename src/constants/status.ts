@@ -10,3 +10,10 @@ export const STATUS_OPTIONS: { value: StatusType; label: string }[] = [
    { value: "ACTIVE", label: "У роботі" },
    { value: "DONE", label: "Завершено" },
 ]
+
+import type { DefectStatusType } from "@/api/types/defect"
+
+export const DEFECT_STATUS: Record<DefectStatusType, { label: string; className: string }> = {
+   OPEN: { label: "Відкритий", className: "text-[#E06767]" },
+   CLOSE: { label: "Закритий", className: "text-[#4a9d5c]" },
+}
