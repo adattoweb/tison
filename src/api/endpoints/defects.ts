@@ -1,5 +1,5 @@
 import { api } from "@/api/api"
-import type { DefectCreateInput, DefectUpdateInput } from "@/api/schemas/defects"
+import type { DefectCreateInput, DefectUpdateInput } from "@/api/schemas/defect"
 import type { DefectRead } from "@/api/types/defect"
 import type { PaginatedResponse } from "@/api/types/pagination"
 

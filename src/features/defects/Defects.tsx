@@ -3,10 +3,12 @@ import PageHeader from "@/components/UI/PageHeader"
 import { DefectsHeader } from "./DefectsHeader"
 import { DefectsTable } from "./DefectsTable"
 import Button from "@/components/UI/Button"
-import { mockClick } from "@/utils/mockClick"
 import { ImageUp } from "lucide-react"
+import { useState } from "react"
+import { AddDefectModal } from "./AddDefectModal"
 
 export function Defects() {
+   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
    return (
       <>
          <div className="flex justify-between items-center">
@@ -14,9 +16,9 @@ export function Defects() {
                <PageHeader>Архів дефектів</PageHeader>
                <PageDescription>Архів фото дефектів та інформація про виявлені невідповідності</PageDescription>
             </div>
-            <Button onClick={mockClick} type="accent" className="h-min">
+            <Button onClick={() => setIsAddModalOpen(true)} type="accent" className="h-min">
                <Button.Icon Icon={ImageUp} />
-               <Button.Paragraph>Додати фото</Button.Paragraph>
+               <Button.Paragraph>Додати дефект</Button.Paragraph>
             </Button>
          </div>
 
@@ -24,6 +26,7 @@ export function Defects() {
             <DefectsHeader />
             <DefectsTable />
          </div>
+         <AddDefectModal isOpen={isAddModalOpen} setIsOpen={setIsAddModalOpen} />
       </>
    )
 }

@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { createDefect } from "@/api/endpoints/defects"
-import type { DefectCreateInput } from "@/api/schemas/defects"
+import type { DefectCreateInput } from "@/api/schemas/defect"
 
 export function useCreateDefect() {
    const queryClient = useQueryClient()
