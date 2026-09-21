@@ -25,3 +25,16 @@ export interface OrdersParams {
 export interface ParamsWithActive extends PaginationParams {
    isActive: boolean
 }
+
+export interface ProductsParams {
+   page: number
+   pageSize: number
+   status?: StatusType
+   departmentId?: number
+   productModelId?: number
+   /** відсоток, 0–100 */
+   minProgress?: number
+   /** відсоток, 0–100 */
+   maxProgress?: number
+   search?: string
+}

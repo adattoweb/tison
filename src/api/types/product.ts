@@ -18,14 +18,3 @@ export interface ProductListRead {
    /** відсоток виконання, 0–100 */
    progress: number
 }
-
-export interface ProductCreatePayload {
-   product_model_id: number
-   order_id?: number | null
-   parent_id?: number | null
-}
-
-export interface ProductUpdatePayload {
-   order_id?: number | null
-   parent_id?: number | null
-}

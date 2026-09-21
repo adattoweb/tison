@@ -12,6 +12,8 @@ export function formatDuration(seconds: number | null | undefined): string {
    return `${hours} год ${minutes} хв`
 }
 
+export const formatDate = (iso: string | null | undefined) => (iso ? new Date(iso).toLocaleDateString("uk-UA") : null)
+
 /** "18.09.2026, 14:30" або "—" */
 export function formatDateTime(value: string | null | undefined): string {
    if (!value) return "—"

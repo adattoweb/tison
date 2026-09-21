@@ -1,7 +1,8 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
-import { getAllProducts, type GetProductsParams } from "@/api/endpoints/products"
+import { getAllProducts } from "@/api/endpoints/products"
+import type { ProductsParams } from "@/types/api"
 
-export function useAllProducts(params: GetProductsParams) {
+export function useAllProducts(params: ProductsParams) {
    return useQuery({
       queryKey: ["products", params],
       queryFn: () => getAllProducts(params),

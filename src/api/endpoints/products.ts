@@ -1,21 +1,10 @@
 import { api } from "@/api/api"
 import type { PaginatedResponse } from "../types/pagination"
-import type { ProductListRead, ProductCreatePayload, ProductUpdatePayload } from "@/api/types/product"
-import type { StatusType } from "@/types/status"
+import type { ProductListRead } from "@/api/types/product"
+import type { ProductCreateInput, ProductUpdateInput } from "../schemas/product"
+import type { ProductsParams } from "@/types/api"
 
-export interface GetProductsParams {
-   page: number
-   pageSize: number
-   status?: StatusType
-   departmentId?: number
-   productModelId?: number
-   /** відсоток, 0–100 */
-   minProgress?: number
-   /** відсоток, 0–100 */
-   maxProgress?: number
-}
-
-export const getAllProducts = async (params: GetProductsParams): Promise<PaginatedResponse<ProductListRead>> => {
+export const getAllProducts = async (params: ProductsParams): Promise<PaginatedResponse<ProductListRead>> => {
    const { data } = await api.get<PaginatedResponse<ProductListRead>>("/products/", {
       params: {
          page: params.page,
@@ -25,6 +14,7 @@ export const getAllProducts = async (params: GetProductsParams): Promise<Paginat
          product_model_id: params.productModelId,
          min_progress: params.minProgress,
          max_progress: params.maxProgress,
+         search: params.search || null,
       },
    })
    return data
@@ -35,13 +25,13 @@ export const getProductById = async (id: number): Promise<ProductListRead> => {
    return data
 }
 
-export const createProduct = async (payload: ProductCreatePayload): Promise<ProductCreatePayload> => {
-   const { data } = await api.post<ProductCreatePayload>("/products/", payload)
+export const createProduct = async (payload: ProductCreateInput): Promise<ProductCreateInput> => {
+   const { data } = await api.post<ProductCreateInput>("/products/", payload)
    return data
 }
 
-export const updateProduct = async (id: number, payload: ProductUpdatePayload): Promise<ProductUpdatePayload> => {
-   const { data } = await api.put<ProductUpdatePayload>(`/products/${id}`, payload)
+export const updateProduct = async (id: number, payload: ProductUpdateInput): Promise<ProductUpdateInput> => {
+   const { data } = await api.put<ProductUpdateInput>(`/products/${id}`, payload)
    return data
 }
 

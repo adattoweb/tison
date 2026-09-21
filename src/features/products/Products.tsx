@@ -4,9 +4,11 @@ import { ProductsHeader } from "./ProductsHeader"
 import { ProductsTable } from "./ProductsTable"
 import Button from "@/components/UI/Button"
 import { PackagePlus } from "lucide-react"
-import { mockClick } from "@/utils/mockClick"
+import { AddProductModal } from "./AddProductModal"
+import { useState } from "react"
 
 export function Products() {
+   const [isProductModalOpen, setIsProductModalOpen] = useState(false)
    return (
       <>
          <div className="flex justify-between items-center">
@@ -14,7 +16,7 @@ export function Products() {
                <PageHeader>Виріб</PageHeader>
                <PageDescription>Список усіх виробів та їх поточний статус</PageDescription>
             </div>
-            <Button onClick={mockClick} type="accent" className="h-min">
+            <Button onClick={() => setIsProductModalOpen(true)} type="accent" className="h-min">
                <Button.Icon Icon={PackagePlus} />
                <Button.Paragraph>Додати виріб</Button.Paragraph>
             </Button>
@@ -24,6 +26,7 @@ export function Products() {
             <ProductsHeader />
             <ProductsTable />
          </div>
+         <AddProductModal isOpen={isProductModalOpen} setIsOpen={setIsProductModalOpen} />
       </>
    )
 }
