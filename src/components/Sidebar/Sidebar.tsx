@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState, type PropsWithChildren } from "react"
+import { useEffect, useRef, useState, type PropsWithChildren } from "react"
 import { Menu, X } from "lucide-react"
 import { NAME } from "@/constants/app"
 import { routes } from "@/routes/routes"
@@ -10,6 +10,7 @@ import type { WithClassName } from "@/types/common"
 import clsx from "clsx"
 import { useIsMobile } from "@/hooks/ui/useIsMobile"
 import { useGSAP } from "@gsap/react"
+import { usePermissions } from "@/hooks/api/auth/usePermissions"
 
 const FIRST_LETTER = NAME.charAt(0)
 const REST_OF_NAME = NAME.slice(1)
@@ -46,6 +47,8 @@ export function Sidebar() {
    const labelRefs = useRef<(HTMLParagraphElement | null)[]>([])
    const timelineRef = useRef<gsap.core.Timeline | null>(null)
    const profileTextsRef = useRef<HTMLDivElement>(null)
+
+   const { can } = usePermissions()
 
    useEffect(() => {
       if (!isMobile) setMobileOpen(false)
@@ -89,6 +92,8 @@ export function Sidebar() {
       timelineRef.current = tl
    }, [isOpen, isMobile])
 
+   const items = routes.filter(route => route.handle.nav && can(route.handle.permission))
+
    return (
       <>
          {isMobile && !mobileOpen && (
@@ -125,21 +130,17 @@ export function Sidebar() {
             </div>
 
             <nav onClick={() => isMobile && setMobileOpen(false)} className="my-6 flex w-full flex-col gap-1">
-               {routes.map((el, index) => {
-                  return (
-                     el.handle.nav && (
-                        <NavItem
-                           key={el.path}
-                           to={el.path}
-                           label={el.handle.label}
-                           Icon={el.handle.Icon}
-                           labelRef={node => {
-                              labelRefs.current[index] = node
-                           }}
-                        />
-                     )
-                  )
-               })}
+               {items.map((el, index) => (
+                  <NavItem
+                     key={el.path}
+                     to={el.path}
+                     label={el.handle.label}
+                     Icon={el.handle.Icon}
+                     labelRef={node => {
+                        labelRefs.current[index] = node
+                     }}
+                  />
+               ))}
             </nav>
             <Profile ref={profileRef} textsRef={profileTextsRef} />
          </aside>

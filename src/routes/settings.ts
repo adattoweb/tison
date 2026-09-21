@@ -9,5 +9,6 @@ export const settings = {
       label: "Налаштування",
       Icon: Cog6ToothIcon,
       nav: true,
+      permission: { resource: "settings", action: "read" },
    },
 } satisfies AppRoute

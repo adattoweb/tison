@@ -9,6 +9,7 @@ export const stations = {
       label: "Робочі станції",
       Icon: MonitorCog,
       nav: true,
+      permission: { resource: "stations", action: "read" },
    },
    children: [
       {

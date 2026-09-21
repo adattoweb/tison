@@ -14,8 +14,9 @@ import { models } from "./models"
 import { logout } from "./logout"
 import { departments } from "./departments"
 import { operationTypes } from "./operationTypes"
+import type { AppRoute } from "@/types/routes"
 
-export const routes = [
+export const routes: AppRoute[] = [
    dashboard,
    employees,
    products,

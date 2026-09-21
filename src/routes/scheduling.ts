@@ -9,5 +9,6 @@ export const orders = {
       label: "Планування",
       Icon: CalendarDaysIcon,
       nav: true,
+      permission: { resource: "scheduling", action: "read" },
    },
 } satisfies AppRoute

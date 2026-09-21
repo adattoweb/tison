@@ -9,6 +9,7 @@ export const employees = {
       label: "Працівники",
       Icon: UserIcon,
       nav: true,
+      permission: { resource: "user", action: "read" },
    },
    children: [
       {

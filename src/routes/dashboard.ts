@@ -9,5 +9,6 @@ export const dashboard = {
       label: "Панель керування",
       Icon: LayoutDashboard,
       nav: true,
+      permission: { resource: "analysis", action: "read" },
    },
 } satisfies AppRoute

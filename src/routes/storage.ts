@@ -9,5 +9,6 @@ export const storage = {
       label: "Склад",
       Icon: WarehouseIcon,
       nav: false, // true
+      permission: { resource: "storage", action: "read" },
    },
 } satisfies AppRoute

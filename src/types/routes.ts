@@ -6,9 +6,9 @@ export interface RouteHandle {
    label: string
    Icon: LucideIcon
    nav: boolean
-   permission?: Permission
+   permission: Permission
 }
 
 export type AppRoute = Omit<RouteObject, "handle"> & {
-   handle?: RouteHandle
+   handle: RouteHandle
 }

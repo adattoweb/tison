@@ -9,5 +9,6 @@ export const models = {
       label: "Моделі продуктів",
       Icon: PackagePlus,
       nav: true,
+      permission: { resource: "product_model", action: "read" },
    },
 } satisfies AppRoute

@@ -9,5 +9,6 @@ export const operations = {
       label: "Операції",
       Icon: WrenchScrewdriverIcon,
       nav: true,
+      permission: { resource: "operation", action: "read" },
    },
 } satisfies AppRoute

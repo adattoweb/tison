@@ -9,6 +9,7 @@ export const products = {
       label: "Вироби",
       Icon: PackageSearch,
       nav: true,
+      permission: { resource: "products", action: "read" },
    },
    children: [
       {

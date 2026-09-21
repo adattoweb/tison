@@ -8,6 +8,7 @@ export const operationTypes = {
       label: "Типи операцій",
       Icon: WrenchScrewdriverIcon,
       nav: true,
+      permission: { resource: "operation_types", action: "read" },
    },
    children: [
       {
