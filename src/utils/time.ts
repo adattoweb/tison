@@ -73,3 +73,36 @@ export const toLocalInput = (iso: string) => {
 
 // значення з <input type="datetime-local"> -> ISO (UTC) для бекенду
 export const fromLocalInput = (value: string) => new Date(value).toISOString()
+
+// Українська множина: 1 рік, 2-4 роки, 5+ років (11-14 завжди "many")
+const plural = (n: number, one: string, few: string, many: string) => {
+   const m10 = n % 10
+   const m100 = n % 100
+   if (m10 === 1 && m100 !== 11) return one
+   if (m10 >= 2 && m10 <= 4 && !(m100 >= 12 && m100 <= 14)) return few
+   return many
+}
+
+/** Стаж від дати `iso` до сьогодні: "2 роки 3 місяці", а для нових працівників "12 днів" */
+export function formatTenure(iso: string | null | undefined, now: Date = new Date()): string {
+   if (!iso) return "—"
+   const start = new Date(iso)
+   if (Number.isNaN(start.getTime()) || start > now) return "—"
+
+   // повні календарні місяці; якщо день місяця ще не настав, останній місяць неповний
+   let months = (now.getFullYear() - start.getFullYear()) * 12 + (now.getMonth() - start.getMonth())
+   if (now.getDate() < start.getDate()) months--
+   months = Math.max(months, 0)
+
+   const years = Math.floor(months / 12)
+   const restMonths = months % 12
+
+   const parts: string[] = []
+   if (years > 0) parts.push(`${years} ${plural(years, "рік", "роки", "років")}`)
+   if (restMonths > 0) parts.push(`${restMonths} ${plural(restMonths, "місяць", "місяці", "місяців")}`)
+   if (parts.length > 0) return parts.join(" ")
+
+   // менше місяця показуємо в днях
+   const days = Math.floor((now.getTime() - start.getTime()) / 86_400_000)
+   return days < 1 ? "Менше доби" : `${days} ${plural(days, "день", "дні", "днів")}`
+}

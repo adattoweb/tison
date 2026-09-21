@@ -1,4 +1,3 @@
-import { queryClient } from "@/main"
 import axios from "axios"
 
 export const api = axios.create({
@@ -9,16 +8,16 @@ export const api = axios.create({
    },
 })
 
-api.interceptors.response.use(
-   response => response,
-   error => {
-      if (error.response?.status === 401) {
-         queryClient.clear()
-         window.location.assign("/login")
-      }
-      return Promise.reject(error)
-   },
-)
+// api.interceptors.response.use(
+//    response => response,
+//    error => {
+//       if (error.response?.status === 401) {
+//          queryClient.clear()
+//          window.location.assign("/login")
+//       }
+//       return Promise.reject(error)
+//    },
+// )
 
 // api.interceptors.response.use(
 //    response => response,

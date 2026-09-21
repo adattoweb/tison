@@ -1,6 +1,7 @@
 import type { ProfileRead } from "@/api/types/profile"
 import avatar from "@/assets/images/avatar.jpg"
 import { titleClassName } from "@/utils/classNames"
+import { formatTenure } from "@/utils/time"
 
 interface ListItemProps {
    label: string
@@ -40,14 +41,14 @@ export function Info({ profile }: InfoProps) {
          <h2 className={`${titleClassName} mt-auto`}>Контактна інформація</h2>
          <ul className="flex flex-col gap-1">
             <ListItem label="Телефон" value={profile.phone} />
-            <ListItem label="Пошта" value={profile.phone} />
+            <ListItem label="Пошта" value={profile.email} />
          </ul>
          <h2 className={`${titleClassName} mt-2`}>Інформація про працівника</h2>
          <ul className="flex flex-col gap-1">
             <ListItem label="Серійний номер" value={profile.code} />
             <ListItem label="Посада" value={profile.position} />
             {profile.shift !== null && <ListItem label="Графік роботи" value={profile.shift.name} />}
-            <ListItem label="Стаж" value="-" />
+            <ListItem label="У системі" value={formatTenure(profile.created_at)} />
          </ul>
       </div>
    )

@@ -7,10 +7,11 @@ import { TablePagination } from "@/components/Table/TablePagination"
 import { useAllProfiles } from "@/hooks/api/profile/useAllProfiles"
 import { useShifts } from "@/hooks/api/shifts/useShifts"
 import { useDebouncedValue } from "@/hooks/api/useDebouncedValue"
+import { formatTenure } from "@/utils/time"
 
 const ALL_SHIFT_LABEL = "Всі зміни"
 
-const columns = ["Працівник", "Посада", "Зміна", "Стаж", "Заробітна плата", "Бонуси", "Продуктивність", ""]
+const columns = ["Працівник", "Посада", "Зміна", "У системі", "Заробітна плата", "Бонуси", "Продуктивність", ""]
 
 const tableClassNames = "min-w-300 grid-cols-[2fr_1.5fr_1.5fr_1fr_1fr_1fr_1fr_48px]"
 
@@ -106,8 +107,15 @@ export function EmployeesTable() {
                   <Table.Row key={employee.id} to={`/employees/${employee.user_id}`}>
                      <Table.Person avatarUrl={"123"} name={employee.first_name} code={employee.code} />
                      <Table.Text text={employee.position} />
-                     <Table.Shift shift={employee.shift} />
-                     <Table.Text text="1 рік" className="text-(--second-color)" />
+                     <Table.TextGroup
+                        primary={employee.shift?.name ?? "Не призначено"}
+                        secondary={
+                           employee.shift?.start_at && employee.shift?.end_at
+                              ? `${employee.shift.start_at.slice(0, 5)} – ${employee.shift.end_at.slice(0, 5)}`
+                              : ""
+                        }
+                     />
+                     <Table.Text text={formatTenure(employee.created_at)} className="text-(--second-color)" />
                      <Table.Money value={employee.salary} className="font-medium" />
                      <Table.Money value={employee.points} className="font-medium" />
                      <Table.Percent value={123} />
