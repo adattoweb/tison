@@ -8,6 +8,12 @@ export const ProductUpdateSchema = z.object({
    parent_id: optionalId,
 })
 
+export const makeProductUpdateSchema = (productId: number) =>
+   ProductUpdateSchema.refine(d => d.parent_id !== productId, {
+      message: "Виріб не може бути батьком самого себе",
+      path: ["parent_id"],
+   })
+
 export const ProductCreateSchema = ProductUpdateSchema.extend({
    product_model_id: z.number({ error: "Оберіть модель виробу" }).int(),
 })

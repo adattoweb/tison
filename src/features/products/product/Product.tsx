@@ -1,5 +1,4 @@
-import { useParams } from "react-router"
-import { mockProducts } from "../products"
+import { useNavigate, useParams } from "react-router"
 import PageHeader from "@/components/UI/PageHeader"
 import { ErrorPage } from "@/components/ErrorPage/ErrorPage"
 import PageDescription from "@/components/UI/PageDescription"
@@ -9,6 +8,15 @@ import { History } from "./History"
 import { Chart } from "./Chart"
 import DashboardAnalysis from "@/features/dashboard/DashboardAnalysis"
 import { useLayoutMode, type LayoutMode } from "@/hooks/ui/useLayoutMode"
+import { useProduct } from "@/hooks/api/products/useProduct"
+import { useOrder } from "@/hooks/api/orders/useOrder"
+import { useAllProductModels } from "@/hooks/api/productModels/useAllProductModels"
+import Button from "@/components/UI/Button"
+import { EditIcon, Trash } from "lucide-react"
+import { useState } from "react"
+import { ConfirmModal } from "@/components/Modal/ConfirmModal"
+import { useDeleteProduct } from "@/hooks/api/products/useDeleteProduct"
+import { UpdateProductModal } from "./UpdateProductModal"
 
 const WIDE_AREAS = `
    "header header header header header header header header header header"
@@ -40,27 +48,72 @@ const AREAS_BY_MODE: Record<LayoutMode, string> = {
 export function Product() {
    const mode = useLayoutMode()
    const { id } = useParams()
-   const product = mockProducts.find(el => el.id === Number(id))
-   if (product === undefined) return <ErrorPage />
+   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false)
+   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false)
+   const { mutate: doDelete } = useDeleteProduct()
+
+   const navigate = useNavigate()
+   const onDelete = () => {
+      doDelete(Number(id))
+      navigate("/products")
+   }
+
+   // "abc" або відсутній id дають undefined, і запит не виконується
+   const parsedId = id !== undefined ? Number(id) : NaN
+   const productId = Number.isInteger(parsedId) ? parsedId : undefined
+
+   const { data: product, isLoading, isError } = useProduct(productId)
+   // планова дата завершення є в замовлення, а не у виробу
+   const { data: order } = useOrder(product?.order_id ?? undefined)
+   const { data: modelsData } = useAllProductModels({ page: 1, pageSize: 100, isActive: true })
+   const model = modelsData?.items.find(m => m.id === product?.product_model_id)
+
+   if (productId === undefined || isError) return <ErrorPage />
+
+   if (isLoading || !product) {
+      return <p className="py-8 text-center text-(--second-color)">Завантаження...</p>
+   }
+
    return (
       <div className="flex flex-col gap-(--components-gap)">
-         <div>
-            <PageHeader>{product.code}</PageHeader>
-            <PageDescription>{product.model}</PageDescription>
+         <div className="flex justify-between items-center">
+            <div>
+               <PageHeader>{product.code}</PageHeader>
+               <PageDescription>{model?.title ?? `Модель #${product.product_model_id}`}</PageDescription>
+            </div>
+            <div className="flex gap-4">
+               <Button onClick={() => setIsUpdateModalOpen(true)} type="accent" className="h-min">
+                  <Button.Icon Icon={EditIcon} />
+                  <Button.Paragraph>Редагувати</Button.Paragraph>
+               </Button>
+               <Button
+                  onClick={() => setIsConfirmModalOpen(true)}
+                  type="accent"
+                  className="h-min bg-(--accent-color) text-black"
+               >
+                  <Button.Icon Icon={Trash} className="stroke-black!" />
+                  <Button.Paragraph>Видалити</Button.Paragraph>
+               </Button>
+            </div>
          </div>
          <div
             className="grid grid-cols-[repeat(10,1fr)] gap-(--components-gap) w-full"
-            style={{
-               gridTemplateAreas: AREAS_BY_MODE[mode],
-            }}
+            style={{ gridTemplateAreas: AREAS_BY_MODE[mode] }}
          >
             <ProductHeader />
-            <Info product={product} />
+            <Info product={product} model={model} order={order} />
             <History />
             <Chart />
-            {/* <Prediction /> */}
             <DashboardAnalysis />
          </div>
+         <UpdateProductModal isOpen={isUpdateModalOpen} product={product} onClose={() => setIsUpdateModalOpen(false)} />
+         <ConfirmModal
+            isOpen={isConfirmModalOpen}
+            onClose={() => setIsConfirmModalOpen(false)}
+            onConfirm={onDelete}
+            title="Видалити станцію"
+            description="Ви впевнені, що хочете видалити станцію?"
+         />
       </div>
    )
 }
