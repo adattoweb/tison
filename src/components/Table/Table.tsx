@@ -150,14 +150,14 @@ function Person({ avatarUrl, name, code }: PersonProps) {
 
 interface TextGroupProps {
    primary: string
-   secondary: string
+   secondary: string | null
 }
 
 function TextGroup({ primary, secondary }: TextGroupProps) {
    return (
       <div className="min-w-0">
          <div className="truncate text-white text-base">{primary}</div>
-         <div className="truncate text-(--second-color)">{secondary}</div>
+         {secondary !== null && <div className="truncate text-(--second-color)">{secondary}</div>}
       </div>
    )
 }

@@ -11,18 +11,22 @@ import { ConfirmModal } from "@/components/Modal/ConfirmModal"
 import { ErrorPage } from "@/components/ErrorPage/ErrorPage"
 import { useDeleteOperationType } from "@/hooks/api/operationTypes/useDeleteOperationTypes"
 import { operationTypes } from "@/routes/operationTypes"
+import { useToast } from "@/components/Toast/useToast"
+import { TOAST_DURATION } from "@/constants/app"
 
 export function OperationType() {
    const { id } = useParams()
    const { data: type } = useOperationType(Number(id))
    const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false)
    const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false)
+   const { addToast } = useToast()
 
    const { mutate: doDelete } = useDeleteOperationType(Number(id))
    const navigate = useNavigate()
 
    const onClose = () => setIsConfirmModalOpen(false)
    const onDelete = () => {
+      addToast("Успішно видалено тип операції!", { duration: TOAST_DURATION, type: "success" })
       navigate(`/${operationTypes.path}`)
       doDelete()
    }

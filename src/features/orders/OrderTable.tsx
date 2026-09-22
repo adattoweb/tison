@@ -17,6 +17,7 @@ import { useDeleteOrder } from "@/hooks/api/orders/useDeleteOrder"
 import { ConfirmModal } from "@/components/Modal/ConfirmModal"
 import { UpdateOrderModal } from "./UpdateOrderModal"
 import { RowMenu } from "@/components/Table/RowMenu"
+import { TOAST_DURATION } from "@/constants/app"
 
 interface StatusOption {
    value: StatusType | undefined
@@ -243,7 +244,7 @@ export function OrderTable() {
                if (!deletingOrder) return
                doDeleteOrder(deletingOrder.id, {
                   onSuccess: () => {
-                     addToast("Успішно видалено замовлення!", { duration: 3000, type: "success" })
+                     addToast("Успішно видалено замовлення!", { duration: TOAST_DURATION, type: "success" })
                      // видалили останній запис на сторінці, повертаємось на попередню
                      if (orders.length === 1 && page > 1) setPage(page - 1)
                   },

@@ -11,6 +11,7 @@ import Dropdown from "@/components/UI/Dropdown"
 import { FieldError } from "@/components/UI/FieldError"
 import { Input } from "@/components/UI/Input"
 import { Textarea } from "@/components/UI/Textarea"
+import { TOAST_DURATION } from "@/constants/app"
 import { useUpdateInstruction } from "@/hooks/api/instructions/useUpdateInstruction"
 import { useAllOperationTypes } from "@/hooks/api/operationTypes/useAllOperationTypes"
 import { titleClassName } from "@/utils/classNames"
@@ -240,7 +241,7 @@ function ActiveStepForm({ step, onClose }: ActiveStepFormProps) {
          },
          {
             onSuccess: () => {
-               addToast("Успішно оновлено інструкцію!", { duration: 3000, type: "success" })
+               addToast("Успішно оновлено інструкцію!", { duration: TOAST_DURATION, type: "success" })
                onClose()
             },
          },

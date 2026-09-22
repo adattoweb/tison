@@ -10,6 +10,8 @@ import { TimeDropdown } from "@/components/UI/TimeDropdown"
 import { FieldError } from "@/components/UI/FieldError"
 import { useUpdateStation } from "@/hooks/api/station/useUpdateStation"
 import type { StationListRead } from "@/api/types/station"
+import { useToast } from "@/components/Toast/useToast"
+import { TOAST_DURATION } from "@/constants/app"
 
 interface ModalProps {
    isOpen: boolean
@@ -23,6 +25,7 @@ export function UpdateStationModal({ isOpen, setIsOpen, station }: ModalProps) {
    const { data: departments } = useAllDepartments({ page: 1, pageSize: 100 })
    const { data: profilesPage } = useAllProfiles({ page: 1, pageSize: 100 })
    const { mutate: updateStation, isPending } = useUpdateStation(station.id)
+   const { addToast } = useToast()
 
    const {
       control,
@@ -43,6 +46,7 @@ export function UpdateStationModal({ isOpen, setIsOpen, station }: ModalProps) {
    const onSubmit = (values: StationCreateForm) => {
       updateStation(values, {
          onSuccess: () => {
+            addToast("Успішно відредаговано станцію!", { duration: TOAST_DURATION, type: "success" })
             reset()
             onClose()
          },

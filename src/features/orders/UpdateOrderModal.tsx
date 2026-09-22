@@ -7,7 +7,7 @@ import { DatePickerField } from "@/components/UI/DatePickerField"
 import Dropdown from "@/components/UI/Dropdown"
 import { FieldError } from "@/components/UI/FieldError"
 import { Input } from "@/components/UI/Input"
-import { STATUS_OPTIONS } from "@/constants/status"
+import { TOAST_DURATION } from "@/constants/app"
 import { useUpdateOrder } from "@/hooks/api/orders/useUpdateOrder"
 import { useAllProductModels } from "@/hooks/api/productModels/useAllProductModels"
 import { endOfDay, startOfDay } from "@/utils/time"
@@ -46,7 +46,6 @@ export function UpdateOrderModal({ isOpen, order, onClose, onDelete }: UpdateOrd
          product_model_id: order.product_model_id,
          plan: order.plan,
          fact: order.fact,
-         status: order.status,
          planned_start_at: toIso(order.planned_start_at),
          planned_end_at: toIso(order.planned_end_at),
       },
@@ -64,7 +63,7 @@ export function UpdateOrderModal({ isOpen, order, onClose, onDelete }: UpdateOrd
          },
          {
             onSuccess: () => {
-               addToast("Успішно оновлено замовлення!", { duration: 3000, type: "success" })
+               addToast("Успішно оновлено замовлення!", { duration: TOAST_DURATION, type: "success" })
                onClose()
             },
          },
@@ -135,7 +134,7 @@ export function UpdateOrderModal({ isOpen, order, onClose, onDelete }: UpdateOrd
                      <FieldError message={errors.fact?.message} />
                   </div>
 
-                  <div className="md:col-span-2">
+                  {/* <div className="md:col-span-2">
                      <Controller
                         name="status"
                         control={control}
@@ -168,7 +167,7 @@ export function UpdateOrderModal({ isOpen, order, onClose, onDelete }: UpdateOrd
                         }}
                      />
                      <FieldError message={errors.status?.message} />
-                  </div>
+                  </div> */}
 
                   <div>
                      <Controller

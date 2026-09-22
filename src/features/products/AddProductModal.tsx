@@ -4,6 +4,7 @@ import { useToast } from "@/components/Toast/useToast"
 import Button from "@/components/UI/Button"
 import { FieldError } from "@/components/UI/FieldError"
 import { SelectField, type SelectOption } from "@/components/UI/SelectField"
+import { TOAST_DURATION } from "@/constants/app"
 import { useAllOrders } from "@/hooks/api/orders/useAllOrders"
 import { useAllProductModels } from "@/hooks/api/productModels/useAllProductModels"
 import { useAllProducts } from "@/hooks/api/products/useAllProducts"
@@ -75,7 +76,7 @@ export function AddProductModal({ isOpen, setIsOpen }: ModalProps) {
          },
          {
             onSuccess: () => {
-               addToast("Успішно створено виріб!", { duration: 3000, type: "success" })
+               addToast("Успішно створено виріб!", { duration: TOAST_DURATION, type: "success" })
                onClose()
             },
          },

@@ -1,11 +1,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { deleteStation } from "@/api/endpoints/stations"
 
-export function useDeleteStation(id: number) {
+export function useDeleteStation() {
    const queryClient = useQueryClient()
    return useMutation({
-      mutationFn: () => deleteStation(id),
-      onSuccess: () => {
+      mutationFn: (id: number) => deleteStation(id),
+      onSuccess: (_data, id) => {
          queryClient.invalidateQueries({ queryKey: ["stations"] })
          queryClient.removeQueries({ queryKey: ["station", id] })
       },

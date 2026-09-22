@@ -5,6 +5,7 @@ import { useToast } from "@/components/Toast/useToast"
 import Button from "@/components/UI/Button"
 import { FieldError } from "@/components/UI/FieldError"
 import { Input } from "@/components/UI/Input"
+import { TOAST_DURATION } from "@/constants/app"
 import { useUpdateDepartment } from "@/hooks/api/departments/useUpdateDepartment"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { NotebookPenIcon } from "lucide-react"
@@ -58,7 +59,7 @@ export function UpdateDepartmentModal({ department, isOpen, setIsOpen }: ModalPr
          },
          {
             onSuccess: () => {
-               addToast("Успішно відредаговано відділ!", { duration: 3000, type: "success" })
+               addToast("Успішно оновлено відділ!", { duration: TOAST_DURATION, type: "success" })
                onClose()
             },
          },

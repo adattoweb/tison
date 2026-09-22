@@ -6,6 +6,7 @@ import Button from "@/components/UI/Button"
 import { FieldError } from "@/components/UI/FieldError"
 import { Input } from "@/components/UI/Input"
 import { Textarea } from "@/components/UI/Textarea"
+import { TOAST_DURATION } from "@/constants/app"
 import { useUpdateProductModel } from "@/hooks/api/productModels/useUpdateProductModel"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { NotebookPenIcon, ShapesIcon } from "lucide-react"
@@ -49,7 +50,7 @@ export function UpdateProductModelModal({ isOpen, model, onClose }: UpdateProduc
          },
          {
             onSuccess: () => {
-               addToast("Успішно оновлено модель виробу!", { duration: 3000, type: "success" })
+               addToast("Успішно оновлено модель виробу!", { duration: TOAST_DURATION, type: "success" })
                onClose()
             },
          },

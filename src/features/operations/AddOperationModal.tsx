@@ -8,6 +8,8 @@ import { useAllOperationTypes } from "@/hooks/api/operationTypes/useAllOperation
 import { useAllProducts } from "@/hooks/api/products/useAllProducts"
 import { useCreateOperation } from "@/hooks/api/operations/useCreateOperation"
 import { FieldError } from "@/components/UI/FieldError"
+import { useToast } from "@/components/Toast/useToast"
+import { TOAST_DURATION } from "@/constants/app"
 
 interface ModalProps {
    isOpen: boolean
@@ -20,6 +22,7 @@ export function AddOperationModal({ isOpen, setIsOpen }: ModalProps) {
    const { data: operationTypes } = useAllOperationTypes({ page: 1, pageSize: 100, isActive: true, search: "" })
    const { data: products } = useAllProducts({ page: 1, pageSize: 100 })
    const { mutate: createOperation, isPending } = useCreateOperation()
+   const { addToast } = useToast()
 
    const {
       control,
@@ -34,6 +37,7 @@ export function AddOperationModal({ isOpen, setIsOpen }: ModalProps) {
    const onSubmit = (values: OperationCreateForm) => {
       createOperation(values, {
          onSuccess: () => {
+            addToast("Успішно створено операцію!!", { duration: TOAST_DURATION, type: "success" })
             reset()
             onClose()
          },

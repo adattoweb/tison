@@ -4,6 +4,7 @@ import { useToast } from "@/components/Toast/useToast"
 import Button from "@/components/UI/Button"
 import { FieldError } from "@/components/UI/FieldError"
 import { Input } from "@/components/UI/Input"
+import { TOAST_DURATION } from "@/constants/app"
 import { useCreateDepartment } from "@/hooks/api/departments/useCreateDepartment"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { NotebookPenIcon } from "lucide-react"
@@ -39,7 +40,7 @@ export function AddDepartmentModal({ isOpen, setIsOpen }: ModalProps) {
    const onSubmit: SubmitHandler<DepartmentBaseInput> = data => {
       doCreateDepartment(data, {
          onSuccess: () => {
-            addToast("Успішно створено відділ!", { duration: 3000, type: "success" })
+            addToast("Успішно створено відділ!", { duration: TOAST_DURATION, type: "success" })
             onClose()
          },
       })

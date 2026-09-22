@@ -12,6 +12,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import clsx from "clsx"
 import { ClockIcon, NotebookPenIcon, WrenchIcon } from "lucide-react"
 import { Controller, useForm, type SubmitHandler } from "react-hook-form"
+import { TOAST_DURATION } from "@/constants/app"
 
 interface ModalProps {
    isOpen: boolean
@@ -50,7 +51,7 @@ export function AddInstructionModal({ isOpen, setIsOpen, modelId }: ModalProps) 
    const onSubmit: SubmitHandler<InstructionCreateInput> = data => {
       doCreateInstruction(data, {
          onSuccess: () => {
-            addToast("Успішно створено інструкцію!", { duration: 3000, type: "success" })
+            addToast("Успішно створено інструкцію!", { duration: TOAST_DURATION, type: "success" })
             onClose()
          },
       })

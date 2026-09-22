@@ -6,6 +6,7 @@ import { FieldError } from "@/components/UI/FieldError"
 import { Input } from "@/components/UI/Input"
 import { SelectField, type SelectOption } from "@/components/UI/SelectField"
 import { Textarea } from "@/components/UI/Textarea"
+import { TOAST_DURATION } from "@/constants/app"
 import { useCreateDefect } from "@/hooks/api/defects/useCreateDefect"
 import { useAllOperations } from "@/hooks/api/operations/useAllOperations"
 import type { StatusType } from "@/types/status"
@@ -68,7 +69,7 @@ export function AddDefectModal({ isOpen, setIsOpen, operationId }: ModalProps) {
          },
          {
             onSuccess: () => {
-               addToast("Успішно створено дефект!", { duration: 3000, type: "success" })
+               addToast("Успішно створено дефект!", { duration: TOAST_DURATION, type: "success" })
                onClose()
             },
          },

@@ -7,6 +7,7 @@ import Dropdown from "@/components/UI/Dropdown"
 import { FieldError } from "@/components/UI/FieldError"
 import { Input } from "@/components/UI/Input"
 import { Textarea } from "@/components/UI/Textarea"
+import { TOAST_DURATION } from "@/constants/app"
 import { DEFECT_STATUS } from "@/constants/status"
 import { useUpdateDefect } from "@/hooks/api/defects/useUpdateDefect"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -60,7 +61,7 @@ export function UpdateDefectModal({ isOpen, defect, onClose, onDelete }: UpdateD
          },
          {
             onSuccess: () => {
-               addToast("Успішно оновлено дефект!", { duration: 3000, type: "success" })
+               addToast("Успішно оновлено дефект!", { duration: TOAST_DURATION, type: "success" })
                onClose()
             },
          },

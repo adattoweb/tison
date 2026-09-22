@@ -5,6 +5,7 @@ import Button from "@/components/UI/Button"
 import { FieldError } from "@/components/UI/FieldError"
 import { Input } from "@/components/UI/Input"
 import { Textarea } from "@/components/UI/Textarea"
+import { TOAST_DURATION } from "@/constants/app"
 import { useCreateProductModel } from "@/hooks/api/productModels/useCreateProductModel"
 import { zodResolver } from "@hookform/resolvers/zod"
 import clsx from "clsx"
@@ -56,7 +57,7 @@ export function AddModelModal({ isOpen, setIsOpen }: ModalProps) {
          },
          {
             onSuccess: () => {
-               addToast("Успішно створено модель виробу!", { duration: 3000, type: "success" })
+               addToast("Успішно створено модель виробу!", { duration: TOAST_DURATION, type: "success" })
                onClose()
             },
          },

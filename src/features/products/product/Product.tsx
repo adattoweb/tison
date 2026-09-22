@@ -18,6 +18,7 @@ import { ConfirmModal } from "@/components/Modal/ConfirmModal"
 import { useDeleteProduct } from "@/hooks/api/products/useDeleteProduct"
 import { UpdateProductModal } from "./UpdateProductModal"
 import { useToast } from "@/components/Toast/useToast"
+import { TOAST_DURATION } from "@/constants/app"
 
 const WIDE_AREAS = `
    "header header header header header header header header header header"
@@ -57,7 +58,7 @@ export function Product() {
    const navigate = useNavigate()
    const onDelete = () => {
       doDelete(Number(id), {
-         onSuccess: () => addToast("Виріб успішно видалено!", { type: "success", duration: 4000 }),
+         onSuccess: () => addToast("Успішно видалено виріб!", { type: "success", duration: TOAST_DURATION }),
       })
       navigate("/products")
    }

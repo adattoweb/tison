@@ -19,6 +19,7 @@ import { useState } from "react"
 import { UpdateDefectModal } from "./UpdateDefectModal"
 import { ConfirmModal } from "@/components/Modal/ConfirmModal"
 import { useToast } from "@/components/Toast/useToast"
+import { TOAST_DURATION } from "@/constants/app"
 
 const WIDE_AREAS = `
    "header header header header header header header header header header"
@@ -67,7 +68,7 @@ export function Defect() {
    const navigate = useNavigate()
    const onDelete = () => {
       doDelete(Number(id), {
-         onSuccess: () => addToast("Дефект успішно видалено!", { type: "success", duration: 4000 }),
+         onSuccess: () => addToast("Успішно видалено дефект", { type: "success", duration: TOAST_DURATION }),
       })
       navigate("/defects")
    }

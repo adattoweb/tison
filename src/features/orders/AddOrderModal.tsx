@@ -11,67 +11,20 @@ import { useCreateOrder } from "@/hooks/api/orders/useCreateOrder"
 import { useAllProductModels } from "@/hooks/api/productModels/useAllProductModels"
 import { endOfDay, startOfDay } from "@/utils/time"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { DayPicker, getDefaultClassNames } from "@daypicker/react"
 import clsx from "clsx"
-import { CalendarIcon, CheckCheckIcon, SquareChartGantt } from "lucide-react"
-import { useState } from "react"
+import { CheckCheckIcon, SquareChartGantt } from "lucide-react"
 import { Controller, useForm, type SubmitHandler } from "react-hook-form"
+import { TOAST_DURATION } from "@/constants/app"
+import { DatePickerField } from "@/components/UI/DatePickerField"
 
 interface ModalProps {
    isOpen: boolean
    setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-interface DatePickerFieldProps {
-   label: string
-   value: string // ISO-рядок або ""
-   onChange: (date: Date) => void
-   minDate: Date
-   hasError: boolean
-}
-
-function DatePickerField({ label, value, onChange, minDate, hasError }: DatePickerFieldProps) {
-   const [open, setOpen] = useState(false)
-   const selected = value ? new Date(value) : undefined
-   const defaultClassNames = getDefaultClassNames()
-
-   return (
-      <div className="flex flex-col gap-1.5 w-full">
-         <Modal.Label>{label}</Modal.Label>
-         <Dropdown className="w-full!" open={open} onOpenChange={setOpen}>
-            <Dropdown.Button className={clsx("w-full h-11", hasError && "border-red-400!")}>
-               <span className="flex items-center gap-2 min-w-0">
-                  <CalendarIcon className="size-5 stroke-white shrink-0" strokeWidth={2} />
-                  <span className={clsx("truncate", !selected && "opacity-60")}>
-                     {selected ? selected.toLocaleDateString("uk-UA") : "Оберіть день"}
-                  </span>
-               </span>
-               <Dropdown.Chevron />
-            </Dropdown.Button>
-            <Dropdown.Content className="w-full items-center justify-cente max-h-max! px-4 py-2">
-               <DayPicker
-                  mode="single"
-                  startMonth={minDate}
-                  selected={selected}
-                  onSelect={date => {
-                     if (!date) return
-                     onChange(date)
-                     setOpen(false)
-                  }}
-                  disabled={{ before: minDate }}
-                  classNames={{
-                     root: `${defaultClassNames.root} rdp-my-root`,
-                  }}
-               />
-            </Dropdown.Content>
-         </Dropdown>
-      </div>
-   )
-}
-
 export function AddOrderModal({ isOpen, setIsOpen }: ModalProps) {
    const { mutate: doCreateOrder, isPending } = useCreateOrder()
-   const { data: modelsData } = useAllProductModels({ page: 1, pageSize: 100 })
+   const { data: modelsData } = useAllProductModels({ page: 1, pageSize: 100, isActive: true })
    const { addToast } = useToast()
 
    const productModels = modelsData?.items ?? []
@@ -107,7 +60,7 @@ export function AddOrderModal({ isOpen, setIsOpen }: ModalProps) {
    const onSubmit: SubmitHandler<OrderCreateInput> = data => {
       doCreateOrder(data, {
          onSuccess: () => {
-            addToast("Успішно створено замовлення!", { duration: 3000, type: "success" })
+            addToast("Успішно створено замовлення!", { duration: TOAST_DURATION, type: "success" })
             onClose()
          },
       })

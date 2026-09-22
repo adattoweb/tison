@@ -12,6 +12,7 @@ import { useAllDepartments } from "@/hooks/api/departments/useAllDepartments"
 import { useDeleteDepartment } from "@/hooks/api/departments/useDeleteDepartment"
 import { useDebouncedValue } from "@/hooks/api/useDebouncedValue"
 import { DEFAULT_PAGE_SIZE } from "@/constants/pagination"
+import { TOAST_DURATION } from "@/constants/app"
 
 const columns = ["Назва", ""]
 
@@ -98,7 +99,7 @@ export function DepartmentsTable() {
                      setPageSize(size)
                      setPage(1)
                   }}
-                  entityLabel="департаментів"
+                  entityLabel="відділів"
                   className="min-w-300"
                />
             </Table>
@@ -113,15 +114,15 @@ export function DepartmentsTable() {
                if (!deletingDepartment) return
                doDeleteDepartment(deletingDepartment.id, {
                   onSuccess: () => {
-                     addToast("Успішно видалено департамент!", { duration: 3000, type: "success" })
+                     addToast("Успішно видалено відділ!", { duration: TOAST_DURATION, type: "success" })
                      // видалили останній запис на сторінці, повертаємось на попередню
                      if (departments.length === 1 && page > 1) setPage(page - 1)
                   },
                })
             }}
-            title="Видалити департамент?"
+            title="Видалити Відділ?"
             description={
-               deletingDepartment ? `Департамент «${deletingDepartment.name}» буде видалено безповоротно.` : undefined
+               deletingDepartment ? `Відділ «${deletingDepartment.name}» буде видалено безповоротно.` : undefined
             }
             confirmLabel="Видалити"
             cancelLabel="Скасувати"

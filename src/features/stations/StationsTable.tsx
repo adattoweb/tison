@@ -16,8 +16,8 @@ import type { StationListRead } from "@/api/types/station"
 const ALL = { department: "Всі дільниці", status: "Всі статуси" } as const
 const STATUS_OPTIONS = [ALL.status, ...Object.keys(STATUS)] as (typeof ALL.status | StatusType)[]
 
-const columns = ["ID Станції", "Дільниця", "Статус", "Час роботи", "Відповідальний", ""]
-const tableClassNames = "min-w-275 grid-cols-[1.3fr_1.6fr_1.3fr_1.8fr_1.8fr_48px]"
+const columns = ["ID Станції", "Дільниця", "Статус", "Час роботи", "Відповідальний"]
+const tableClassNames = "min-w-275 grid-cols-[1.3fr_1.6fr_1.3fr_1.8fr_1.8fr]"
 const DEFAULT_PAGE_SIZE = 10
 
 function Station({ station }: { station: StationListRead }) {
@@ -35,7 +35,6 @@ function Station({ station }: { station: StationListRead }) {
                   : `${responsible?.first_name} ${responsible?.last_name}`
             }
          />
-         <Table.MenuButton onClick={() => console.log("menu", station.id)} />
       </Table.Row>
    )
 }

@@ -6,6 +6,7 @@ import Button from "@/components/UI/Button"
 import Dropdown from "@/components/UI/Dropdown"
 import { FieldError } from "@/components/UI/FieldError"
 import { Input } from "@/components/UI/Input"
+import { TOAST_DURATION } from "@/constants/app"
 import { STATUS } from "@/constants/status"
 import { useUpdateOperation } from "@/hooks/api/operations/useUpdateOperation"
 import { useAllStations } from "@/hooks/api/station/useAllStations"
@@ -64,7 +65,7 @@ export function UpdateOperationModal({ isOpen, operation, onClose, onDelete }: U
          },
          {
             onSuccess: () => {
-               addToast("Успішно оновлено операцію!", { duration: 3000, type: "success" })
+               addToast("Успішно оновлено операцію!", { duration: TOAST_DURATION, type: "success" })
                onClose()
             },
          },

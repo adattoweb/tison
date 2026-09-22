@@ -9,6 +9,8 @@ import { useAllProfiles } from "@/hooks/api/profile/useAllProfiles"
 import { useCreateStation } from "@/hooks/api/station/useCreateStation"
 import { TimeDropdown } from "@/components/UI/TimeDropdown"
 import { FieldError } from "@/components/UI/FieldError"
+import { useToast } from "@/components/Toast/useToast"
+import { TOAST_DURATION } from "@/constants/app"
 
 interface ModalProps {
    isOpen: boolean
@@ -21,6 +23,7 @@ export function AddStationModal({ isOpen, setIsOpen }: ModalProps) {
    const { data: departments } = useAllDepartments({ page: 1, pageSize: 100 })
    const { data: profilesPage } = useAllProfiles({ page: 1, pageSize: 100 })
    const { mutate: createStation, isPending } = useCreateStation()
+   const { addToast } = useToast()
 
    const {
       control,
@@ -35,6 +38,7 @@ export function AddStationModal({ isOpen, setIsOpen }: ModalProps) {
    const onSubmit = (values: StationCreateForm) => {
       createStation(values, {
          onSuccess: () => {
+            addToast("Успішно створено станцію!", { duration: TOAST_DURATION, type: "success" })
             reset()
             onClose()
          },
