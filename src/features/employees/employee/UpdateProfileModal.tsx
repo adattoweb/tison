@@ -1,7 +1,7 @@
 import { useEffect } from "react"
 import { useForm, type SubmitHandler } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { AtSign, Briefcase, HandCoins, Phone, Send, Star, UserIcon } from "lucide-react"
+import { Briefcase, HandCoins, Phone, Send, Star, UserIcon } from "lucide-react"
 import { isAxiosError } from "axios"
 
 import Modal from "@/components/Modal/Modal"
@@ -50,7 +50,7 @@ export function UpdateProfileModal({ isOpen, setIsOpen, profile }: ModalProps) {
       control,
       reset,
       setError,
-      formState: { errors, isDirty },
+      formState: { errors },
    } = useForm<ProfileAdminUpdateFormInput, unknown, ProfileAdminUpdateInput>({
       resolver: zodResolver(ProfileAdminUpdateSchema),
       defaultValues,
@@ -78,12 +78,17 @@ export function UpdateProfileModal({ isOpen, setIsOpen, profile }: ModalProps) {
                if (isAxiosError<{ detail: string; field?: string }>(error) && error.response?.status === 409) {
                   const field = error.response.data?.field
 
-                  if (field === "email") {
-                     setError("email", { message: "Юзер з таким email вже існує" })
-                  } else if (field === "telegram") {
+                  if (field === "telegram") {
                      setError("telegram", { message: "Юзер з таким telegram вже існує" })
                   } else if (field === "phone") {
                      setError("phone", { message: "Юзер з таким телефоном вже існує" })
+                  }
+               }
+               if (isAxiosError(error) && error.response?.status === 422) {
+                  const detail = error.response.data?.detail
+                  const phoneError = detail?.find((e: any) => e.loc?.includes("phone"))
+                  if (phoneError) {
+                     setError("phone", { message: "Невірний номер телефону" })
                   }
                }
             },
@@ -132,17 +137,6 @@ export function UpdateProfileModal({ isOpen, setIsOpen, profile }: ModalProps) {
                         />
                         <FieldError message={errors.middle_name?.message} />
                      </div>
-                  </div>
-
-                  <div>
-                     <Input
-                        label="Електронна пошта"
-                        Icon={AtSign}
-                        placeholder="example@mail.com"
-                        hasError={!!errors.email}
-                        {...register("email")}
-                     />
-                     <FieldError message={errors.email?.message} />
                   </div>
 
                   <div>

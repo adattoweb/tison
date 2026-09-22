@@ -1,5 +1,4 @@
 import { z } from "zod"
-import { isValidPhoneNumber } from "libphonenumber-js"
 
 export const ProfileBaseSchema = z.object({
    first_name: z.string().min(1, "Обов'язкове поле").max(32),
@@ -15,9 +14,7 @@ export const ProfileBaseSchema = z.object({
    phone: z
       .string()
       .min(1, "Обов'язкове поле")
-      .refine(val => isValidPhoneNumber(val), {
-         message: "Невірний номер телефону",
-      }),
+      .regex(/^\+?[0-9]{9,15}$/, "Невірний формат телефону"),
    salary: z.coerce.number().int("Ціле число").nonnegative("Не може бути відʼємним"),
    position: z.string().min(1, "Обов'язкове поле").max(32),
    shift_id: z.preprocess(val => (val === "" || val === undefined ? null : Number(val)), z.number().int().nullable()),
@@ -42,7 +39,6 @@ export const ProfileAdminUpdateSchema = ProfileBaseSchema.pick({
    shift_id: true,
 }).extend({
    points: z.coerce.number().int("Ціле число").nonnegative("Не може бути відʼємним"),
-   email: z.string().email("Невірний формат email").max(100, "Максимум 100 символів"),
 })
 
 export type ProfileUpdateFormInput = z.input<typeof ProfileUpdateSchema>
