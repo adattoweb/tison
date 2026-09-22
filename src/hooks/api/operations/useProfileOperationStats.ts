@@ -1,10 +1,11 @@
 import { useQuery } from "@tanstack/react-query"
-import { getProfileOperationStats } from "@/api/endpoints/operations"
 
-export const useProfileOperationStats = (userId: string | undefined) => {
+import { getProfileOperationStats } from "@/api/endpoints/profiles"
+
+export function useProfileOperationStats(userId: string) {
    return useQuery({
-      queryKey: ["profile-operation-stats", userId],
-      queryFn: () => getProfileOperationStats(userId!),
+      queryKey: ["profile", userId, "operations", "stats"],
+      queryFn: () => getProfileOperationStats(userId),
       enabled: !!userId,
    })
 }

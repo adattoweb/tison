@@ -5,6 +5,7 @@ export interface ProfileRead {
    user_id: string
    created_at: string
    code: string
+   email: string
 
    salary: number
    points: number

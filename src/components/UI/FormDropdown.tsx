@@ -4,7 +4,7 @@ import clsx from "clsx"
 import Dropdown from "@/components/UI/Dropdown"
 
 interface Option {
-   value: number
+   value: number | null
    label: string
 }
 

@@ -3,13 +3,16 @@ import PageHeader from "@/components/UI/PageHeader"
 import { EmployeeHeader } from "./EmployeeHeader"
 import { Info } from "./Info"
 import { History } from "./History"
-import { Chart } from "./Chart"
 import DashboardAnalysis from "@/features/dashboard/DashboardAnalysis"
 import { useLayoutMode, type LayoutMode } from "@/hooks/ui/useLayoutMode"
 import { OperationsHeatmap } from "./OperationsHeatmap"
 import { useProfile } from "@/hooks/api/profile/useProfile"
 import { useProfileOperations } from "@/hooks/api/operations/useProfileOperations"
-import { useProfileOperationStats } from "@/hooks/api/operations/useProfileOperationStats"
+import Button from "@/components/UI/Button"
+import { EditIcon } from "lucide-react"
+import { mockClick } from "@/utils/mockClick"
+import { UpdateProfileModal } from "./UpdateProfileModal"
+import { useState } from "react"
 
 const WIDE_AREAS = `
    "header header header header header header header header header header"
@@ -46,8 +49,9 @@ export function Employee() {
    const { id } = useParams<{ id: string }>()
 
    const { data: profile, isLoading: isProfileLoading } = useProfile(id)
-   const { data: operations, isLoading: isOperationsLoading } = useProfileOperations(id)
-   const { data: operationStats, isLoading: isStatsLoading } = useProfileOperationStats(id)
+   const { data: operations, isLoading: isOperationsLoading } = useProfileOperations(String(id))
+
+   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false)
 
    if (isProfileLoading) {
       return <p className="py-8 text-center text-(--second-color)">Завантаження...</p>
@@ -58,25 +62,32 @@ export function Employee() {
    }
 
    return (
-      <div className="flex flex-col gap-(--components-gap)">
-         <div>
-            <PageHeader>
-               {profile.first_name} {profile.last_name}
-            </PageHeader>
+      <>
+         <div className="flex flex-col gap-(--components-gap)">
+            <div className="flex justify-between w-full">
+               <PageHeader>
+                  {profile.first_name} {profile.last_name}
+               </PageHeader>
+               <Button onClick={() => setIsUpdateModalOpen(true)} type="accent">
+                  <Button.Icon Icon={EditIcon} />
+                  <Button.Paragraph>Редагувати</Button.Paragraph>
+               </Button>
+            </div>
+            <div
+               className="grid grid-cols-[repeat(10,1fr)] gap-(--components-gap) w-full"
+               style={{
+                  gridTemplateAreas: AREAS_BY_MODE[mode],
+               }}
+            >
+               <EmployeeHeader profile={profile} />
+               <Info profile={profile} />
+               <History operations={operations ?? []} isLoading={isOperationsLoading} profile={profile} />
+               {/* <Chart stats={operationStats ?? []} isLoading={isStatsLoading} /> */}
+               <DashboardAnalysis />
+               <OperationsHeatmap />
+            </div>
          </div>
-         <div
-            className="grid grid-cols-[repeat(10,1fr)] gap-(--components-gap) w-full"
-            style={{
-               gridTemplateAreas: AREAS_BY_MODE[mode],
-            }}
-         >
-            <EmployeeHeader profile={profile} />
-            <Info profile={profile} />
-            <History operations={operations ?? []} isLoading={isOperationsLoading} profile={profile} />
-            {/* <Chart stats={operationStats ?? []} isLoading={isStatsLoading} /> */}
-            <DashboardAnalysis />
-            <OperationsHeatmap />
-         </div>
-      </div>
+         <UpdateProfileModal profile={profile} setIsOpen={setIsUpdateModalOpen} isOpen={isUpdateModalOpen} />
+      </>
    )
 }
