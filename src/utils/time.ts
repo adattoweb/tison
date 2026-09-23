@@ -106,3 +106,13 @@ export function formatTenure(iso: string | null | undefined, now: Date = new Dat
    const days = Math.floor((now.getTime() - start.getTime()) / 86_400_000)
    return days < 1 ? "Менше доби" : `${days} ${plural(days, "день", "дні", "днів")}`
 }
+
+export const toISODate = (date: Date) => {
+   const year = date.getFullYear()
+   const month = String(date.getMonth() + 1).padStart(2, "0")
+   const day = String(date.getDate()).padStart(2, "0")
+   return `${year}-${month}-${day}`
+}
+
+export const formatShortDate = (iso: string) =>
+   new Date(iso).toLocaleDateString("uk-UA", { day: "2-digit", month: "2-digit" })

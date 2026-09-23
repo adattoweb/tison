@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import {
    LineChart,
    Line,
@@ -8,6 +8,7 @@ import {
    Tooltip,
    ResponsiveContainer,
    Dot,
+   ReferenceLine,
    type TooltipContentProps,
 } from "recharts"
 import type { NameType, ValueType } from "recharts/types/component/DefaultTooltipContent"
@@ -15,29 +16,14 @@ import Dropdown from "@/components/UI/Dropdown"
 import type { WithClassName } from "@/types/common"
 import clsx from "clsx"
 import { titleClassName } from "@/utils/classNames"
+import { useProductionAnalyticsChart } from "@/hooks/api/productionAnalytics/useProductionAnalyticsChart"
+import { formatShortDate, toISODate } from "@/utils/time"
+import { Link } from "react-router"
 
-interface ChartPoint {
-   time: string
-   plan: number
-   fact: number
-}
-
-const chartData: ChartPoint[] = [
-   { time: "6:00", plan: 0, fact: 0 },
-   { time: "7:30", plan: 22, fact: 30 },
-   { time: "9:00", plan: 38, fact: 60 },
-   { time: "10:30", plan: 45, fact: 60 },
-   { time: "12:00", plan: 52, fact: 75 },
-   { time: "13:30", plan: 55, fact: 80 },
-   { time: "15:00", plan: 51, fact: 85 },
-   { time: "16:30", plan: 54, fact: 78 },
-   { time: "18:00", plan: 59, fact: 85 },
-]
-
-const PERIOD_OPTIONS = ["Сьогодні", "Тиждень", "Місяць"]
+const DAYS_OPTIONS = [3, 7, 14, 30] as const
 
 const SERIES_LABELS: Record<string, string> = {
-   plan: "План",
+   planned: "План",
    fact: "Факт",
 }
 
@@ -56,20 +42,30 @@ function StatRow({ label, value, valueColor = "text-white" }: StatRowProps) {
    )
 }
 
-interface LastPointDotProps {
-   cx?: number
-   cy?: number
-   index?: number
+interface ChartRow {
+   date: string
+   label: string
+   planned: number
+   fact: number
+   isDeadline: boolean
 }
 
-function LastPointDot({ cx, cy, index }: LastPointDotProps) {
-   if (cx === undefined || cy === undefined || index === undefined) return null
-   if (index !== chartData.length - 1) return null
-   return <Dot cx={cx} cy={cy} r={5} fill="var(--accent-color)" stroke="none" />
+interface DeadlineDotProps {
+   cx?: number
+   cy?: number
+   payload?: ChartRow
+}
+
+// Позначає точку на графіку діамантом, якщо на цей день припадає дедлайн замовлення
+function DeadlineDot({ cx, cy, payload }: DeadlineDotProps) {
+   if (cx === undefined || cy === undefined || !payload?.isDeadline) return null
+   return <Dot cx={cx} cy={cy} r={4} fill="#E06767" stroke="none" />
 }
 
 function CustomTooltip({ active, payload, label }: TooltipContentProps<ValueType, NameType>) {
    if (!active || !payload?.length) return null
+
+   const row = payload[0]?.payload as ChartRow | undefined
 
    return (
       <div className="min-w-35 rounded-md border border-(--stroke-color) bg-(--bg-color) px-3 py-2 shadow-lg">
@@ -83,12 +79,33 @@ function CustomTooltip({ active, payload, label }: TooltipContentProps<ValueType
                </p>
             )
          })}
+         {row?.isDeadline && <p className="mt-1 text-xs text-[#E06767]">Дедлайн замовлення</p>}
       </div>
    )
 }
 
 export default function DashboardAnalysis({ className }: WithClassName) {
-   const [period, setPeriod] = useState(PERIOD_OPTIONS[0])
+   const [days, setDays] = useState<number>(DAYS_OPTIONS[1])
+
+   // dateTo — сьогодні, dateFrom — days-1 днів тому включно з сьогодні
+   const { dateFrom, dateTo } = useMemo(() => {
+      const today = new Date()
+      const from = new Date(today)
+      from.setDate(from.getDate() - (days - 1))
+      return { dateFrom: toISODate(from), dateTo: toISODate(today) }
+   }, [days])
+
+   const { data, isLoading, isError } = useProductionAnalyticsChart({ dateFrom, dateTo })
+
+   const chartData: ChartRow[] = (data ?? []).map(point => ({
+      date: point.date,
+      label: formatShortDate(point.date),
+      planned: point.planned,
+      fact: point.fact,
+      isDeadline: point.is_deadline,
+   }))
+
+   const deadlineLabels = chartData.filter(row => row.isDeadline).map(row => row.label)
 
    return (
       <div
@@ -103,14 +120,14 @@ export default function DashboardAnalysis({ className }: WithClassName) {
 
             <Dropdown>
                <Dropdown.Button>
-                  <span className="font-normal text-white whitespace-nowrap">{period}</span>
+                  <span className="font-normal text-white whitespace-nowrap">{days} днів</span>
                   <Dropdown.Chevron />
                </Dropdown.Button>
 
                <Dropdown.Content>
-                  {PERIOD_OPTIONS.map(option => (
-                     <Dropdown.Item key={option} onClick={() => setPeriod(option)}>
-                        {option}
+                  {DAYS_OPTIONS.map(option => (
+                     <Dropdown.Item key={option} onClick={() => setDays(option)}>
+                        {option} днів
                      </Dropdown.Item>
                   ))}
                </Dropdown.Content>
@@ -132,12 +149,12 @@ export default function DashboardAnalysis({ className }: WithClassName) {
                   <StatRow label="Прогноз виконання плану" value="102%" valueColor="text-[#61D381]" />
                </div>
 
-               <a
-                  href="#"
+               <Link
+                  to="/analytics"
                   className="mt-auto text-sm font-medium text-(--accent-color) underline underline-offset-4 transition-opacity hover:opacity-80 lg:pt-8 "
                >
                   Детальніше
-               </a>
+               </Link>
             </div>
 
             <div className="flex w-full min-w-0 flex-col flex-1 min-h-0">
@@ -152,57 +169,89 @@ export default function DashboardAnalysis({ className }: WithClassName) {
                         <span className="h-px w-4 bg-white" />
                         Факт
                      </span>
+                     {deadlineLabels.length > 0 && (
+                        <span className="flex items-center gap-2">
+                           <span className="size-2 rounded-full bg-[#E06767]" />
+                           Дедлайн
+                        </span>
+                     )}
                   </div>
                </div>
 
                <div className="w-full flex-1 min-h-64">
-                  <ResponsiveContainer width="100%" height="100%">
-                     <LineChart data={chartData} margin={{ top: 0, right: 8, left: -8, bottom: 0 }}>
-                        <CartesianGrid vertical={false} stroke="var(--stroke-color)" />
-                        <XAxis
-                           dataKey="time"
-                           axisLine={{ stroke: "var(--stroke-color)" }}
-                           tickLine={false}
-                           tick={{ fill: "var(--second-color)", fontSize: 12 }}
-                           interval="preserveStartEnd"
-                           minTickGap={24}
-                        />
-                        <YAxis
-                           domain={[0, 100]}
-                           ticks={[0, 25, 50, 75, 100]}
-                           axisLine={false}
-                           tickLine={false}
-                           tick={{ fill: "var(--second-color)", fontSize: 12 }}
-                           width={32}
-                        />
-                        <Tooltip
-                           content={CustomTooltip}
-                           cursor={{ stroke: "var(--stroke-color)" }}
-                           isAnimationActive={false}
-                           allowEscapeViewBox={{ x: false, y: true }}
-                           wrapperStyle={{ outline: "none" }}
-                        />
-                        <Line
-                           type="linear"
-                           dataKey="plan"
-                           stroke="var(--accent-color)"
-                           strokeWidth={2}
-                           strokeDasharray="4 4"
-                           dot={false}
-                           isAnimationActive={false}
-                           activeDot={{ r: 4, fill: "var(--accent-color)" }}
-                        />
-                        <Line
-                           type="linear"
-                           dataKey="fact"
-                           stroke="#ffffff"
-                           strokeWidth={2}
-                           dot={<LastPointDot />}
-                           isAnimationActive={false}
-                           activeDot={{ r: 4, fill: "#ffffff" }}
-                        />
-                     </LineChart>
-                  </ResponsiveContainer>
+                  {isLoading && (
+                     <div className="flex h-full items-center justify-center text-(--second-color)">
+                        Завантаження...
+                     </div>
+                  )}
+
+                  {isError && (
+                     <div className="flex h-full items-center justify-center text-red-400">
+                        Не вдалося завантажити дані
+                     </div>
+                  )}
+
+                  {!isLoading && !isError && chartData.length === 0 && (
+                     <div className="flex h-full items-center justify-center text-(--second-color)">Даних немає</div>
+                  )}
+
+                  {!isLoading && !isError && chartData.length > 0 && (
+                     <ResponsiveContainer width="100%" height="100%">
+                        <LineChart data={chartData} margin={{ top: 0, right: 8, left: -8, bottom: 0 }}>
+                           <CartesianGrid vertical={false} stroke="var(--stroke-color)" />
+                           <XAxis
+                              dataKey="label"
+                              axisLine={{ stroke: "var(--stroke-color)" }}
+                              tickLine={false}
+                              tick={{ fill: "var(--second-color)", fontSize: 12 }}
+                              interval="preserveStartEnd"
+                              minTickGap={24}
+                           />
+                           <YAxis
+                              allowDecimals={false}
+                              axisLine={false}
+                              tickLine={false}
+                              tick={{ fill: "var(--second-color)", fontSize: 12 }}
+                              width={32}
+                           />
+                           <Tooltip
+                              content={CustomTooltip}
+                              cursor={{ stroke: "var(--stroke-color)" }}
+                              isAnimationActive={false}
+                              allowEscapeViewBox={{ x: false, y: true }}
+                              wrapperStyle={{ outline: "none" }}
+                           />
+                           {deadlineLabels.map(label => (
+                              <ReferenceLine
+                                 key={label}
+                                 x={label}
+                                 stroke="#E06767"
+                                 strokeDasharray="3 3"
+                                 strokeOpacity={0.5}
+                              />
+                           ))}
+                           <Line
+                              type="linear"
+                              dataKey="planned"
+                              stroke="var(--accent-color)"
+                              strokeWidth={2}
+                              strokeDasharray="4 4"
+                              dot={false}
+                              isAnimationActive={false}
+                              activeDot={{ r: 4, fill: "var(--accent-color)" }}
+                           />
+                           <Line
+                              type="linear"
+                              dataKey="fact"
+                              stroke="#ffffff"
+                              strokeWidth={2}
+                              dot={<DeadlineDot />}
+                              isAnimationActive={false}
+                              activeDot={{ r: 4, fill: "#ffffff" }}
+                           />
+                        </LineChart>
+                     </ResponsiveContainer>
+                  )}
                </div>
             </div>
          </div>
