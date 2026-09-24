@@ -57,7 +57,7 @@ export function Dashboard() {
             <DashboardAnalysis />
             <DashboardStats />
             <DashboardChart />
-            {/* <DashboardPlanning /> */}
+            <DashboardPlanning />
          </div>
       </>
    )
