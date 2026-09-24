@@ -6,7 +6,6 @@ import { ProductHeader } from "./ProductHeader"
 import { Info } from "./Info"
 import { History } from "./History"
 import { Chart } from "./Chart"
-import DashboardAnalysis from "@/features/dashboard/DashboardAnalysis"
 import { useLayoutMode, type LayoutMode } from "@/hooks/ui/useLayoutMode"
 import { useProduct } from "@/hooks/api/products/useProduct"
 import { useOrder } from "@/hooks/api/orders/useOrder"
@@ -109,7 +108,7 @@ export function Product() {
             <ProductHeader />
             <Info product={product} model={model} order={order} />
             <History productId={product.id} />
-            <Chart />
+            <Chart productModelId={product.product_model_id} />
             <ProductDashboard productModelId={product.product_model_id} />
          </div>
          <UpdateProductModal isOpen={isUpdateModalOpen} product={product} onClose={() => setIsUpdateModalOpen(false)} />
