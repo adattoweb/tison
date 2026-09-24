@@ -1,10 +1,10 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { deleteOperationType } from "@/api/endpoints/operationTypes"
+import { dearchiveOperationType } from "@/api/endpoints/operationTypes"
 
-export function useDeleteOperationType() {
+export function useDearchiveOperationType() {
    const queryClient = useQueryClient()
    return useMutation({
-      mutationFn: (id: number) => deleteOperationType(id),
+      mutationFn: (id: number) => dearchiveOperationType(id),
       onSuccess: () => {
          queryClient.invalidateQueries({ queryKey: ["operationTypes"] })
       },

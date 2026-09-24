@@ -37,6 +37,10 @@ export const updateOperationType = async (
    return data
 }
 
+export const dearchiveOperationType = async (id: number): Promise<void> => {
+   await api.patch(`/operation_types/${id}`)
+}
+
 export const deleteOperationType = async (id: number): Promise<void> => {
    await api.delete(`/operation_types/${id}`)
 }

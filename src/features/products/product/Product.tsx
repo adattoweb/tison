@@ -105,7 +105,7 @@ export function Product() {
             className="grid grid-cols-[repeat(10,1fr)] gap-(--components-gap) w-full"
             style={{ gridTemplateAreas: AREAS_BY_MODE[mode] }}
          >
-            <ProductHeader />
+            <ProductHeader productId={product.id} />
             <Info product={product} model={model} order={order} />
             <History productId={product.id} />
             <Chart productModelId={product.product_model_id} />

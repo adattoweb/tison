@@ -7,10 +7,8 @@ import DashboardAnalysis from "@/features/dashboard/DashboardAnalysis"
 import { useLayoutMode, type LayoutMode } from "@/hooks/ui/useLayoutMode"
 import { OperationsHeatmap } from "./OperationsHeatmap"
 import { useProfile } from "@/hooks/api/profile/useProfile"
-import { useProfileOperations } from "@/hooks/api/operations/useProfileOperations"
 import Button from "@/components/UI/Button"
 import { EditIcon } from "lucide-react"
-import { mockClick } from "@/utils/mockClick"
 import { UpdateProfileModal } from "./UpdateProfileModal"
 import { useState } from "react"
 
@@ -49,7 +47,6 @@ export function Employee() {
    const { id } = useParams<{ id: string }>()
 
    const { data: profile, isLoading: isProfileLoading } = useProfile(id)
-   const { data: operations, isLoading: isOperationsLoading } = useProfileOperations(String(id))
 
    const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false)
 
@@ -81,7 +78,7 @@ export function Employee() {
             >
                <EmployeeHeader profile={profile} />
                <Info profile={profile} />
-               <History operations={operations ?? []} isLoading={isOperationsLoading} profile={profile} />
+               <History employeeId={id} profile={profile} />
                {/* <Chart stats={operationStats ?? []} isLoading={isStatsLoading} /> */}
                <DashboardAnalysis />
                <OperationsHeatmap />

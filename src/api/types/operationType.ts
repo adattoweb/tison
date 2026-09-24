@@ -14,4 +14,6 @@ export interface OperationTypeCreatePayload {
    color: string
 }
 
-export interface OperationTypeUpdatePayload extends OperationTypeCreatePayload {}
+export interface OperationTypeUpdatePayload extends OperationTypeCreatePayload {
+   is_active: boolean
+}

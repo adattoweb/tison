@@ -1,3 +1,5 @@
+import type { StatusType } from "@/types/status"
+
 export interface ProductionAnalyticsPoint {
    date: string // "YYYY-MM-DD"
    planned: number
@@ -64,4 +66,26 @@ export interface ProductHistoryEvent {
    defect_title: string | null
 
    operator: OperatorShortRead | null
+}
+
+export type ProductSpeed = "fast" | "average" | "slow"
+
+export interface ProductSummary {
+   status: StatusType
+   progress: number // 0–100
+   completed_steps: number
+   total_steps: number
+   department_name: string | null
+   duration_seconds: number
+   speed: ProductSpeed | null
+   responsible: OperatorShortRead | null
+}
+
+export interface ProductsOverview {
+   total: number
+   created_today: number
+   in_production: number
+   waiting_inspection: number
+   defects_count: number
+   ready_to_ship: number
 }
