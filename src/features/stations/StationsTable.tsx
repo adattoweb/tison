@@ -12,6 +12,7 @@ import { useAllDepartments } from "@/hooks/api/departments/useAllDepartments"
 import type { DepartmentRead } from "@/api/types/department"
 import { useProfile } from "@/hooks/api/profile/useProfile"
 import type { StationListRead } from "@/api/types/station"
+import { getStationStatus } from "@/utils/getStationStatus"
 
 const ALL = { department: "Всі дільниці", status: "Всі статуси" } as const
 const STATUS_OPTIONS = [ALL.status, ...Object.keys(STATUS)] as (typeof ALL.status | StatusType)[]
@@ -26,7 +27,7 @@ function Station({ station }: { station: StationListRead }) {
       <Table.Row key={station.id} to={`/stations/${station.id}`}>
          <Table.Text text={station.code} className="font-medium" />
          <Table.Text text={station.department.name} />
-         <Table.Status status={station.status} />
+         <Table.Status status={getStationStatus(station)} />
          <Table.TextGroup primary={station.start_at} secondary={station.end_at} />
          <Table.Text
             text={

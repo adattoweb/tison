@@ -5,8 +5,6 @@ import PageDescription from "@/components/UI/PageDescription"
 import { useLayoutMode, type LayoutMode } from "@/hooks/ui/useLayoutMode"
 import { StationHeader } from "./StationHeader"
 import { Info } from "./Info"
-import { StationTable } from "./StationTable"
-import HourlyLoadChart from "./Chart"
 import Button from "@/components/UI/Button"
 import { EditIcon, Trash } from "lucide-react"
 import { useStation } from "@/hooks/api/station/useStation"
@@ -16,11 +14,14 @@ import { useDeleteStation } from "@/hooks/api/station/useDeleteStation"
 import { ConfirmModal } from "@/components/Modal/ConfirmModal"
 import { useToast } from "@/components/Toast/useToast"
 import { TOAST_DURATION } from "@/constants/app"
+import { Heatmap } from "./Heatmap"
+import { RecentProductsTable } from "./RecentProductsTable"
+import { RecentWorkSessionsTable } from "./RecentWorkSessionsTable"
 
 const WIDE_AREAS = `
    "header header header header header header header header header header"
-   "info info info history history history table table table table"
-   "chart chart chart history history history table table table table"
+   "info info info heatmap heatmap heatmap table table table table"
+   "history history history history history history table table table table"
 `
 
 const MEDIUM_AREAS = `
@@ -93,8 +94,11 @@ export function Station() {
             <StationHeader />
             <Info station={station} />
             {/* <History /> */}
-            <StationTable station={station} />
-            <HourlyLoadChart />
+            {/* <StationTable station={station} /> */}
+            {/* <HourlyLoadChart /> */}
+            <Heatmap stationId={station.id} />
+            <RecentProductsTable stationId={station.id} />
+            <RecentWorkSessionsTable stationId={station.id} />
          </div>
          <UpdateStationModal isOpen={isUpdateModalOpen} setIsOpen={setIsUpdateModalOpen} station={station} />
          <ConfirmModal

@@ -116,3 +116,8 @@ export const toISODate = (date: Date) => {
 
 export const formatShortDate = (iso: string) =>
    new Date(iso).toLocaleDateString("uk-UA", { day: "2-digit", month: "2-digit" })
+
+export function getDurationSeconds(startedAt: string, endAt: string | null): number | null {
+   if (!endAt) return null
+   return Math.round((new Date(endAt).getTime() - new Date(startedAt).getTime()) / 1000)
+}

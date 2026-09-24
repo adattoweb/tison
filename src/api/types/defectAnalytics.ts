@@ -1,4 +1,4 @@
-export interface DefectsByOperationType {
+export interface DefectsByOperationTypeRead {
    operation_type_id: number
    name: string
    color: string // hex, напр. "#c0392b"

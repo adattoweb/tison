@@ -21,7 +21,6 @@ export function StationTable({ station }: TableProps) {
                   <Table.Person avatarUrl={avatarUrl} name={responsible?.first_name} code={responsible?.code} />
                )}
                <Table.TextGroup primary={station.department.name} secondary={station.department.description} />
-               <Table.Status status={station.status} />
                {/* <Table.TextGroup primary={station.taskName} secondary={station.taskCode} /> */}
                <Table.MenuButton onClick={() => console.log("menu", station.id)} />
             </Table.Row>

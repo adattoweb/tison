@@ -95,6 +95,7 @@ interface StatusProps {
 }
 
 function Status({ status }: StatusProps) {
+   if (status === undefined || status === null) return
    return (
       <div className="flex min-w-0 items-center gap-2 ">
          <span

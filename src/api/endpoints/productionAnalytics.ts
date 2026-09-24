@@ -1,5 +1,5 @@
 import { api } from "@/api/api"
-import type { ProductionAnalyticsPoint, ProductionSummary } from "@/api/types/productionAnalytics"
+import type { ProductHistoryEvent, ProductionAnalyticsPoint, ProductionSummary } from "@/api/types/productionAnalytics"
 
 export interface GetProductionAnalyticsChartParams {
    dateFrom: string // "YYYY-MM-DD"
@@ -32,5 +32,10 @@ export const getProductionSummary = async (params: GetProductionSummaryParams = 
          product_model_id: params.productModelId,
       },
    })
+   return data
+}
+
+export const getProductHistory = async (productId: number): Promise<ProductHistoryEvent[]> => {
+   const { data } = await api.get<ProductHistoryEvent[]>(`analytics/production/${productId}/history`)
    return data
 }

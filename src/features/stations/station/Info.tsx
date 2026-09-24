@@ -1,5 +1,4 @@
 import type { StationListRead } from "@/api/types/station"
-import { STATUS } from "@/constants/status"
 import { useProfile } from "@/hooks/api/profile/useProfile"
 import { titleClassName } from "@/utils/classNames"
 
@@ -33,7 +32,6 @@ export function Info({ station }: InfoProps) {
             <ListItem label="Серійний номер" value={station.code} />
             {/* <ListItem label="Завантаження" value={station.load} /> */}
             <ListItem label="Відділ" value={station.department.name} />
-            <ListItem label="Статус" value={STATUS[station.status].label} />
             <ListItem label="Графік роботи" value={`${station.start_at} - ${station.end_at}`} />
             <ListItem
                label="Відповідальний"

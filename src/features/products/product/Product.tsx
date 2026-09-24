@@ -19,6 +19,7 @@ import { useDeleteProduct } from "@/hooks/api/products/useDeleteProduct"
 import { UpdateProductModal } from "./UpdateProductModal"
 import { useToast } from "@/components/Toast/useToast"
 import { TOAST_DURATION } from "@/constants/app"
+import ProductDashboard from "./ProductDashboard"
 
 const WIDE_AREAS = `
    "header header header header header header header header header header"
@@ -107,9 +108,9 @@ export function Product() {
          >
             <ProductHeader />
             <Info product={product} model={model} order={order} />
-            <History />
+            <History productId={product.id} />
             <Chart />
-            <DashboardAnalysis />
+            <ProductDashboard productModelId={product.product_model_id} />
          </div>
          <UpdateProductModal isOpen={isUpdateModalOpen} product={product} onClose={() => setIsUpdateModalOpen(false)} />
          <ConfirmModal
