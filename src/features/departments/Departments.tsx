@@ -1,6 +1,5 @@
 import PageDescription from "@/components/UI/PageDescription"
 import PageHeader from "@/components/UI/PageHeader"
-import { DepartmentsHeader } from "./DepartmentsHeader"
 import { DepartmentsTable } from "./DepartmentsTable"
 import Button from "@/components/UI/Button"
 import { MonitorCog } from "lucide-react"
@@ -24,7 +23,6 @@ export function Departments() {
          </div>
 
          <div className="flex flex-col gap-(--components-gap)">
-            <DepartmentsHeader />
             <DepartmentsTable />
          </div>
          <AddDepartmentModal isOpen={isOpen} setIsOpen={setIsOpen} />

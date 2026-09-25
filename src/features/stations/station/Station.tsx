@@ -20,21 +20,21 @@ import { RecentWorkSessionsTable } from "./RecentWorkSessionsTable"
 
 const WIDE_AREAS = `
    "header header header header header header header header header header"
-   "info info info heatmap heatmap heatmap table table table table"
-   "history history history history history history table table table table"
+   "info info info table table table table table table table"
+   "heatmap heatmap heatmap history history history history history history history"
 `
 
 const MEDIUM_AREAS = `
    "header header header header header header header header header header"
-   "info info info info info history history history history history"
-   "chart chart chart chart chart history history history history history"
+   "info info info info info heatmap heatmap heatmap heatmap heatmap"
    "table table table table table table table table table table"
+   "history history history history history history history history history history"
 `
 
 const STACKED_AREAS = `
    "header header header header header header header header header header"
    "info info info info info info info info info info"
-   "chart chart chart chart chart chart chart chart chart chart"
+   "heatmap heatmap heatmap heatmap heatmap heatmap heatmap heatmap heatmap heatmap"
    "table table table table table table table table table table"
    "history history history history history history history history history history"
 `

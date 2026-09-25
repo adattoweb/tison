@@ -36,7 +36,7 @@ export function Info({ product, model, order }: InfoProps) {
       >
          <div
             className="flex-1 rounded-lg aspect-video bg-center bg-cover bg-no-repeat"
-            style={{ backgroundImage: `url("${image}")` }}
+            style={{ backgroundImage: `url("${productImg}")` }}
          />
          <h2 className={titleClassName}>Інформація про виріб</h2>
          <ul className="flex flex-col gap-1">

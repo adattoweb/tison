@@ -81,3 +81,11 @@ export interface EmployeeSummary {
    rating: number
    rating_label: string
 }
+
+export interface EmployeesOverview {
+   total: number
+   active: number
+   absent: number
+   new_this_month: number
+   on_shift: number
+}

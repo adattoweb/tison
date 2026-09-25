@@ -3,7 +3,7 @@ import PageHeader from "@/components/UI/PageHeader"
 import Button from "@/components/UI/Button"
 import { FilePlus } from "lucide-react"
 import { ModelList } from "./ModelList"
-import { ModelHeader } from "./ModelHeader"
+import { ProductModelsHeader } from "./ModelHeader"
 import { AddModelModal } from "./AddModelModal"
 import { useState } from "react"
 
@@ -23,7 +23,7 @@ export function Models() {
          </div>
 
          <div className="flex flex-col gap-(--components-gap)">
-            <ModelHeader />
+            <ProductModelsHeader />
             <ModelList />
          </div>
          <AddModelModal isOpen={isAddModalOpen} setIsOpen={setIsAddModalOpen} />

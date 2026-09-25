@@ -2,6 +2,7 @@ import { api } from "@/api/api"
 import type {
    EmployeeActivityPage,
    EmployeeRanking,
+   EmployeesOverview,
    EmployeeSummary,
    EmployeeWorkloadPage,
 } from "@/api/types/employeeAnalytics"
@@ -58,5 +59,10 @@ export const getEmployeeWorkload = async (
 
 export const getEmployeeSummary = async (employeeId: string): Promise<EmployeeSummary> => {
    const { data } = await api.get<EmployeeSummary>(`/analytics/employees/${employeeId}/summary`)
+   return data
+}
+
+export const getEmployeesOverview = async (): Promise<EmployeesOverview> => {
+   const { data } = await api.get<EmployeesOverview>("/analytics/employees/overview")
    return data
 }

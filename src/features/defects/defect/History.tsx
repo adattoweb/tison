@@ -29,17 +29,19 @@ export function History({ defect }: { defect: DefectRead }) {
       ...(defect.end_at
          ? [{ key: "close", title: "Дефект закрито", date: defect.end_at, description: defect.title }]
          : []),
-   ].reverse() // нові події зверху
+   ].reverse()
 
    return (
       <div
-         className="flex flex-col ibm-plex-sans bg-(--bg-trans-color) border border-(--stroke-color) rounded-xl py-(--components-py) px-(--components-px) gap-2"
+         className="flex flex-col ibm-plex-sans bg-(--bg-trans-color) border border-(--stroke-color) rounded-xl py-(--components-py) px-(--components-px) gap-2 overflow-y-scroll min-h-0 4xl:max-h-226"
          style={{ gridArea: "history" }}
       >
          <h2 className={titleClassName}>Історія</h2>
-         <ul className="flex flex-col flex-1">
+         <ul className="flex flex-col flex-1 min-h-0 overflow-y-auto">
             {events.map(event => (
-               <HistoryItem key={event.key} event={event} />
+               <>
+                  <HistoryItem key={event.key} event={event} />
+               </>
             ))}
          </ul>
       </div>

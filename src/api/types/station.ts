@@ -10,6 +10,8 @@ export interface StationListRead {
    department_id: number
    responsible_id: string | null
    department: DepartmentRead
+   is_active: boolean
+   created_at: string
 }
 
 export interface StationCreatePayload {

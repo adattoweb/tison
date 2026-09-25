@@ -108,6 +108,7 @@ export default function ProductDashboard({
             className,
             "rounded-xl border border-(--stroke-color) bg-(--bg-trans-color) py-(--components-py) px-(--components-px) flex flex-col h-full min-h-0",
          )}
+         style={{ gridArea: "analysis" }}
       >
          <div className="mb-2 flex flex-wrap items-start justify-between gap-4 shrink-0">
             <h2 className={titleClassName}>{title}</h2>

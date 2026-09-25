@@ -31,7 +31,6 @@ export function Info({ defect, operation }: InfoBlockProps) {
    const images = defect.images?.length ? defect.images : [defectImg]
    // після оновлення даних індекс може вийти за межі масиву
    const activeImage = images[activeIndex] ?? images[0]
-
    return (
       <div
          className="flex flex-col flex-1 ibm-plex-sans bg-(--bg-trans-color) border border-(--stroke-color) rounded-xl py-(--components-py) px-(--components-py) gap-2"
@@ -39,7 +38,7 @@ export function Info({ defect, operation }: InfoBlockProps) {
       >
          <div
             className="flex-1 rounded-lg aspect-video bg-center bg-cover bg-no-repeat"
-            style={{ backgroundImage: `url("${activeImage}")` }}
+            style={{ backgroundImage: `url("${defectImg}")` }}
          />
 
          {images.length > 1 && (

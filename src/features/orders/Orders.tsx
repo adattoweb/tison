@@ -2,10 +2,10 @@ import PageDescription from "@/components/UI/PageDescription"
 import PageHeader from "@/components/UI/PageHeader"
 import Button from "@/components/UI/Button"
 import { PlusIcon } from "lucide-react"
-import { OrderHeader } from "./OrderHeader"
 import { OrderTable } from "./OrderTable"
 import { useState } from "react"
 import { AddOrderModal } from "./AddOrderModal"
+import { DashboardHeader } from "../dashboard/DashboardHeader"
 
 export function Orders() {
    const [isOpen, setIsOpen] = useState(false)
@@ -24,7 +24,7 @@ export function Orders() {
          </div>
 
          <div className="flex flex-col gap-(--components-gap)">
-            <OrderHeader />
+            <DashboardHeader />
             <OrderTable />
          </div>
          <AddOrderModal isOpen={isOpen} setIsOpen={setIsOpen} />

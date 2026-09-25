@@ -85,7 +85,7 @@ export function History({ productId }: HistoryProps) {
 
    return (
       <div
-         className="flex flex-col flex-1 ibm-plex-sans bg-(--bg-trans-color) border border-(--stroke-color) rounded-xl py-(--components-py) px-(--components-px) gap-2"
+         className="flex flex-col flex-1 ibm-plex-sans bg-(--bg-trans-color) border border-(--stroke-color) rounded-xl py-(--components-py) px-(--components-px) gap-2 max-h-226 overflow-y-auto"
          style={{ gridArea: "history" }}
       >
          <h2 className={titleClassName}>Історія</h2>

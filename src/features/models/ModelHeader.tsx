@@ -1,47 +1,72 @@
 import InfoCard from "@/components/UI/InfoCard"
+import { useProductModelsOverview } from "@/hooks/api/productModelAnalytics/useProductModelOverview"
 import type { WithClassName } from "@/types/common"
-import { LayersIcon, RepeatIcon, ClockIcon, CheckCircle2Icon, BoxIcon } from "lucide-react"
+import { TrendingUpIcon, ZapIcon, HourglassIcon, ClockIcon, BugIcon } from "lucide-react"
 
-export function ModelHeader({ className = "" }: WithClassName) {
+export function ProductModelsHeader({ className = "" }: WithClassName) {
+   const { data, isLoading } = useProductModelsOverview()
+
    return (
-      <InfoCard.Wrapper className={className} style={{ gridArea: "header" }}>
+      <InfoCard.Wrapper className={className}>
          <InfoCard className="col-span-3 lg:col-span-2 4xl:col-span-1!">
-            <InfoCard.Icon Icon={LayersIcon} />
+            <InfoCard.Icon Icon={TrendingUpIcon} />
             <InfoCard.TextWrapper>
-               <InfoCard.Title>Типи продуктів</InfoCard.Title>
-               <InfoCard.Value>24</InfoCard.Value>
+               <InfoCard.Title>Найвиробляюваніша модель</InfoCard.Title>
+               <InfoCard.Value>{isLoading ? "—" : (data?.most_produced?.title ?? "Немає даних")}</InfoCard.Value>
+               {data?.most_produced && (
+                  <InfoCard.Description className="text-(--second-color)">
+                     {data.most_produced.count} виробів
+                  </InfoCard.Description>
+               )}
             </InfoCard.TextWrapper>
          </InfoCard>
 
          <InfoCard className="col-span-3 lg:col-span-2 4xl:col-span-1!">
-            <InfoCard.Icon Icon={RepeatIcon} />
+            <InfoCard.Icon Icon={ZapIcon} />
             <InfoCard.TextWrapper>
-               <InfoCard.Title>Найчастіший етап</InfoCard.Title>
-               <InfoCard.Value>Тестування</InfoCard.Value>
+               <InfoCard.Title>Найшвидша модель</InfoCard.Title>
+               <InfoCard.Value>{isLoading ? "—" : (data?.fastest?.title ?? "Немає даних")}</InfoCard.Value>
+               {data?.fastest && (
+                  <InfoCard.Description className="text-[#61D381]">
+                     ~{data.fastest.average_minutes} хв
+                  </InfoCard.Description>
+               )}
             </InfoCard.TextWrapper>
          </InfoCard>
 
          <InfoCard className="col-span-3 lg:col-span-2 4xl:col-span-1!">
-            <InfoCard.Icon Icon={ClockIcon} />
+            <InfoCard.Icon Icon={HourglassIcon} />
             <InfoCard.TextWrapper>
-               <InfoCard.Title>Середній час виконання</InfoCard.Title>
-               <InfoCard.Value>42 хв</InfoCard.Value>
+               <InfoCard.Title>Найдовша модель</InfoCard.Title>
+               <InfoCard.Value>{isLoading ? "—" : (data?.slowest?.title ?? "Немає даних")}</InfoCard.Value>
+               {data?.slowest && (
+                  <InfoCard.Description className="text-[#F2A65A]">
+                     ~{data.slowest.average_minutes} хв
+                  </InfoCard.Description>
+               )}
             </InfoCard.TextWrapper>
          </InfoCard>
 
          <InfoCard className="col-span-3 4xl:col-span-1!">
-            <InfoCard.Icon Icon={BoxIcon} />
+            <InfoCard.Icon Icon={ClockIcon} />
             <InfoCard.TextWrapper>
-               <InfoCard.Title>Найчастіший тип моделей</InfoCard.Title>
-               <InfoCard.Value>Модуль керування</InfoCard.Value>
+               <InfoCard.Title>Середній час виконання</InfoCard.Title>
+               <InfoCard.Value>
+                  {isLoading || !data || data.average_duration_minutes === null
+                     ? "—"
+                     : `${data.average_duration_minutes} хв`}
+               </InfoCard.Value>
             </InfoCard.TextWrapper>
          </InfoCard>
 
          <InfoCard className="col-span-6 lg:col-span-3 4xl:col-span-1!">
-            <InfoCard.Icon Icon={CheckCircle2Icon} />
+            <InfoCard.Icon Icon={BugIcon} />
             <InfoCard.TextWrapper>
-               <InfoCard.Title>Заповненість інструкцій</InfoCard.Title>
-               <InfoCard.Value>91%</InfoCard.Value>
+               <InfoCard.Title>Відсоток дефектів</InfoCard.Title>
+               <InfoCard.Value>
+                  {isLoading || !data || data.defects_percent === null ? "—" : `${data.defects_percent}%`}
+               </InfoCard.Value>
+               <InfoCard.Description className="text-(--second-color)">на всіх операціях</InfoCard.Description>
             </InfoCard.TextWrapper>
          </InfoCard>
       </InfoCard.Wrapper>

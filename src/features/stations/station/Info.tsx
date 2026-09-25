@@ -1,6 +1,7 @@
 import type { StationListRead } from "@/api/types/station"
 import { useProfile } from "@/hooks/api/profile/useProfile"
 import { titleClassName } from "@/utils/classNames"
+import { formatDate } from "@/utils/time"
 
 interface ListItemProps {
    label: string
@@ -30,6 +31,13 @@ export function Info({ station }: InfoProps) {
          <h2 className={`${titleClassName}`}>Інформація про станцію</h2>
          <ul className="flex flex-col gap-1 justify-between flex-1">
             <ListItem label="Серійний номер" value={station.code} />
+            <ListItem
+               label="Опис"
+               value={station.description === null || station.description === undefined ? "Немає" : station.description}
+            />
+            <ListItem label="Відділ" value={station.department.name} />
+            <ListItem label="Станція робоча" value={station.is_active ? "Так" : "Ні"} />
+            <ListItem label="Створена" value={formatDate(station.created_at)} />
             {/* <ListItem label="Завантаження" value={station.load} /> */}
             <ListItem label="Відділ" value={station.department.name} />
             <ListItem label="Графік роботи" value={`${station.start_at} - ${station.end_at}`} />
