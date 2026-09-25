@@ -52,3 +52,32 @@ export interface EmployeeActivityPage {
    page: number
    page_size: number
 }
+export interface EmployeeWorkloadPoint {
+   date: string // "YYYY-MM-DD"
+   hour: number
+   worked_minutes: number
+   capacity_minutes: number
+   percent: number
+   sessions_count: number
+}
+
+export interface EmployeeWorkloadPage {
+   items: EmployeeWorkloadPoint[]
+   total_days: number
+   page: number
+   page_size: number
+}
+
+export interface EmployeeSummary {
+   productivity_percent: number
+   productivity_label: string
+
+   quality_percent: number
+   quality_label: string
+
+   experience_years: number
+   bonus_points: number
+
+   rating: number
+   rating_label: string
+}

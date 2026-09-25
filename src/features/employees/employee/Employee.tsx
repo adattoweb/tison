@@ -5,7 +5,7 @@ import { Info } from "./Info"
 import { History } from "./History"
 import DashboardAnalysis from "@/features/dashboard/DashboardAnalysis"
 import { useLayoutMode, type LayoutMode } from "@/hooks/ui/useLayoutMode"
-import { OperationsHeatmap } from "./OperationsHeatmap"
+import { EmployeeWorkloadHeatmap } from "./OperationsHeatmap"
 import { useProfile } from "@/hooks/api/profile/useProfile"
 import Button from "@/components/UI/Button"
 import { EditIcon } from "lucide-react"
@@ -78,10 +78,10 @@ export function Employee() {
             >
                <EmployeeHeader profile={profile} />
                <Info profile={profile} />
-               <History employeeId={id} profile={profile} />
+               <History employeeId={String(id)} profile={profile} />
                {/* <Chart stats={operationStats ?? []} isLoading={isStatsLoading} /> */}
                <DashboardAnalysis />
-               <OperationsHeatmap />
+               <EmployeeWorkloadHeatmap employeeId={String(id)} />
             </div>
          </div>
          <UpdateProfileModal profile={profile} setIsOpen={setIsUpdateModalOpen} isOpen={isUpdateModalOpen} />

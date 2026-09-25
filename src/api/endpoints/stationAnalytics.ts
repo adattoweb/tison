@@ -1,5 +1,5 @@
 import { api } from "@/api/api"
-import type { StationWorkloadPage } from "@/api/types/stationAnalytics"
+import type { StationsOverview, StationSummary, StationWorkloadPage } from "@/api/types/stationAnalytics"
 import type { StationWorkSessionListRead } from "@/api/types/workSession"
 import type { ProductListRead } from "@/api/types/product"
 
@@ -39,5 +39,15 @@ export const getStationWorkedProducts = async (
    const { data } = await api.get<ProductListRead[]>(`/analytics/stations/${stationId}/worked-products`, {
       params: { limit: params.limit },
    })
+   return data
+}
+
+export const getStationsOverview = async (): Promise<StationsOverview> => {
+   const { data } = await api.get<StationsOverview>("/analytics/stations/overview")
+   return data
+}
+
+export const getStationSummary = async (stationId: number): Promise<StationSummary> => {
+   const { data } = await api.get<StationSummary>(`/analytics/stations/${stationId}/summary`)
    return data
 }

@@ -1,5 +1,10 @@
 import { api } from "@/api/api"
-import type { EmployeeActivityPage, EmployeeRanking } from "@/api/types/employeeAnalytics"
+import type {
+   EmployeeActivityPage,
+   EmployeeRanking,
+   EmployeeSummary,
+   EmployeeWorkloadPage,
+} from "@/api/types/employeeAnalytics"
 
 export interface GetEmployeeRankingParams {
    limit?: number
@@ -30,5 +35,28 @@ export const getEmployeeActivity = async (
          page_size: params.pageSize,
       },
    })
+   return data
+}
+
+export interface GetEmployeeWorkloadParams {
+   page?: number
+   pageSize?: number
+}
+
+export const getEmployeeWorkload = async (
+   employeeId: string,
+   params: GetEmployeeWorkloadParams = {},
+): Promise<EmployeeWorkloadPage> => {
+   const { data } = await api.get<EmployeeWorkloadPage>(`/analytics/employees/${employeeId}/workload`, {
+      params: {
+         page: params.page,
+         page_size: params.pageSize,
+      },
+   })
+   return data
+}
+
+export const getEmployeeSummary = async (employeeId: string): Promise<EmployeeSummary> => {
+   const { data } = await api.get<EmployeeSummary>(`/analytics/employees/${employeeId}/summary`)
    return data
 }

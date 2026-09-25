@@ -1,5 +1,5 @@
 import { api } from "@/api/api"
-import type { DefectsByOperationTypeRead } from "@/api/types/defectAnalytics"
+import type { DefectsByOperationTypeRead, DefectsOverview } from "@/api/types/defectAnalytics"
 
 export interface GetDefectsByOperationTypeParams {
    dateFrom?: string // "YYYY-MM-DD"
@@ -62,5 +62,10 @@ export const getDefectsByProductModel = async (
          },
       },
    )
+   return data
+}
+
+export const getDefectsOverview = async (): Promise<DefectsOverview> => {
+   const { data } = await api.get<DefectsOverview>("/analytics/defects/overview")
    return data
 }
