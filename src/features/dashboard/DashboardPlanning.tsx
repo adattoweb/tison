@@ -34,7 +34,7 @@ export function DashboardPlanning() {
                const progress = item.planned > 0 ? Math.round((item.fact / item.planned) * 100) : 0
 
                return (
-                  <Table.Row key={item.product_model_id} to={`/models/${item.product_model_id}`}>
+                  <Table.Row key={item.product_model_id}>
                      <Table.Name name={item.product_model_title} model="" />
                      <Table.StatItem value={item.planned} />
                      <Table.StatItem value={item.remaining} />

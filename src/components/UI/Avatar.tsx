@@ -1,48 +1,78 @@
 import type { WithClassName } from "@/types/common"
 import clsx from "clsx"
-import { UserIcon } from "lucide-react"
-import { useRef, useState } from "react"
+import { UserIcon, type LucideIcon } from "lucide-react"
+import { useEffect, useRef, useState } from "react"
 
-interface ImageProps extends WithClassName {
+interface AvatarProps extends WithClassName {
+   value?: string | null
    onChange?: (file: File | null) => void
+   FallbackIcon?: LucideIcon
+   disabled?: boolean
 }
 
-export function Avatar({ className, onChange }: ImageProps) {
+export function Avatar({ className, value, onChange, FallbackIcon = UserIcon, disabled = false }: AvatarProps) {
    const inputRef = useRef<HTMLInputElement>(null)
-   const [preview, setPreview] = useState<string | null>(null)
+   const [localPreview, setLocalPreview] = useState<string | null>(null)
+
+   useEffect(() => {
+      setLocalPreview(prev => {
+         if (prev) URL.revokeObjectURL(prev)
+         return null
+      })
+   }, [value])
+
+   useEffect(() => {
+      return () => {
+         if (localPreview) URL.revokeObjectURL(localPreview)
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+   }, [])
 
    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0] ?? null
 
       if (!file) {
-         setPreview(null)
+         setLocalPreview(prev => {
+            if (prev) URL.revokeObjectURL(prev)
+            return null
+         })
          onChange?.(null)
          return
       }
 
       const url = URL.createObjectURL(file)
-      setPreview(prev => {
+      setLocalPreview(prev => {
          if (prev) URL.revokeObjectURL(prev)
          return url
       })
       onChange?.(file)
    }
 
+   const displaySrc = localPreview ?? value ?? null
+
    return (
       <div
          className={clsx(
             className,
-            "relative min-w-full aspect-square rounded-2xl bg-(--bg-trans-color) border border-(--stroke-color) flex items-center justify-center overflow-hidden cursor-pointer hover:border-(--stroke-active-color) transition-colors",
+            "relative min-w-full aspect-square rounded-2xl bg-(--bg-trans-color) border border-(--stroke-color) flex items-center justify-center overflow-hidden transition-colors",
+            disabled ? "cursor-default opacity-60" : "cursor-pointer hover:border-(--stroke-active-color)",
          )}
-         onClick={() => inputRef.current?.click()}
+         onClick={() => !disabled && inputRef.current?.click()}
       >
-         {preview ? (
-            <img src={preview} alt="Avatar" className="w-full h-full object-cover" />
+         {displaySrc ? (
+            <img src={displaySrc} alt="Avatar" className="w-full h-full object-cover" />
          ) : (
-            <UserIcon className="w-[33%] h-[33%] text-(--second-color)" strokeWidth={2} />
+            <FallbackIcon className="w-[33%] h-[33%] text-(--second-color)" strokeWidth={2} />
          )}
 
-         <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
+         <input
+            ref={inputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            disabled={disabled}
+            onChange={handleFileChange}
+         />
       </div>
    )
 }

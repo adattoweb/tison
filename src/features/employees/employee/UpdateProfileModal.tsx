@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useForm, type SubmitHandler } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Briefcase, HandCoins, Phone, Send, Star, UserIcon } from "lucide-react"
@@ -9,6 +9,7 @@ import Button from "@/components/UI/Button"
 import { Input } from "@/components/UI/Input"
 import { FormDropdown } from "@/components/UI/FormDropdown"
 import { FieldError } from "@/components/UI/FieldError"
+import { Avatar } from "@/components/UI/Avatar"
 import { useToast } from "@/components/Toast/useToast"
 
 import {
@@ -17,6 +18,7 @@ import {
    type ProfileAdminUpdateInput,
 } from "@/api/schemas/profile"
 import { useUpdateProfileByAdmin } from "@/hooks/api/profile/useUpdateProfileByAdmin"
+import { useUploadImage } from "@/hooks/api/media/useUploadImage"
 import { useShifts } from "@/hooks/api/shifts/useShifts"
 import type { ProfileRead } from "@/api/types/profile"
 
@@ -28,8 +30,11 @@ interface ModalProps {
 
 export function UpdateProfileModal({ isOpen, setIsOpen, profile }: ModalProps) {
    const { data: shifts } = useShifts()
-   const { mutate: doUpdateProfile, isPending } = useUpdateProfileByAdmin()
+   const { mutate: doUpdateProfile, isPending: isUpdating } = useUpdateProfileByAdmin()
+   const { mutateAsync: doUploadImage, isPending: isUploading } = useUploadImage()
    const { addToast } = useToast()
+
+   const [avatarFile, setAvatarFile] = useState<File | null>(null)
 
    const defaultValues: ProfileAdminUpdateFormInput = {
       first_name: profile.first_name,
@@ -58,17 +63,35 @@ export function UpdateProfileModal({ isOpen, setIsOpen, profile }: ModalProps) {
 
    useEffect(() => {
       reset(defaultValues)
+      setAvatarFile(null)
       // eslint-disable-next-line react-hooks/exhaustive-deps
    }, [profile, reset])
 
    const onClose = () => {
       reset()
+      setAvatarFile(null)
       setIsOpen(false)
    }
 
-   const onSubmit: SubmitHandler<ProfileAdminUpdateInput> = data => {
+   const onSubmit: SubmitHandler<ProfileAdminUpdateInput> = async data => {
+      let avatarUrl: string | undefined
+
+      if (avatarFile) {
+         try {
+            const uploaded = await doUploadImage({ category: "profiles", file: avatarFile })
+            avatarUrl = uploaded.url
+         } catch {
+            addToast("Не вдалося завантажити аватар", { duration: 3000, type: "error" })
+            return
+         }
+      }
+
       doUpdateProfile(
-         { profileId: profile.id, data, userId: profile.user_id },
+         {
+            profileId: profile.id,
+            data: avatarUrl ? { ...data, avatar_url: avatarUrl } : data,
+            userId: profile.user_id,
+         },
          {
             onSuccess: () => {
                addToast("Профіль успішно оновлено!", { duration: 3000, type: "success" })
@@ -100,12 +123,24 @@ export function UpdateProfileModal({ isOpen, setIsOpen, profile }: ModalProps) {
       { value: null, label: "Без зміни" },
       ...(shifts?.map(shift => ({ value: shift.id, label: shift.name })) ?? []),
    ]
+
+   const isSaving = isUploading || isUpdating
+
    return (
       <Modal isOpen={isOpen} onClose={onClose}>
          <Modal.Header>Редагування профілю</Modal.Header>
          <form onSubmit={handleSubmit(onSubmit)}>
             <Modal.Content>
                <div className="flex flex-col gap-4">
+                  <div className="mx-auto w-24 sm:w-28">
+                     <Avatar
+                        value={profile.avatar_url}
+                        onChange={setAvatarFile}
+                        FallbackIcon={UserIcon}
+                        disabled={isSaving}
+                     />
+                  </div>
+
                   <div className="flex flex-col sm:flex-row w-full gap-2">
                      <div className="w-full">
                         <Input
@@ -206,11 +241,13 @@ export function UpdateProfileModal({ isOpen, setIsOpen, profile }: ModalProps) {
                </div>
             </Modal.Content>
             <footer className="flex justify-end gap-4">
-               <Button type="transparent" onClick={onClose}>
+               <Button type="transparent" onClick={onClose} disabled={isSaving}>
                   <Button.Paragraph>Скасувати</Button.Paragraph>
                </Button>
-               <Button type="accentFilled" isSubmit={true}>
-                  <Button.Paragraph>{isPending ? "Збереження..." : "Зберегти"}</Button.Paragraph>
+               <Button type="accentFilled" isSubmit={true} disabled={isSaving}>
+                  <Button.Paragraph>
+                     {isUploading ? "Завантаження фото..." : isUpdating ? "Збереження..." : "Зберегти"}
+                  </Button.Paragraph>
                </Button>
             </footer>
          </form>

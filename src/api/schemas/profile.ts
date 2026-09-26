@@ -18,6 +18,10 @@ export const ProfileBaseSchema = z.object({
    salary: z.coerce.number().int("Ціле число").nonnegative("Не може бути відʼємним"),
    position: z.string().min(1, "Обов'язкове поле").max(32),
    shift_id: z.preprocess(val => (val === "" || val === undefined ? null : Number(val)), z.number().int().nullable()),
+   avatar_url: z.preprocess(
+      val => (val === "" ? undefined : val),
+      z.string().url("Невірний формат посилання").optional(),
+   ),
 })
 
 export const ProfileUpdateSchema = ProfileBaseSchema.pick({
@@ -26,6 +30,7 @@ export const ProfileUpdateSchema = ProfileBaseSchema.pick({
    middle_name: true,
    telegram: true,
    phone: true,
+   avatar_url: true,
 })
 
 export const ProfileAdminUpdateSchema = ProfileBaseSchema.pick({
@@ -37,6 +42,7 @@ export const ProfileAdminUpdateSchema = ProfileBaseSchema.pick({
    salary: true,
    position: true,
    shift_id: true,
+   avatar_url: true,
 }).extend({
    points: z.coerce.number().int("Ціле число").nonnegative("Не може бути відʼємним"),
 })

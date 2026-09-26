@@ -6,9 +6,9 @@ export const ProductModelBaseSchema = z.object({
    description: z.string().max(1024, "Максимум 1024 символи").nullable().optional(),
    images: z.array(z.url("Некоректне посилання")).max(10, "Максимум 10 зображень"),
 })
-export const ProductModelFormSchema = ProductModelBaseSchema.omit({ images: true }).extend({
-   images: z.array(z.object({ value: z.url("Некоректне посилання") })).max(10, "Максимум 10 зображень"),
-})
+
+export const ProductModelFormSchema = ProductModelBaseSchema.omit({ images: true })
+
 export const ProductModelEditSchema = ProductModelBaseSchema.pick({
    title: true,
    type: true,

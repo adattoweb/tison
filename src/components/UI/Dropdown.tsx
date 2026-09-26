@@ -238,7 +238,7 @@ function DropdownContent({ children, className, ...props }: DropdownContentProps
             opacity: 0,
          }}
          className={clsx(
-            "overflow-hidden rounded-sm border border-(--stroke-color) bg-(--bg-trans-color) z-50 backdrop-blur-sm min-w-50 max-h-50 overflow-y-scroll",
+            "overflow-hidden rounded-sm border border-(--stroke-color) bg-(--bg-trans-color) z-50 backdrop-blur-sm min-w-50 max-h-75 overflow-y-scroll",
             open ? "pointer-events-auto" : "pointer-events-none",
             className,
          )}

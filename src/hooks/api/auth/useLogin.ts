@@ -11,7 +11,7 @@ export const useLogin = () => {
       mutationFn: ({ email, password }: LoginCredentials) => login(email, password),
       onSuccess: async () => {
          await queryClient.invalidateQueries({ queryKey: ["currentUser"] })
-         navigate("/profiles/me")
+         navigate("/dashboard")
          queryClient.invalidateQueries({ queryKey: ["me"] })
       },
    })

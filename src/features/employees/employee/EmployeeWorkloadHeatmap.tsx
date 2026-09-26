@@ -1,6 +1,6 @@
 // EmployeeWorkloadHeatmap.tsx
 
-import { useMemo, useState } from "react"
+import { Fragment, useMemo, useState } from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { titleClassName } from "@/utils/classNames"
 import { formatShortDate } from "@/utils/time"
@@ -88,6 +88,15 @@ export function EmployeeWorkloadHeatmap({ employeeId }: EmployeeWorkloadHeatmapP
          <div className="flex flex-wrap items-center justify-between gap-4">
             <h2 className={titleClassName}>Продуктивність</h2>
             <div className="flex items-center gap-2">
+               <button
+                  type="button"
+                  disabled={page >= totalPages}
+                  onClick={() => setPage(p => p + 1)}
+                  className="rounded-md border border-(--stroke-color) p-1 text-(--second-color) transition-colors hover:text-white disabled:cursor-default disabled:opacity-40 disabled:hover:text-(--second-color)"
+                  aria-label="Старіший період"
+               >
+                  <ChevronLeft size={16} />
+               </button>
                <span className="text-sm text-(--second-color)">{rangeLabel}</span>
                <button
                   type="button"
@@ -97,15 +106,6 @@ export function EmployeeWorkloadHeatmap({ employeeId }: EmployeeWorkloadHeatmapP
                   aria-label="Новіший період"
                >
                   <ChevronRight size={16} />
-               </button>
-               <button
-                  type="button"
-                  disabled={page >= totalPages}
-                  onClick={() => setPage(p => p + 1)}
-                  className="rounded-md border border-(--stroke-color) p-1 text-(--second-color) transition-colors hover:text-white disabled:cursor-default disabled:opacity-40 disabled:hover:text-(--second-color)"
-                  aria-label="Старіший період"
-               >
-                  <ChevronLeft size={16} />
                </button>
             </div>
          </div>
@@ -125,19 +125,19 @@ export function EmployeeWorkloadHeatmap({ employeeId }: EmployeeWorkloadHeatmapP
                   ))}
 
                   {rows.reverse().map(row => (
-                     <>
-                        <span key={`label-${row.date}`} className="self-center text-[11px] text-(--second-color)">
+                     <Fragment key={row.date}>
+                        <span className="self-center text-[11px] text-(--second-color)">
                            {formatShortDate(row.date)}
                         </span>
                         {row.points.map(point => (
                            <HeatCell key={point.hour} point={point} />
                         ))}
-                     </>
+                     </Fragment>
                   ))}
                </div>
 
                <div className="flex flex-wrap items-center justify-between gap-4 text-sm text-(--second-color)">
-                  <span>Дані оновлюються щогодини</span>
+                  <span>Дані оновлюються щохвилини</span>
                   <div className="flex items-center gap-2 text-xs">
                      <span>Менше</span>
                      {LEGEND_STEPS.map((o, i) => (

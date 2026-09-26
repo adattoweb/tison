@@ -19,4 +19,5 @@ export interface ProfileRead {
    position: string | null
    shift_id: number | null
    shift: ShiftRead
+   avatar_url: string | null
 }

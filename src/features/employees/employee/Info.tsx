@@ -1,11 +1,11 @@
 import type { ProfileRead } from "@/api/types/profile"
-import avatar from "@/assets/images/avatar.jpg"
+import avatar from "@/assets/images/avatar.png"
 import { titleClassName } from "@/utils/classNames"
-import { formatTenure } from "@/utils/time"
+import { formatDate, formatTenure } from "@/utils/time"
 
 interface ListItemProps {
    label: string
-   value: string | null
+   value: string | number | null
 }
 
 function ListItem({ label, value }: ListItemProps) {
@@ -29,7 +29,7 @@ export function Info({ profile }: InfoProps) {
       >
          <div
             className="aspect-square size-56 self-center bg-center bg-cover bg-no-repeat rounded-full"
-            style={{ backgroundImage: `url(${avatar})` }}
+            style={{ backgroundImage: `url(${profile.avatar_url ?? avatar})` }}
          ></div>
          <h1 className="text-white text-3xl font-semibold self-center">
             {profile.first_name} {profile.last_name} {profile.middle_name}
@@ -47,8 +47,10 @@ export function Info({ profile }: InfoProps) {
          <ul className="flex flex-col gap-1">
             <ListItem label="Серійний номер" value={profile.code} />
             <ListItem label="Посада" value={profile.position} />
+            <ListItem label="Акаунт створено" value={formatDate(profile.created_at)} />
             {profile.shift !== null && <ListItem label="Графік роботи" value={profile.shift.name} />}
             <ListItem label="У системі" value={formatTenure(profile.created_at)} />
+            <ListItem label="Кількість балів" value={profile.points} />
          </ul>
       </div>
    )

@@ -5,7 +5,7 @@ import { Info } from "./Info"
 import { History } from "./History"
 import DashboardAnalysis from "@/features/dashboard/DashboardAnalysis"
 import { useLayoutMode, type LayoutMode } from "@/hooks/ui/useLayoutMode"
-import { EmployeeWorkloadHeatmap } from "./OperationsHeatmap"
+import { EmployeeWorkloadHeatmap } from "./EmployeeWorkloadHeatmap"
 import { useProfile } from "@/hooks/api/profile/useProfile"
 import Button from "@/components/UI/Button"
 import { EditIcon } from "lucide-react"
@@ -16,7 +16,7 @@ const WIDE_AREAS = `
    "header header header header header header header header header header"
    "info info analysis analysis analysis analysis analysis history history history"
    "info info analysis analysis analysis analysis analysis history history history"
-   "map map map map chart chart chart history history history"
+   "info info map map map map map history history history"
 `
 
 const MEDIUM_AREAS = `
