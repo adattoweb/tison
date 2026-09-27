@@ -5,6 +5,7 @@ export const InstructionBaseSchema = z.object({
    description: z.string().max(1024, "Максимум 1024 символи"),
    operation_type_id: z.number({ error: "Оберіть тип операції" }).int(),
    planned_time: z.number().int("Введіть ціле число").min(0, "Не може бути від'ємним").nullable().optional(),
+   images: z.array(z.url("Некоректне посилання")).max(10, "Максимум 10 зображень"),
 })
 
 export const InstructionCreateSchema = InstructionBaseSchema.extend({
@@ -20,6 +21,7 @@ export const InstructionUpdateSchema = InstructionBaseSchema.extend({
    steps: z.array(z.string()).nullable().optional(),
    checkpoints: z.array(z.string()).nullable().optional(),
 })
+
 export const InstructionEditFormSchema = InstructionBaseSchema.extend({
    details: z.array(
       z.object({

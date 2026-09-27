@@ -72,7 +72,6 @@ export function AddModelModal({ isOpen, setIsOpen }: ModalProps) {
          {
             title: data.title,
             type: data.type,
-            // порожній опис відправляємо як null
             description: data.description?.trim() ? data.description : null,
             images: uploadedUrls,
          },
@@ -80,6 +79,9 @@ export function AddModelModal({ isOpen, setIsOpen }: ModalProps) {
             onSuccess: () => {
                addToast("Успішно створено модель виробу!", { duration: TOAST_DURATION, type: "success" })
                onClose()
+            },
+            onError: () => {
+               addToast("Не вдалося створити модель виробу!", { duration: TOAST_DURATION, type: "error" })
             },
          },
       )

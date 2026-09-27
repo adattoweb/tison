@@ -19,6 +19,7 @@ export interface InstructionListRead {
    title: string
    description: string
    planned_time: number | null
+   images: string[]
 }
 
 export interface InstructionRead extends InstructionListRead {}

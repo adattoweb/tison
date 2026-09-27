@@ -12,7 +12,7 @@ export const getAllOperationTypes = async (params: ParamsWithActive): Promise<Pa
       params: {
          page: params.page,
          page_size: params.pageSize,
-         is_active: params.isActive,
+         is_active: params.is_active,
          search: params.search,
       },
    })

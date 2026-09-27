@@ -13,6 +13,9 @@ import clsx from "clsx"
 import { ClockIcon, NotebookPenIcon, WrenchIcon } from "lucide-react"
 import { Controller, useForm, type SubmitHandler } from "react-hook-form"
 import { TOAST_DURATION } from "@/constants/app"
+import { MultiImageUpload, type ImageItem } from "@/components/UI/MultiImageUpload"
+import { useState } from "react"
+import { useUploadImage } from "@/hooks/api/media/useUploadImage"
 
 interface ModalProps {
    isOpen: boolean
@@ -20,10 +23,21 @@ interface ModalProps {
    modelId: number
 }
 
+const MAX_IMAGES = 10
+
+// images завантажуються окремо (через MultiImageUpload + useUploadImage) і підставляються
+// в payload вручну, тому виключаємо це поле зі схеми валідації самої форми
+const AddInstructionFormSchema = InstructionCreateSchema.omit({ images: true })
+type AddInstructionFormInput = Omit<InstructionCreateInput, "images">
+
 export function AddInstructionModal({ isOpen, setIsOpen, modelId }: ModalProps) {
    const { mutate: doCreateInstruction, isPending } = useCreateInstruction()
-   const { data: operationTypesData } = useAllOperationTypes({ page: 1, pageSize: 100, isActive: true })
+   const { data: operationTypesData } = useAllOperationTypes({ page: 1, pageSize: 100, is_active: true })
+   const { mutateAsync: doUploadImage } = useUploadImage()
    const { addToast } = useToast()
+
+   const [images, setImages] = useState<ImageItem[]>([])
+   const [isUploadingImages, setIsUploadingImages] = useState(false)
 
    const operationTypes = operationTypesData?.items ?? []
 
@@ -33,29 +47,64 @@ export function AddInstructionModal({ isOpen, setIsOpen, modelId }: ModalProps) 
       reset,
       control,
       formState: { errors },
-   } = useForm<InstructionCreateInput>({
-      resolver: zodResolver(InstructionCreateSchema),
+   } = useForm<AddInstructionFormInput>({
+      resolver: zodResolver(AddInstructionFormSchema),
       defaultValues: {
          title: "",
          description: "",
+         operation_type_id: undefined,
          planned_time: null,
          product_model_id: modelId,
       },
    })
 
    const onClose = () => {
+      images.forEach(img => URL.revokeObjectURL(img.url))
+      setImages([])
       reset()
       setIsOpen(false)
    }
 
-   const onSubmit: SubmitHandler<InstructionCreateInput> = data => {
-      doCreateInstruction(data, {
-         onSuccess: () => {
-            addToast("Успішно створено інструкцію!", { duration: TOAST_DURATION, type: "success" })
-            onClose()
+   const onSubmit: SubmitHandler<AddInstructionFormInput> = async data => {
+      let uploadedUrls: string[] = []
+
+      if (images.length > 0) {
+         setIsUploadingImages(true)
+         try {
+            const uploaded = await Promise.all(
+               images.map(img => doUploadImage({ category: "instructions", file: img.file! })),
+            )
+            uploadedUrls = uploaded.map(u => u.url)
+         } catch {
+            addToast("Не вдалося завантажити одне або кілька зображень", { duration: TOAST_DURATION, type: "error" })
+            setIsUploadingImages(false)
+            return
+         }
+         setIsUploadingImages(false)
+      }
+
+      doCreateInstruction(
+         {
+            title: data.title,
+            description: data.description.trim(),
+            operation_type_id: data.operation_type_id,
+            product_model_id: data.product_model_id,
+            planned_time: data.planned_time,
+            images: uploadedUrls,
          },
-      })
+         {
+            onSuccess: () => {
+               addToast("Успішно створено інструкцію!", { duration: TOAST_DURATION, type: "success" })
+               onClose()
+            },
+            onError: () => {
+               addToast("Не вдалося створити інструкцію", { duration: TOAST_DURATION, type: "error" })
+            },
+         },
+      )
    }
+
+   const isSaving = isUploadingImages || isPending
 
    return (
       <Modal isOpen={isOpen} onClose={onClose}>
@@ -150,6 +199,12 @@ export function AddInstructionModal({ isOpen, setIsOpen, modelId }: ModalProps) 
                         />
                         <FieldError message={errors.planned_time?.message} />
                      </div>
+                     <MultiImageUpload
+                        images={images}
+                        onChange={setImages}
+                        maxImages={MAX_IMAGES}
+                        disabled={isSaving}
+                     />
                   </div>
                </div>
             </Modal.Content>
@@ -157,8 +212,8 @@ export function AddInstructionModal({ isOpen, setIsOpen, modelId }: ModalProps) 
                <Button type="transparent" onClick={onClose}>
                   <Button.Paragraph>Скасувати</Button.Paragraph>
                </Button>
-               <Button type="accentFilled" isSubmit={true}>
-                  <Button.Paragraph>{isPending ? "Створення..." : "Створити"}</Button.Paragraph>
+               <Button type="accentFilled" isSubmit={true} disabled={isSaving}>
+                  <Button.Paragraph>{isSaving ? "Створення..." : "Створити"}</Button.Paragraph>
                </Button>
             </footer>
          </form>

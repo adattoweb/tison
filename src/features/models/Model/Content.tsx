@@ -123,7 +123,10 @@ export function AboutModel({ isActive, onSelect }: AboutModelProps) {
                isActive && "text-(--accent-color)! border-(--accent-color)!",
             )}
          >
-            <ImageIcon className="size-3.5 sm:size-4" strokeWidth={1.5} />
+            <ImageIcon
+               className={clsx("size-3.5 sm:size-4", isActive && "stroke-(--accent-color)!")}
+               strokeWidth={1.5}
+            />
          </div>
          <p
             title="Про модель"
@@ -159,25 +162,31 @@ function AboutModelInfo({ model }: AboutModelInfoProps) {
             </span>
          </div>
 
-         {model.images.length > 0 && (
-            <div className="flex flex-wrap gap-2">
-               {model.images.map((src, index) => (
-                  <img
-                     key={index}
-                     src={src}
-                     alt={model.title}
-                     onClick={() => setGalleryIndex(index)}
-                     className="w-full sm:w-48 h-32 object-cover rounded-lg border border-(--stroke-color) cursor-pointer hover:opacity-80 transition-opacity"
-                  />
-               ))}
-            </div>
-         )}
+         <div className="flex flex-col gap-2">
+            <h2 className="text-lg font-medium">Опис</h2>
+            {model.description ? (
+               <p className="text-(--second-color) whitespace-pre-line">{model.description}</p>
+            ) : (
+               <p className="text-(--second-color)">Опис відсутній</p>
+            )}
+         </div>
 
-         {model.description ? (
-            <p className="text-(--second-color) whitespace-pre-line">{model.description}</p>
-         ) : (
-            <p className="text-(--second-color)">Опис відсутній</p>
-         )}
+         <div className="flex flex-col gap-2">
+            <h2 className="text-lg font-medium">Зображення</h2>
+            {model.images.length > 0 && (
+               <div className="flex flex-wrap gap-2">
+                  {model.images.map((src, index) => (
+                     <img
+                        key={index}
+                        src={src}
+                        alt={model.title}
+                        onClick={() => setGalleryIndex(index)}
+                        className="w-full sm:w-48 h-32 object-cover rounded-lg border border-(--stroke-color) cursor-pointer hover:opacity-80 transition-opacity"
+                     />
+                  ))}
+               </div>
+            )}
+         </div>
 
          <ImageGalleryModal
             images={model.images}
@@ -200,6 +209,7 @@ const toPayload = (step: InstructionListRead, order: number): InstructionUpdateI
    details: step.details,
    steps: step.steps,
    checkpoints: step.checkpoints,
+   images: step.images,
 })
 
 interface ContentProps {

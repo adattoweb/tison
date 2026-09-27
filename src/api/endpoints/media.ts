@@ -1,6 +1,6 @@
 import { api } from "@/api/api"
 
-export type MediaCategory = "defects" | "product_models" | "profiles"
+export type MediaCategory = "defects" | "product_models" | "profiles" | "instructions"
 
 export interface UploadedImage {
    url: string

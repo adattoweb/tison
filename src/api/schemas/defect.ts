@@ -4,7 +4,7 @@ import type { DefectStatusType } from "@/api/types/defect"
 export const DefectBaseSchema = z.object({
    title: z.string().min(1, "Обов'язкове поле").max(255, "Максимум 255 символів"),
    description: z.string().max(2058, "Максимум 2058 символів"),
-   images: z.array(z.url("Некоректне посилання")).nullable().optional(),
+   images: z.array(z.url("Некоректне посилання")).max(10, "Максимум 10 зображень"),
 })
 
 export const DefectCreateSchema = DefectBaseSchema.extend({

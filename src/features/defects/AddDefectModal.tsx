@@ -59,6 +59,8 @@ export function AddDefectModal({ isOpen, setIsOpen, operationId }: ModalProps) {
    }))
 
    const onClose = () => {
+      images.forEach(img => URL.revokeObjectURL(img.url))
+      setImages([])
       reset()
       setIsOpen(false)
    }

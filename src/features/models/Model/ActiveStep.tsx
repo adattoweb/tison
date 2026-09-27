@@ -14,12 +14,17 @@ import { Textarea } from "@/components/UI/Textarea"
 import { TOAST_DURATION } from "@/constants/app"
 import { useUpdateInstruction } from "@/hooks/api/instructions/useUpdateInstruction"
 import { useAllOperationTypes } from "@/hooks/api/operationTypes/useAllOperationTypes"
+import { useUploadImage } from "@/hooks/api/media/useUploadImage"
 import { titleClassName } from "@/utils/classNames"
 import { zodResolver } from "@hookform/resolvers/zod"
 import clsx from "clsx"
 import { ClockIcon, EditIcon, NotebookPenIcon, PlusIcon, WrenchIcon, XIcon } from "lucide-react"
 import { useState } from "react"
 import { Controller, useFieldArray, useForm, type SubmitHandler } from "react-hook-form"
+import { MultiImageUpload, type ImageItem } from "@/components/UI/MultiImageUpload"
+import { ImageGalleryModal } from "@/components/UI/ImageGalleryModal"
+
+const MAX_IMAGES = 10
 
 interface InstructionProps {
    steps: InstructionSteps | undefined
@@ -98,6 +103,40 @@ function Checkpoints({ checkpoints }: CheckpointsProps) {
    )
 }
 
+interface StepImagesProps {
+   images: string[] | undefined
+}
+
+function StepImages({ images }: StepImagesProps) {
+   const [galleryIndex, setGalleryIndex] = useState<number | null>(null)
+
+   if (!images || images.length === 0) return null
+
+   return (
+      <div className="flex flex-col gap-2">
+         <h2 className="font-medium text-lg">Зображення</h2>
+         <div className="flex flex-wrap gap-2">
+            {images.map((src, index) => (
+               <img
+                  key={src + index}
+                  src={src}
+                  alt={`Зображення ${index + 1}`}
+                  onClick={() => setGalleryIndex(index)}
+                  className="w-24 h-24 sm:w-28 sm:h-28 object-cover rounded-lg border border-(--stroke-color) cursor-pointer hover:opacity-80 transition-opacity"
+               />
+            ))}
+         </div>
+
+         <ImageGalleryModal
+            images={images}
+            initialIndex={galleryIndex ?? 0}
+            isOpen={galleryIndex !== null}
+            onClose={() => setGalleryIndex(null)}
+         />
+      </div>
+   )
+}
+
 const cardClassName =
    "flex flex-col gap-(--components-gap) ibm-plex-sans border border-(--stroke-color) rounded-lg px-(--components-py) py-(--components-py) flex-1"
 
@@ -150,11 +189,12 @@ export function ActiveStep({ step }: ActiveStepProps) {
             </div>
          </div>
          <Checkpoints checkpoints={step?.checkpoints} />
+         <StepImages images={step?.images} />
       </div>
    )
 }
 
-function toFormValues(step: InstructionListRead): InstructionEditFormInput {
+function toFormValues(step: InstructionListRead): Omit<InstructionEditFormInput, "images"> {
    return {
       title: step.title,
       description: step.description ?? "",
@@ -167,6 +207,11 @@ function toFormValues(step: InstructionListRead): InstructionEditFormInput {
       steps: (step.steps ?? []).map(value => ({ value })),
       checkpoints: (step.checkpoints ?? []).map(value => ({ value })),
    }
+}
+
+// вже завантажені зображення кроку показуємо в MultiImageUpload як готові превʼю без file
+function toImageItems(step: InstructionListRead): ImageItem[] {
+   return (step.images ?? []).map(url => ({ url, file: undefined }))
 }
 
 function SectionHeader({ title, onAdd }: { title: string; onAdd: () => void }) {
@@ -203,10 +248,18 @@ interface ActiveStepFormProps {
    onClose: () => void
 }
 
+// схема форми без images: зображеннями керуємо окремим стейтом + MultiImageUpload
+const ActiveStepFormSchema = InstructionEditFormSchema.omit({ images: true })
+type ActiveStepFormInput = Omit<InstructionEditFormInput, "images">
+
 function ActiveStepForm({ step, onClose }: ActiveStepFormProps) {
    const { mutate: doUpdateInstruction, isPending } = useUpdateInstruction()
-   const { data: operationTypesData } = useAllOperationTypes({ page: 1, pageSize: 100, isActive: true })
+   const { data: operationTypesData } = useAllOperationTypes({ page: 1, pageSize: 100, is_active: true })
+   const { mutateAsync: doUploadImage } = useUploadImage()
    const { addToast } = useToast()
+
+   const [images, setImages] = useState<ImageItem[]>(() => toImageItems(step))
+   const [isUploadingImages, setIsUploadingImages] = useState(false)
 
    const operationTypes = operationTypesData?.items ?? []
 
@@ -215,8 +268,8 @@ function ActiveStepForm({ step, onClose }: ActiveStepFormProps) {
       handleSubmit,
       control,
       formState: { errors },
-   } = useForm<InstructionEditFormInput>({
-      resolver: zodResolver(InstructionEditFormSchema),
+   } = useForm<ActiveStepFormInput>({
+      resolver: zodResolver(ActiveStepFormSchema),
       defaultValues: toFormValues(step),
    })
 
@@ -224,7 +277,36 @@ function ActiveStepForm({ step, onClose }: ActiveStepFormProps) {
    const steps = useFieldArray({ control, name: "steps" })
    const checkpoints = useFieldArray({ control, name: "checkpoints" })
 
-   const onSubmit: SubmitHandler<InstructionEditFormInput> = data => {
+   const handleClose = () => {
+      // прибираємо object URL-и, створені для превʼю ще не завантажених файлів
+      images.forEach(img => {
+         if (img.file) URL.revokeObjectURL(img.url)
+      })
+      onClose()
+   }
+
+   const onSubmit: SubmitHandler<ActiveStepFormInput> = async data => {
+      let finalImageUrls: string[] = []
+
+      if (images.length > 0) {
+         setIsUploadingImages(true)
+         try {
+            finalImageUrls = await Promise.all(
+               images.map(async img => {
+                  // вже завантажене зображення — просто лишаємо його url
+                  if (!img.file) return img.url
+                  const uploaded = await doUploadImage({ category: "instructions", file: img.file })
+                  return uploaded.url
+               }),
+            )
+         } catch {
+            addToast("Не вдалося завантажити одне або кілька зображень", { duration: TOAST_DURATION, type: "error" })
+            setIsUploadingImages(false)
+            return
+         }
+         setIsUploadingImages(false)
+      }
+
       doUpdateInstruction(
          {
             id: step.id,
@@ -234,6 +316,7 @@ function ActiveStepForm({ step, onClose }: ActiveStepFormProps) {
                operation_type_id: data.operation_type_id,
                planned_time: data.planned_time,
                order: step.order, // порядок не редагуємо, беремо поточний
+               images: finalImageUrls,
                details: data.details.map(d => ({ [d.key]: d.value })),
                steps: data.steps.map(s => s.value),
                checkpoints: data.checkpoints.map(c => c.value),
@@ -244,9 +327,14 @@ function ActiveStepForm({ step, onClose }: ActiveStepFormProps) {
                addToast("Успішно оновлено інструкцію!", { duration: TOAST_DURATION, type: "success" })
                onClose()
             },
+            onError: () => {
+               addToast("Не вдалося оновити інструкцію", { duration: TOAST_DURATION, type: "error" })
+            },
          },
       )
    }
+
+   const isSaving = isUploadingImages || isPending
 
    return (
       <form onSubmit={handleSubmit(onSubmit)} className={cardClassName}>
@@ -344,6 +432,10 @@ function ActiveStepForm({ step, onClose }: ActiveStepFormProps) {
                />
                <FieldError message={errors.description?.message} />
             </div>
+
+            <div className="md:col-span-2">
+               <MultiImageUpload images={images} onChange={setImages} maxImages={MAX_IMAGES} disabled={isSaving} />
+            </div>
          </div>
 
          <div className="flex flex-col xl:flex-row gap-(--components-gap)">
@@ -435,11 +527,11 @@ function ActiveStepForm({ step, onClose }: ActiveStepFormProps) {
          </div>
 
          <footer className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 sm:gap-4">
-            <Button type="transparent" onClick={onClose}>
+            <Button type="transparent" onClick={handleClose}>
                <Button.Paragraph>Скасувати</Button.Paragraph>
             </Button>
-            <Button type="accentFilled" isSubmit={true}>
-               <Button.Paragraph>{isPending ? "Збереження..." : "Зберегти"}</Button.Paragraph>
+            <Button type="accentFilled" isSubmit={true} disabled={isSaving}>
+               <Button.Paragraph>{isSaving ? "Збереження..." : "Зберегти"}</Button.Paragraph>
             </Button>
          </footer>
       </form>

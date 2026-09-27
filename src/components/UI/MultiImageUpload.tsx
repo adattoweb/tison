@@ -105,11 +105,11 @@ export function MultiImageUpload({ images, onChange, maxImages = 10, disabled = 
                <p className="text-sm">Немає зображень — натисни, щоб додати</p>
             </div>
          ) : (
-            <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+            <div className="flex flex-wrap gap-2">
                {images.map(img => (
                   <div
                      key={img.id}
-                     className="group relative aspect-square rounded-md overflow-hidden border border-(--stroke-color)"
+                     className="group relative aspect-square rounded-md overflow-hidden border border-(--stroke-color) w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28"
                   >
                      <img src={img.url} alt="" className="w-full h-full object-cover" />
                      <button
