@@ -1,9 +1,82 @@
-import { AuthComponent } from "./components/AuthComponent"
+import Button from "@/components/UI/Button"
+import { Input } from "@/components/UI/Input"
+import { ParagraphError } from "@/components/UI/ParagraphError"
+import { LockKeyholeOpen } from "lucide-react"
+import { useForm, type SubmitHandler } from "react-hook-form"
+import { Link } from "react-router"
+import { useLogin } from "@/hooks/api/auth/useLogin"
+import type { LoginCredentials } from "@/api/types/auth"
+import { isAxiosError } from "axios"
+
+interface IForm {
+   email: string
+   password: string
+}
 
 export function Login() {
+   const {
+      register,
+      handleSubmit,
+      formState: { errors },
+   } = useForm<IForm>({ mode: "onSubmit" })
+
+   const { mutate: doLogin, error } = useLogin()
+
+   const onSubmit: SubmitHandler<LoginCredentials> = data => {
+      doLogin(data)
+   }
+
+   const errorMessage = isAxiosError(error)
+      ? error.response?.data?.detail === "LOGIN_BAD_CREDENTIALS"
+         ? "Невірний email або пароль"
+         : "Помилка входу"
+      : null
    return (
       <div className="flex justify-center items-center flex-1">
-         <AuthComponent title="Вхід в систему" />
+         <div className="flex m-auto w-100 rounded-xl bg-(--bg-trans-color) border-(--stroke-color) border flex-col px-5 py-5">
+            <h2 className="text-xl font-medium mx-auto mb-5">Вхід в систему</h2>
+            <form className="flex flex-col gap-2" onSubmit={handleSubmit(onSubmit)}>
+               <Input
+                  hasError={errors.email !== undefined}
+                  type="email"
+                  label="Електронна пошта"
+                  placeholder="your@gmail.com"
+                  {...register("email", {
+                     required: "Це поле обов'язкове!",
+                     pattern: {
+                        value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
+                        message: "Некоректна пошта!",
+                     },
+                  })}
+               />
+               {errors.email && <ParagraphError>{errors.email.message}</ParagraphError>}
+               <Input
+                  hasError={errors.password !== undefined}
+                  type="password"
+                  label="Пароль"
+                  {...register("password", {
+                     required: "Це поле обов'язкове!",
+                     minLength: {
+                        value: 5,
+                        message: "Пароль має містити мінімум 6 символів",
+                     },
+                     maxLength: {
+                        value: 30,
+                        message: "Пароль має містити максимум 30 символів",
+                     },
+                  })}
+               />
+               {errors.password && <ParagraphError>{errors.password.message}</ParagraphError>}
+               <Link to="/reset-password" className="text-(--accent-color) underline ml-auto">
+                  Забули пароль?
+               </Link>
+               {errorMessage && <ParagraphError>{errorMessage}</ParagraphError>}
+               <Button type="accentFilled" className="gap-2 mt-4 justify-center py-3 h-11" isSubmit={true}>
+                  <Button.Icon Icon={LockKeyholeOpen} strokeWidth={1.5} className="size-5" />
+                  <Button.Paragraph className="font-medium">Увійти</Button.Paragraph>
+               </Button>
+            </form>
+         </div>
       </div>
    )
 }

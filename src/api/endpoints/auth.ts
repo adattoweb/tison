@@ -24,3 +24,11 @@ export const getMe = async (): Promise<MeRead> => {
    const { data } = await api.get<MeRead>("/auth/me")
    return data
 }
+
+export const forgotPassword = async (email: string): Promise<void> => {
+   await api.post("/auth/forgot-password", { email })
+}
+
+export const resetPassword = async (token: string, password: string): Promise<void> => {
+   await api.post("/auth/reset-password", { token, password })
+}

@@ -15,6 +15,7 @@ import { logout } from "./logout"
 import { departments } from "./departments"
 import { operationTypes } from "./operationTypes"
 import type { AppRoute } from "@/types/routes"
+import { resetPassword } from "./resetPassword"
 
 export const routes: AppRoute[] = [
    dashboard,
@@ -33,4 +34,5 @@ export const routes: AppRoute[] = [
    analysis,
    settings,
    logout,
+   resetPassword,
 ]
