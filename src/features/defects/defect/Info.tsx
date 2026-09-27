@@ -1,5 +1,5 @@
 import { useState } from "react"
-import defectImg from "@/assets/images/defect.png"
+import blankPhoto from "@/assets/images/blank_photo.png"
 import type { DefectRead } from "@/api/types/defect"
 import type { OperationListRead } from "@/api/types/operation"
 import { DEFECT_STATUS } from "@/constants/status"
@@ -28,7 +28,7 @@ function ListItem({ label, value }: ListItemProps) {
 export function Info({ defect, operation }: InfoBlockProps) {
    const [activeIndex, setActiveIndex] = useState(0)
 
-   const images = defect.images?.length ? defect.images : [defectImg]
+   const images = defect.images?.length ? defect.images : [blankPhoto]
    // після оновлення даних індекс може вийти за межі масиву
    const activeImage = images[activeIndex] ?? images[0]
    return (
@@ -38,7 +38,7 @@ export function Info({ defect, operation }: InfoBlockProps) {
       >
          <div
             className="flex-1 rounded-lg aspect-video bg-center bg-cover bg-no-repeat"
-            style={{ backgroundImage: `url("${defectImg}")` }}
+            style={{ backgroundImage: `url("${activeImage}")` }}
          />
 
          {images.length > 1 && (

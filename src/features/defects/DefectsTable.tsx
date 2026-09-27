@@ -9,7 +9,7 @@ import Table from "@/components/Table/Table"
 import { TablePagination } from "@/components/Table/TablePagination"
 import { defects as defectsRoute } from "@/routes/defects"
 import { DEFAULT_PAGE_SIZE } from "@/constants/pagination"
-import placeholderImg from "@/assets/images/product.jpg"
+import blankPhoto from "@/assets/images/blank_photo.png"
 import type { DefectStatusType } from "@/api/types/defect"
 import { useAllDefects } from "@/hooks/api/defects/useAllDefects"
 import { useAllOperations } from "@/hooks/api/operations/useAllOperations"
@@ -149,12 +149,12 @@ export function DefectsTable() {
             tableClassNames={tableClassNames}
             className={clsx("transition-opacity", isPlaceholderData && "opacity-50")}
          >
-            {isLoading && <p className="min-w-320 px-4 py-8 text-center text-(--second-color)">Завантаження...</p>}
+            {isLoading && <p className="min-w-7xl px-4 py-8 text-center text-(--second-color)">Завантаження...</p>}
 
-            {isError && <p className="min-w-320 px-4 py-8 text-center text-red-400">Не вдалося завантажити дефекти</p>}
+            {isError && <p className="min-w-7xl px-4 py-8 text-center text-red-400">Не вдалося завантажити дефекти</p>}
 
             {!isLoading && !isError && defects.length === 0 && (
-               <p className="min-w-320 px-4 py-8 text-center text-(--second-color)">Дефектів не знайдено</p>
+               <p className="min-w-7xl px-4 py-8 text-center text-(--second-color)">Дефектів не знайдено</p>
             )}
 
             {defects.map(defect => {
@@ -162,7 +162,7 @@ export function DefectsTable() {
 
                return (
                   <Table.Row key={defect.id} to={`/${defectsRoute.path}/${defect.id}`}>
-                     <Table.Photo src={defect.images?.[0] ?? placeholderImg} alt={defect.code} />
+                     <Table.Photo src={defect.images?.[0] ?? blankPhoto} alt={defect.code} />
                      <Table.Text text={defect.code} className="font-medium" />
                      <Table.Text text={operationCodeById.get(defect.operation_id) ?? `#${defect.operation_id}`} />
                      <Table.TextGroup primary={defect.title} secondary={defect.description} />

@@ -15,14 +15,8 @@ export const DefectUpdateSchema = DefectBaseSchema.extend({
    end_at: z.iso.datetime({ offset: true, error: "Некоректна дата" }).nullable().optional(),
    status: z.custom<DefectStatusType>(v => v === "OPEN" || v === "CLOSE", "Оберіть статус"),
 })
-export const DefectFormSchema = DefectCreateSchema.omit({ images: true }).extend({
-   images: z.array(z.object({ value: z.url("Некоректне посилання") })),
-})
 
-export const DefectUpdateFormSchema = DefectUpdateSchema.omit({ images: true, end_at: true }).extend({
-   images: z.array(z.object({ value: z.url("Некоректне посилання") })),
-})
+export const DefectUpdateFormSchema = DefectUpdateSchema.omit({ end_at: true })
 export type DefectCreateInput = z.infer<typeof DefectCreateSchema>
 export type DefectUpdateInput = z.infer<typeof DefectUpdateSchema>
 export type DefectUpdateFormInput = z.infer<typeof DefectUpdateFormSchema>
-export type DefectFormInput = z.infer<typeof DefectFormSchema>

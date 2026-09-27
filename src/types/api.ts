@@ -23,7 +23,7 @@ export interface OrdersParams {
 }
 
 export interface ParamsWithActive extends PaginationParams {
-   isActive: boolean
+   is_active: boolean
 }
 
 export interface ProductsParams {

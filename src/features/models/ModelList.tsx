@@ -21,7 +21,7 @@ export function ModelList() {
       page,
       pageSize,
       search: debouncedSearch || undefined,
-      isActive: isActive,
+      is_active: isActive,
    })
 
    function withPageReset<T>(setter: (value: T) => void) {

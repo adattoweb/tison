@@ -12,7 +12,7 @@ export const getAllProductModels = async (
          page: params.page,
          page_size: params.pageSize,
          search: params.search || undefined,
-         isActive: params.isActive,
+         is_active: params.is_active,
       },
    })
    return data
