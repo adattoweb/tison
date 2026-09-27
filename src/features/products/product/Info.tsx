@@ -1,10 +1,12 @@
-import productImg from "@/assets/images/product.jpg"
+import blankPhoto from "@/assets/images/blank_photo.png"
 import type { ProductListRead } from "@/api/types/product"
 import type { ProductModelListRead } from "@/api/types/product_model"
 import type { OrderListRead } from "@/api/types/order"
 import { STATUS } from "@/constants/status"
 import { titleClassName } from "@/utils/classNames"
 import { formatDate, formatDateTime } from "@/utils/time"
+import { useState } from "react"
+import { ImageGalleryModal } from "@/components/UI/ImageGalleryModal"
 
 interface InfoProps {
    product: ProductListRead
@@ -27,7 +29,10 @@ function ListItem({ label, value }: ListItemProps) {
 }
 
 export function Info({ product, model, order }: InfoProps) {
-   const image = model?.images?.[0] ?? productImg
+   const [activeIndex, setActiveIndex] = useState(0)
+   const [isGalleryOpen, setIsGalleryOpen] = useState(false)
+   const images = model?.images?.length ? model?.images : [blankPhoto]
+   const activeImage = images[activeIndex] ?? images[0]
 
    return (
       <div
@@ -36,8 +41,25 @@ export function Info({ product, model, order }: InfoProps) {
       >
          <div
             className="flex-1 rounded-lg aspect-video bg-center bg-cover bg-no-repeat"
-            style={{ backgroundImage: `url("${productImg}")` }}
+            style={{ backgroundImage: `url("${activeImage}")` }}
+            onClick={() => setIsGalleryOpen(true)}
          />
+         {images.length > 1 && (
+            <div className="flex items-center gap-2 overflow-x-auto pb-1">
+               {images.map((src, index) => (
+                  <button
+                     key={src + index}
+                     type="button"
+                     onClick={() => setActiveIndex(index)}
+                     className={`shrink-0 w-16 h-16 rounded-lg overflow-hidden bg-center bg-cover bg-no-repeat border-2 transition-colors ${
+                        index === activeIndex ? "border-(--accent-color,#f2a65a)" : "border-(--stroke-color)"
+                     }`}
+                     style={{ backgroundImage: `url("${src}")` }}
+                     aria-label={`Фото дефекту ${index + 1}`}
+                  />
+               ))}
+            </div>
+         )}
          <h2 className={titleClassName}>Інформація про виріб</h2>
          <ul className="flex flex-col gap-1">
             <ListItem label="Серійний номер" value={product.code} />
@@ -52,6 +74,13 @@ export function Info({ product, model, order }: InfoProps) {
             <ListItem label="Планове завершення замовлення" value={formatDate(order?.planned_end_at)} />
             <ListItem label="Фактичне завершення" value={formatDateTime(product.end_at)} />
          </ul>
+         <ImageGalleryModal
+            images={images}
+            initialIndex={activeIndex}
+            isOpen={isGalleryOpen}
+            onClose={() => setIsGalleryOpen(false)}
+            alt={model?.title}
+         />
       </div>
    )
 }

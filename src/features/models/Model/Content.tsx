@@ -22,11 +22,12 @@ import {
 import { CSS } from "@dnd-kit/utilities"
 import { useQueryClient } from "@tanstack/react-query"
 import clsx from "clsx"
-import { GripVerticalIcon, PlusIcon } from "lucide-react"
+import { GripVerticalIcon, ImageIcon, PlusIcon } from "lucide-react"
 import { useState } from "react"
 import { ActiveStep } from "./ActiveStep"
 import { AddInstructionModal } from "./AddInstructionModal"
 import { titleClassName } from "@/utils/classNames"
+import { ImageGalleryModal } from "@/components/UI/ImageGalleryModal"
 
 interface ListItemProps {
    isActive: boolean
@@ -82,6 +83,7 @@ export function ListItem({ isActive, step, onSelect }: ListItemProps) {
       </li>
    )
 }
+
 interface AddItemProps {
    setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
@@ -97,6 +99,94 @@ export function AddItem({ setIsOpen }: AddItemProps) {
          </div>
          <p className="ibm-plex-sans min-w-0 text-sm md:text-base text-(--second-color) truncate">Додати новий етап</p>
       </li>
+   )
+}
+
+interface AboutModelProps {
+   isActive: boolean
+   onSelect: () => void
+}
+
+// Той самий вигляд, що й у ListItem, але без ручки перетягування та номера кроку
+export function AboutModel({ isActive, onSelect }: AboutModelProps) {
+   return (
+      <li
+         className={clsx(
+            "flex flex-1 gap-1.5 sm:gap-2 items-center hover:bg-(--bg-trans-color) py-2 px-1.5 sm:px-2 rounded-lg duration-200 cursor-pointer w-full min-w-0",
+            isActive && "bg-(--accent-trans-color) hover:bg-(--accent-trans-color)!",
+         )}
+         onClick={onSelect}
+      >
+         <div
+            className={clsx(
+               "size-7 sm:size-8 shrink-0 flex justify-center items-center rounded-full border border-(--stroke-color) text-(--second-color) select-none",
+               isActive && "text-(--accent-color)! border-(--accent-color)!",
+            )}
+         >
+            <ImageIcon className="size-3.5 sm:size-4" strokeWidth={1.5} />
+         </div>
+         <p
+            title="Про модель"
+            className={clsx(
+               "ibm-plex-sans min-w-0 text-sm md:text-base text-(--second-color) select-none truncate",
+               isActive && "text-(--accent-color)!",
+            )}
+         >
+            Про модель
+         </p>
+      </li>
+   )
+}
+
+interface AboutModelInfoProps {
+   model: ProductModelListRead
+}
+
+function AboutModelInfo({ model }: AboutModelInfoProps) {
+   const [galleryIndex, setGalleryIndex] = useState<number | null>(null)
+
+   return (
+      <div className="flex flex-col gap-(--components-gap) ibm-plex-sans border border-(--stroke-color) rounded-lg px-(--components-py) py-(--components-py) flex-1">
+         <h2 className={titleClassName}>{model.title}</h2>
+
+         <div className="flex flex-wrap gap-3 text-sm text-(--second-color)">
+            <span className="px-2 py-1 rounded-md border border-(--stroke-color)">Тип: {model.type}</span>
+            <span className="px-2 py-1 rounded-md border border-(--stroke-color)">
+               Інструкцій: {model.steps.length}
+            </span>
+            <span className="px-2 py-1 rounded-md border border-(--stroke-color)">
+               Статус: {model.is_active ? "Активна" : "Неактивна"}
+            </span>
+         </div>
+
+         {model.images.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+               {model.images.map((src, index) => (
+                  <img
+                     key={index}
+                     src={src}
+                     alt={model.title}
+                     onClick={() => setGalleryIndex(index)}
+                     className="w-full sm:w-48 h-32 object-cover rounded-lg border border-(--stroke-color) cursor-pointer hover:opacity-80 transition-opacity"
+                  />
+               ))}
+            </div>
+         )}
+
+         {model.description ? (
+            <p className="text-(--second-color) whitespace-pre-line">{model.description}</p>
+         ) : (
+            <p className="text-(--second-color)">Опис відсутній</p>
+         )}
+
+         <ImageGalleryModal
+            images={model.images}
+            initialIndex={galleryIndex ?? 0}
+            isOpen={galleryIndex !== null}
+            onClose={() => setGalleryIndex(null)}
+            alt={model.title}
+         />
+      </div>
    )
 }
 
@@ -121,6 +211,7 @@ export function Content({ model }: ContentProps) {
    const [isInstructionModalOpen, setIsInstructionModalOpen] = useState(false)
    // Тимчасовий порядок id, поки зміни зберігаються на сервері (оптимістичне оновлення)
    const [localOrder, setLocalOrder] = useState<number[] | null>(null)
+   const [isAboutActive, setIsAboutActive] = useState(true)
 
    const { mutateAsync: updateInstruction } = useUpdateInstruction()
    const queryClient = useQueryClient()
@@ -145,6 +236,11 @@ export function Content({ model }: ContentProps) {
    const activeStep = instructions.find(s => s.id === activeStepId) ?? instructions[0]
 
    const isSaving = localOrder !== null
+
+   const handleSelectStep = (id: number) => {
+      setIsAboutActive(false)
+      setActiveStepId(id)
+   }
 
    const handleDragEnd = async ({ active, over }: DragEndEvent) => {
       if (!over || active.id === over.id || isSaving) return
@@ -178,16 +274,19 @@ export function Content({ model }: ContentProps) {
    return (
       <main className="flex flex-col sm:flex-row gap-4">
          <div className="flex flex-col shrink-0 min-w-0 w-full sm:w-44 md:w-60 lg:w-80 rounded-lg border-(--stroke-color) border px-(--components-py) py-(--components-py)">
-            <p className="text-(--second-color) truncate">Інструкції, {instructions.length} операції</p>
+            <ul className={clsx("flex flex-col gap-2 w-full", isSaving && "opacity-70")}>
+               <AboutModel isActive={isAboutActive} onSelect={() => setIsAboutActive(true)} />
+            </ul>
+            <p className="text-(--second-color) truncate mt-2">Інструкції, {instructions.length} операції</p>
             <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                <SortableContext items={instructions.map(s => s.id)} strategy={verticalListSortingStrategy}>
                   <ul className={clsx("flex flex-col gap-2 mt-2 w-full", isSaving && "opacity-70")}>
                      {instructions.map(step => (
                         <ListItem
                            key={step.id}
-                           isActive={step.id === activeStep?.id}
+                           isActive={!isAboutActive && step.id === activeStep?.id}
                            step={step}
-                           onSelect={() => setActiveStepId(step.id)}
+                           onSelect={() => handleSelectStep(step.id)}
                         />
                      ))}
                      <AddItem setIsOpen={setIsInstructionModalOpen} />
@@ -197,7 +296,9 @@ export function Content({ model }: ContentProps) {
          </div>
 
          <div className="flex flex-1 min-w-0">
-            {activeStep ? (
+            {isAboutActive ? (
+               <AboutModelInfo model={model} />
+            ) : activeStep ? (
                <ActiveStep step={activeStep} />
             ) : (
                <div className="flex flex-col gap-(--components-gap) ibm-plex-sans border border-(--stroke-color) rounded-lg px-(--components-py) py-(--components-py) flex-1">

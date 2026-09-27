@@ -5,6 +5,7 @@ import type { OperationListRead } from "@/api/types/operation"
 import { DEFECT_STATUS } from "@/constants/status"
 import { titleClassName } from "@/utils/classNames"
 import { formatDateTime } from "@/utils/time"
+import { ImageGalleryModal } from "@/components/UI/ImageGalleryModal"
 
 interface InfoBlockProps {
    defect: DefectRead
@@ -27,6 +28,7 @@ function ListItem({ label, value }: ListItemProps) {
 
 export function Info({ defect, operation }: InfoBlockProps) {
    const [activeIndex, setActiveIndex] = useState(0)
+   const [isGalleryOpen, setIsGalleryOpen] = useState(false)
 
    const images = defect.images?.length ? defect.images : [blankPhoto]
    // після оновлення даних індекс може вийти за межі масиву
@@ -37,8 +39,9 @@ export function Info({ defect, operation }: InfoBlockProps) {
          style={{ gridArea: "info" }}
       >
          <div
-            className="flex-1 rounded-lg aspect-video bg-center bg-cover bg-no-repeat"
+            className="flex-1 rounded-lg aspect-video bg-center bg-cover bg-no-repeat cursor-pointer"
             style={{ backgroundImage: `url("${activeImage}")` }}
+            onClick={() => setIsGalleryOpen(true)}
          />
 
          {images.length > 1 && (
@@ -74,6 +77,14 @@ export function Info({ defect, operation }: InfoBlockProps) {
             <ListItem label="Дата виявлення" value={formatDateTime(defect.start_at)} />
             <ListItem label="Дата закриття" value={formatDateTime(defect.end_at)} />
          </ul>
+
+         <ImageGalleryModal
+            images={images}
+            initialIndex={activeIndex}
+            isOpen={isGalleryOpen}
+            onClose={() => setIsGalleryOpen(false)}
+            alt={defect.title}
+         />
       </div>
    )
 }
