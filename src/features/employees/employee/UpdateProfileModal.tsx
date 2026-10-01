@@ -41,12 +41,11 @@ export function UpdateProfileModal({ isOpen, setIsOpen, profile }: ModalProps) {
       last_name: profile.last_name,
       middle_name: profile.middle_name,
       telegram: profile.telegram ?? "",
-      phone: profile.phone,
+      phone: profile.phone ?? "",
       salary: profile.salary,
-      position: profile.position,
+      position: profile.position ?? "",
       points: profile.points,
       shift_id: profile.shift_id ?? undefined,
-      email: profile.email,
    }
 
    const {

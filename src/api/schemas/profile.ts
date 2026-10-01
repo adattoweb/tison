@@ -22,6 +22,7 @@ export const ProfileBaseSchema = z.object({
       val => (val === "" ? undefined : val),
       z.string().url("Невірний формат посилання").optional(),
    ),
+   email: z.email("Невірний формат email").min(1, "Обов'язкове поле"),
 })
 
 export const ProfileUpdateSchema = ProfileBaseSchema.pick({

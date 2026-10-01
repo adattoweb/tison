@@ -14,6 +14,7 @@ export function ModelList() {
    const [page, setPage] = useState(1)
    const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE)
    const [isActive, setIsActive] = useState(true)
+   const [isDetail, setIsDetail] = useState(false)
 
    const debouncedSearch = useDebouncedValue(search, 400)
 
@@ -22,6 +23,7 @@ export function ModelList() {
       pageSize,
       search: debouncedSearch || undefined,
       is_active: isActive,
+      is_detail: isDetail,
    })
 
    function withPageReset<T>(setter: (value: T) => void) {
@@ -63,6 +65,18 @@ export function ModelList() {
                <Dropdown.Content>
                   <Dropdown.Item onClick={() => withPageReset(setIsActive)(true)}>Активні</Dropdown.Item>
                   <Dropdown.Item onClick={() => withPageReset(setIsActive)(false)}>Архівовані</Dropdown.Item>
+               </Dropdown.Content>
+            </Dropdown>
+            <Dropdown>
+               <Dropdown.Button>
+                  <span className="text-base font-normal text-white whitespace-nowrap">
+                     {isDetail ? "Деталі" : "Моделі"}
+                  </span>
+                  <Dropdown.Chevron />
+               </Dropdown.Button>
+               <Dropdown.Content>
+                  <Dropdown.Item onClick={() => withPageReset(setIsDetail)(true)}>Деталі</Dropdown.Item>
+                  <Dropdown.Item onClick={() => withPageReset(setIsDetail)(false)}>Моделі</Dropdown.Item>
                </Dropdown.Content>
             </Dropdown>
          </Table.Header>

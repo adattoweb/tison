@@ -28,6 +28,7 @@ import { ActiveStep } from "./ActiveStep"
 import { AddInstructionModal } from "./AddInstructionModal"
 import { titleClassName } from "@/utils/classNames"
 import { ImageGalleryModal } from "@/components/UI/ImageGalleryModal"
+import { useProductModel } from "@/hooks/api/productModels/useProductModel"
 
 interface ListItemProps {
    isActive: boolean
@@ -145,6 +146,20 @@ interface AboutModelInfoProps {
    model: ProductModelListRead
 }
 
+const ProductDetail = ({ id }: { id: number }) => {
+   const { data: detail, isLoading } = useProductModel(id)
+
+   if (isLoading) {
+      return <div>Завантаження...</div>
+   }
+
+   if (!detail) {
+      return null
+   }
+
+   return <div className="px-2 py-1 rounded-md border border-(--stroke-color)">{detail.title}</div>
+}
+
 function AboutModelInfo({ model }: AboutModelInfoProps) {
    const [galleryIndex, setGalleryIndex] = useState<number | null>(null)
 
@@ -173,7 +188,7 @@ function AboutModelInfo({ model }: AboutModelInfoProps) {
 
          <div className="flex flex-col gap-2">
             <h2 className="text-lg font-medium">Зображення</h2>
-            {model.images.length > 0 && (
+            {model.images.length > 0 ? (
                <div className="flex flex-wrap gap-2">
                   {model.images.map((src, index) => (
                      <img
@@ -185,6 +200,22 @@ function AboutModelInfo({ model }: AboutModelInfoProps) {
                      />
                   ))}
                </div>
+            ) : (
+               <p className="text-(--second-color)">Зображення відсутні</p>
+            )}
+         </div>
+
+         <div className="flex flex-col gap-2">
+            <h2 className="text-lg font-medium">Деталі</h2>
+
+            {model.details_ids.length > 0 ? (
+               <div className="flex flex-wrap gap-2">
+                  {model.details_ids.map(id => (
+                     <ProductDetail key={id} id={id} />
+                  ))}
+               </div>
+            ) : (
+               <p className="text-(--second-color)">Деталі відсутні</p>
             )}
          </div>
 

@@ -8,6 +8,8 @@ export interface ProductModelListRead {
    is_active: boolean
    type: string
    steps: InstructionListRead[]
+   details_ids: number[]
+   is_detail: boolean
 }
 
 export interface ProductModelRead extends ProductModelListRead {}
@@ -17,4 +19,6 @@ export interface ProductModelUpdatePayload {
    description: string | null
    images: string[]
    type: string
+   details_ids: number[]
+   is_detail: boolean
 }

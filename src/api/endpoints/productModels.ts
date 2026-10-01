@@ -4,8 +4,10 @@ import type { PaginatedResponse } from "../types/pagination"
 import type { ParamsWithActive } from "@/types/api"
 import type { ProductModelBaseInput } from "../schemas/productModel"
 
+export type ProductModelsParams = ParamsWithActive & { is_detail?: boolean }
+
 export const getAllProductModels = async (
-   params: ParamsWithActive,
+   params: ProductModelsParams,
 ): Promise<PaginatedResponse<ProductModelListRead>> => {
    const { data } = await api.get<PaginatedResponse<ProductModelListRead>>("/models", {
       params: {
@@ -13,6 +15,7 @@ export const getAllProductModels = async (
          page_size: params.pageSize,
          search: params.search || undefined,
          is_active: params.is_active,
+         is_detail: params.is_detail,
       },
    })
    return data

@@ -1,0 +1,15 @@
+import { z } from "zod"
+
+export const WorkSessionCreateSchema = z.object({
+   station_id: z.number().int(),
+   operation_id: z.number().int(),
+   note: z.string().max(512).optional(),
+})
+
+export const WorkSessionEndSchema = z.object({
+   result: z.enum(["PAUSED", "COMPLETED", "CANCELLED"]),
+   note: z.string().max(512).optional(),
+})
+
+export type WorkSessionCreateInput = z.infer<typeof WorkSessionCreateSchema>
+export type WorkSessionEndInput = z.infer<typeof WorkSessionEndSchema>

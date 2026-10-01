@@ -1,4 +1,3 @@
-// api/schemas/product.ts
 import { z } from "zod"
 
 const optionalId = z.number().int().nullable().optional()
@@ -16,6 +15,7 @@ export const makeProductUpdateSchema = (productId: number) =>
 
 export const ProductCreateSchema = ProductUpdateSchema.extend({
    product_model_id: z.number({ error: "Оберіть модель виробу" }).int(),
+   code: z.string().max(255),
 })
 
 export type ProductCreateInput = z.infer<typeof ProductCreateSchema>

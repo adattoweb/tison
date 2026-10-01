@@ -1,3 +1,5 @@
+import type { AppRoute } from "@/types/routes"
+
 import { analysis } from "./analysis"
 import { analytics } from "./analytics"
 import { dashboard } from "./dashboard"
@@ -14,11 +16,12 @@ import { models } from "./models"
 import { logout } from "./logout"
 import { departments } from "./departments"
 import { operationTypes } from "./operationTypes"
-import type { AppRoute } from "@/types/routes"
 import { resetPassword } from "./resetPassword"
+import { workPlace } from "./workPlace"
 
 export const routes: AppRoute[] = [
    dashboard,
+   workPlace,
    employees,
    products,
    models,

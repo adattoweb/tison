@@ -38,3 +38,7 @@ export interface ProductsParams {
    maxProgress?: number
    search?: string
 }
+
+export interface ModelParams extends ParamsWithActive {
+   is_detail: boolean
+}

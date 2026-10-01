@@ -14,6 +14,10 @@ import { useUploadImage } from "@/hooks/api/media/useUploadImage"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { NotebookPenIcon, ShapesIcon } from "lucide-react"
 import { useForm, type SubmitHandler } from "react-hook-form"
+import { ChildModelsPicker } from "./ChildModelsPicker"
+import { useDebouncedValue } from "@/hooks/api/useDebouncedValue"
+import { keepPreviousData, useQuery } from "@tanstack/react-query"
+import { getAllProductModels } from "@/api/endpoints/productModels"
 
 interface UpdateProductModelModalProps {
    isOpen: boolean
@@ -22,6 +26,7 @@ interface UpdateProductModelModalProps {
 }
 
 const MAX_IMAGES = 10
+const PARTS_PAGE_SIZE = 100
 
 export function UpdateProductModelModal({ isOpen, model, onClose }: UpdateProductModelModalProps) {
    const { mutate: doUpdateProductModel, isPending: isUpdating } = useUpdateProductModel()
@@ -38,14 +43,45 @@ export function UpdateProductModelModal({ isOpen, model, onClose }: UpdateProduc
       register,
       handleSubmit,
       formState: { errors },
+      setValue,
    } = useForm<ProductModelEditInput>({
       resolver: zodResolver(ProductModelEditSchema),
       defaultValues: {
          title: model.title,
          type: model.type,
          description: model.description ?? "",
+         details_ids: model.details_ids,
       },
    })
+
+   const [selectedParts, setSelectedParts] = useState<ProductModelListRead[]>([])
+   const [partsSearch, setPartsSearch] = useState("")
+   const debouncedSearch = useDebouncedValue(partsSearch.trim(), 300)
+
+   const partsQuery = useQuery({
+      queryKey: ["product-models", "parts", debouncedSearch],
+      queryFn: () =>
+         getAllProductModels({
+            page: 1,
+            pageSize: PARTS_PAGE_SIZE,
+            is_active: true,
+            is_detail: true,
+            search: debouncedSearch,
+         }),
+      enabled: isOpen && !model.is_detail,
+      staleTime: 60000,
+      placeholderData: keepPreviousData,
+   })
+   const parts = (partsQuery.data?.items ?? []).filter(m => m.is_detail)
+
+   const handleSelectedChange = (items: ProductModelListRead[]) => {
+      setSelectedParts(items)
+      setValue(
+         "details_ids",
+         items.map(p => p.id),
+         { shouldValidate: true },
+      )
+   }
 
    const onSubmit: SubmitHandler<ProductModelEditInput> = async data => {
       // ті, що вже мали URL з сервера (без file) — лишаються як є
@@ -77,6 +113,8 @@ export function UpdateProductModelModal({ isOpen, model, onClose }: UpdateProduc
                type: data.type,
                description: data.description?.trim() ? data.description : null,
                images: [...existingUrls, ...uploadedUrls],
+               is_detail: model.is_detail,
+               details_ids: data.details_ids,
             },
          },
          {
@@ -129,6 +167,23 @@ export function UpdateProductModelModal({ isOpen, model, onClose }: UpdateProduc
                   </div>
 
                   <MultiImageUpload images={images} onChange={setImages} maxImages={MAX_IMAGES} disabled={isSaving} />
+
+                  {!model.is_detail && (
+                     <div className="w-full">
+                        <ChildModelsPicker
+                           parts={parts}
+                           selected={selectedParts}
+                           onChange={handleSelectedChange}
+                           search={partsSearch}
+                           onSearchChange={setPartsSearch}
+                           isLoading={partsQuery.isLoading}
+                           isFetching={partsQuery.isFetching}
+                           isError={partsQuery.isError}
+                           disabled={isSaving}
+                        />
+                        <FieldError message={errors.details_ids?.message} />
+                     </div>
+                  )}
                </div>
             </Modal.Content>
             <footer className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 sm:gap-4">
