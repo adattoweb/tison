@@ -1,4 +1,3 @@
-// api/schemas/admin.ts
 import { z } from "zod"
 import { UserRouterCreateSchema } from "./user"
 import { ProfileBaseSchema } from "./profile"

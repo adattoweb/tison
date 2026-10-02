@@ -2,8 +2,10 @@ import { useEffect, useState } from "react"
 import { Ellipsis, type LucideIcon } from "lucide-react"
 import clsx from "clsx"
 import Dropdown from "@/components/UI/Dropdown"
+import { Can } from "../Auth/Can"
+import type { Permission } from "@/api/types/permission"
 
-export interface RowMenuAction {
+export interface RowMenuAction extends Permission {
    label: string
    Icon?: LucideIcon
    onClick: () => void
@@ -60,23 +62,25 @@ export function RowMenu({ actions, className }: RowMenuProps) {
             className="w-max! min-w-48 overflow-y-auto! py-1"
          >
             {actions.map(action => (
-               <Dropdown.Item
-                  key={action.label}
-                  role="menuitem"
-                  disabled={action.disabled}
-                  onClick={event => {
-                     event.preventDefault()
-                     event.stopPropagation()
-                     action.onClick()
-                  }}
-                  className={clsx(
-                     "flex items-center gap-2 text-sm md:text-sm disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent",
-                     action.danger && "text-[#E06767]! hover:bg-[#E06767]/10!",
-                  )}
-               >
-                  {action.Icon && <action.Icon size={16} strokeWidth={1.5} />}
-                  {action.label}
-               </Dropdown.Item>
+               <Can resource={action.resource} action={action.action}>
+                  <Dropdown.Item
+                     key={action.label}
+                     role="menuitem"
+                     disabled={action.disabled}
+                     onClick={event => {
+                        event.preventDefault()
+                        event.stopPropagation()
+                        action.onClick()
+                     }}
+                     className={clsx(
+                        "flex items-center gap-2 text-sm md:text-sm disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent",
+                        action.danger && "text-[#E06767]! hover:bg-[#E06767]/10!",
+                     )}
+                  >
+                     {action.Icon && <action.Icon size={16} strokeWidth={1.5} />}
+                     {action.label}
+                  </Dropdown.Item>
+               </Can>
             ))}
          </Dropdown.Content>
       </Dropdown>

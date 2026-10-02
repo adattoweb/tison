@@ -1,5 +1,5 @@
 import { useForm, type SubmitHandler } from "react-hook-form"
-import { Link, useSearchParams } from "react-router"
+import { Link, Navigate, useSearchParams } from "react-router"
 import { isAxiosError } from "axios"
 import { MailIcon, LockKeyholeIcon } from "lucide-react"
 
@@ -8,6 +8,7 @@ import { Input } from "@/components/UI/Input"
 import { ParagraphError } from "@/components/UI/ParagraphError"
 import { useForgotPassword } from "@/hooks/api/auth/useForgotPassword"
 import { useResetPassword } from "@/hooks/api/auth/useResetPassword"
+import { useCurrentUser } from "@/hooks/api/auth/useCurrentUser"
 
 interface ForgotPasswordForm {
    email: string
@@ -26,8 +27,9 @@ function ForgotPasswordCard() {
       doForgotPassword(data.email)
    }
 
-   // fastapi-users завжди повертає 202, навіть якщо email не знайдено — щоб не палити,
-   // які email існують у системі; тому показуємо той самий успіх у будь-якому разі
+   const { data: user } = useCurrentUser()
+   if (user !== undefined) return <Navigate to="/workplace" replace />
+
    if (isSuccess) {
       return (
          <div className="flex flex-col gap-3 text-center">

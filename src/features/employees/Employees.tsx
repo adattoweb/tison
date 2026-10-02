@@ -6,6 +6,7 @@ import Button from "@/components/UI/Button"
 import { UserPlus } from "lucide-react"
 import { AddEmployeeModal } from "./AddEmployeeModal"
 import { useState } from "react"
+import { Can } from "@/components/Auth/Can"
 
 export function Employees() {
    const [isOpen, setIsOpen] = useState(false)
@@ -17,16 +18,22 @@ export function Employees() {
                <PageHeader>Працівники</PageHeader>
                <PageDescription>Управління персоналом та інформація про працівників</PageDescription>
             </div>
-            <Button onClick={openModal} type="accent" className="h-min">
-               <Button.Icon Icon={UserPlus} />
-               <Button.Paragraph>Додати працівника</Button.Paragraph>
-            </Button>
+            <Can resource="user" action="create">
+               <Button onClick={openModal} type="accent" className="h-min">
+                  <Button.Icon Icon={UserPlus} />
+                  <Button.Paragraph>Додати працівника</Button.Paragraph>
+               </Button>
+            </Can>
          </div>
          <div className="flex flex-col gap-(--components-gap)">
-            <EmployeesHeader />
+            <Can resource="analytics" action="read">
+               <EmployeesHeader />
+            </Can>
             <EmployeesTable />
          </div>
-         <AddEmployeeModal isOpen={isOpen} setIsOpen={setIsOpen} />
+         <Can resource="user" action="create">
+            <AddEmployeeModal isOpen={isOpen} setIsOpen={setIsOpen} />
+         </Can>
       </>
    )
 }

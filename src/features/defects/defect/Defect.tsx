@@ -20,6 +20,7 @@ import { UpdateDefectModal } from "./UpdateDefectModal"
 import { ConfirmModal } from "@/components/Modal/ConfirmModal"
 import { useToast } from "@/components/Toast/useToast"
 import { TOAST_DURATION } from "@/constants/app"
+import { Can } from "@/components/Auth/Can"
 
 const WIDE_AREAS = `
    "header header header header header header header header header header"
@@ -90,18 +91,22 @@ export function Defect() {
                   </PageDescription>
                </div>
                <div className="flex gap-4">
-                  <Button onClick={() => setIsUpdateModalOpen(true)} type="accent" className="h-min">
-                     <Button.Icon Icon={EditIcon} />
-                     <Button.Paragraph>Редагувати</Button.Paragraph>
-                  </Button>
-                  <Button
-                     onClick={() => setIsConfirmModalOpen(true)}
-                     type="accent"
-                     className="h-min bg-(--accent-color) text-black"
-                  >
-                     <Button.Icon Icon={Trash} className="stroke-black!" />
-                     <Button.Paragraph>Видалити</Button.Paragraph>
-                  </Button>
+                  <Can resource="defect" action="update">
+                     <Button onClick={() => setIsUpdateModalOpen(true)} type="accent" className="h-min">
+                        <Button.Icon Icon={EditIcon} />
+                        <Button.Paragraph>Редагувати</Button.Paragraph>
+                     </Button>
+                  </Can>
+                  <Can resource="defect" action="delete">
+                     <Button
+                        onClick={() => setIsConfirmModalOpen(true)}
+                        type="accent"
+                        className="h-min bg-(--accent-color) text-black"
+                     >
+                        <Button.Icon Icon={Trash} className="stroke-black!" />
+                        <Button.Paragraph>Видалити</Button.Paragraph>
+                     </Button>
+                  </Can>
                </div>
             </div>
             <div
@@ -117,7 +122,9 @@ export function Defect() {
                <History defect={defect} />
             </div>
          </div>
-         <UpdateDefectModal defect={defect} isOpen={isUpdateModalOpen} onClose={() => setIsUpdateModalOpen(false)} />
+         <Can resource="defect" action="update">
+            <UpdateDefectModal defect={defect} isOpen={isUpdateModalOpen} onClose={() => setIsUpdateModalOpen(false)} />
+         </Can>
          <ConfirmModal
             isOpen={isConfirmModalOpen}
             onClose={() => setIsConfirmModalOpen(false)}

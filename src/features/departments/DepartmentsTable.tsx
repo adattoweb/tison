@@ -15,6 +15,7 @@ import { DEFAULT_PAGE_SIZE } from "@/constants/pagination"
 import { TOAST_DURATION } from "@/constants/app"
 import clsx from "clsx"
 import { tableMessageClassName } from "@/utils/classNames"
+import { Can } from "@/components/Auth/Can"
 
 const columns = ["Назва", ""]
 
@@ -90,12 +91,20 @@ export function DepartmentsTable() {
                      <Table.Text text={department.name} />
                      <RowMenu
                         actions={[
-                           { label: "Редагувати", Icon: Pencil, onClick: () => handleEdit(department) },
+                           {
+                              label: "Редагувати",
+                              Icon: Pencil,
+                              onClick: () => handleEdit(department),
+                              resource: "department",
+                              action: "update",
+                           },
                            {
                               label: "Видалити",
                               Icon: Trash2,
                               danger: true,
                               onClick: () => setDeletingDepartment(department),
+                              resource: "department",
+                              action: "delete",
                            },
                         ]}
                      />
@@ -116,7 +125,9 @@ export function DepartmentsTable() {
             </Table>
          </Table.Wrapper>
 
-         <UpdateDepartmentModal department={editingDepartment} isOpen={isEditOpen} setIsOpen={setIsEditOpen} />
+         <Can resource="department" action="update">
+            <UpdateDepartmentModal department={editingDepartment} isOpen={isEditOpen} setIsOpen={setIsEditOpen} />
+         </Can>
 
          <ConfirmModal
             isOpen={deletingDepartment !== null}

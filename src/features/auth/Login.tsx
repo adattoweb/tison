@@ -3,10 +3,11 @@ import { Input } from "@/components/UI/Input"
 import { ParagraphError } from "@/components/UI/ParagraphError"
 import { LockKeyholeOpen } from "lucide-react"
 import { useForm, type SubmitHandler } from "react-hook-form"
-import { Link } from "react-router"
+import { Link, Navigate } from "react-router"
 import { useLogin } from "@/hooks/api/auth/useLogin"
 import type { LoginCredentials } from "@/api/types/auth"
 import { isAxiosError } from "axios"
+import { useCurrentUser } from "@/hooks/api/auth/useCurrentUser"
 
 interface IForm {
    email: string
@@ -25,6 +26,9 @@ export function Login() {
    const onSubmit: SubmitHandler<LoginCredentials> = data => {
       doLogin(data)
    }
+
+   const { data: user } = useCurrentUser()
+   if (user) return <Navigate to="/workplace" replace />
 
    const errorMessage = isAxiosError(error)
       ? error.response?.data?.detail === "LOGIN_BAD_CREDENTIALS"

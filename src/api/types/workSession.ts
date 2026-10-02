@@ -1,3 +1,4 @@
+import type { SessionStatus } from "./global"
 import type { OperationListRead } from "./operation"
 import type { StationListRead } from "./station"
 
@@ -23,8 +24,6 @@ export interface StationWorkSessionListRead {
    operation: WorkSessionOperationShort
    station: WorkSessionStationShort
 }
-
-export type SessionStatus = "PAUSED" | "COMPLETED" | "CANCELLED"
 
 export interface WorkSessionListRead {
    id: string

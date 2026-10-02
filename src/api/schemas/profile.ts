@@ -18,10 +18,6 @@ export const ProfileBaseSchema = z.object({
    salary: z.coerce.number().int("Ціле число").nonnegative("Не може бути відʼємним"),
    position: z.string().min(1, "Обов'язкове поле").max(32),
    shift_id: z.preprocess(val => (val === "" || val === undefined ? null : Number(val)), z.number().int().nullable()),
-   avatar_url: z.preprocess(
-      val => (val === "" ? undefined : val),
-      z.string().url("Невірний формат посилання").optional(),
-   ),
    email: z.email("Невірний формат email").min(1, "Обов'язкове поле"),
 })
 
@@ -31,7 +27,11 @@ export const ProfileUpdateSchema = ProfileBaseSchema.pick({
    middle_name: true,
    telegram: true,
    phone: true,
-   avatar_url: true,
+}).extend({
+   avatar_url: z.preprocess(
+      val => (val === "" ? undefined : val),
+      z.string().url("Невірний формат посилання").optional(),
+   ),
 })
 
 export const ProfileAdminUpdateSchema = ProfileBaseSchema.pick({
@@ -43,10 +43,16 @@ export const ProfileAdminUpdateSchema = ProfileBaseSchema.pick({
    salary: true,
    position: true,
    shift_id: true,
-   avatar_url: true,
-}).extend({
-   points: z.coerce.number().int("Ціле число").nonnegative("Не може бути відʼємним"),
 })
+   .extend({
+      points: z.coerce.number().int("Ціле число").nonnegative("Не може бути відʼємним"),
+   })
+   .extend({
+      avatar_url: z.preprocess(
+         val => (val === "" ? undefined : val),
+         z.string().url("Невірний формат посилання").optional(),
+      ),
+   })
 
 export type ProfileUpdateFormInput = z.input<typeof ProfileUpdateSchema>
 export type ProfileBaseInput = z.infer<typeof ProfileBaseSchema>

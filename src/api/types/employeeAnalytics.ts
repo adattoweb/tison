@@ -1,3 +1,5 @@
+import type { SessionStatus } from "./global"
+
 export interface EmployeeRankingEntry {
    place: number
    user_id: string
@@ -22,8 +24,6 @@ export type EmployeeActivityEventType =
    | "defect_opened"
    | "defect_closed"
 
-export type SessionResult = "paused" | "completed" | "cancelled"
-
 export interface EmployeeActivityEvent {
    type: EmployeeActivityEventType
    at: string // ISO datetime
@@ -39,7 +39,7 @@ export interface EmployeeActivityEvent {
    work_session_id: string | null
    station_id: number | null
    station_code: string | null
-   result: SessionResult | null
+   result: SessionStatus | null
 
    defect_id: number | null
    defect_code: string | null

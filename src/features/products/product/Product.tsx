@@ -19,6 +19,7 @@ import { UpdateProductModal } from "./UpdateProductModal"
 import { useToast } from "@/components/Toast/useToast"
 import { TOAST_DURATION } from "@/constants/app"
 import ProductDashboard from "./ProductDashboard"
+import { Can } from "@/components/Auth/Can"
 
 const WIDE_AREAS = `
    "header header header header header header header header header header"
@@ -87,18 +88,22 @@ export function Product() {
                <PageDescription>{model?.title ?? `Модель #${product.product_model_id}`}</PageDescription>
             </div>
             <div className="flex gap-4">
-               <Button onClick={() => setIsUpdateModalOpen(true)} type="accent" className="h-min">
-                  <Button.Icon Icon={EditIcon} />
-                  <Button.Paragraph>Редагувати</Button.Paragraph>
-               </Button>
-               <Button
-                  onClick={() => setIsConfirmModalOpen(true)}
-                  type="accent"
-                  className="h-min bg-(--accent-color) text-black"
-               >
-                  <Button.Icon Icon={Trash} className="stroke-black!" />
-                  <Button.Paragraph>Видалити</Button.Paragraph>
-               </Button>
+               <Can resource="product" action="update">
+                  <Button onClick={() => setIsUpdateModalOpen(true)} type="accent" className="h-min">
+                     <Button.Icon Icon={EditIcon} />
+                     <Button.Paragraph>Редагувати</Button.Paragraph>
+                  </Button>
+               </Can>
+               <Can resource="product" action="delete">
+                  <Button
+                     onClick={() => setIsConfirmModalOpen(true)}
+                     type="accent"
+                     className="h-min bg-(--accent-color) text-black"
+                  >
+                     <Button.Icon Icon={Trash} className="stroke-black!" />
+                     <Button.Paragraph>Видалити</Button.Paragraph>
+                  </Button>
+               </Can>
             </div>
          </div>
          <div
@@ -111,7 +116,13 @@ export function Product() {
             <Chart productModelId={product.product_model_id} />
             <ProductDashboard productModelId={product.product_model_id} />
          </div>
-         <UpdateProductModal isOpen={isUpdateModalOpen} product={product} onClose={() => setIsUpdateModalOpen(false)} />
+         <Can resource="product" action="update">
+            <UpdateProductModal
+               isOpen={isUpdateModalOpen}
+               product={product}
+               onClose={() => setIsUpdateModalOpen(false)}
+            />
+         </Can>
          <ConfirmModal
             isOpen={isConfirmModalOpen}
             onClose={() => setIsConfirmModalOpen(false)}

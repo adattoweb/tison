@@ -6,6 +6,7 @@ import { ModelList } from "./ModelList"
 import { ProductModelsHeader } from "./ModelHeader"
 import { AddModelModal } from "./AddModelModal"
 import { useState } from "react"
+import { Can } from "@/components/Auth/Can"
 
 export function Models() {
    const [isAddModalOpen, setIsAddModalOpen] = useState(false)
@@ -16,17 +17,23 @@ export function Models() {
                <PageHeader>Моделі виробів</PageHeader>
                <PageDescription>Створення та редагування моделей та інструкцій до них</PageDescription>
             </div>
-            <Button type="accent" className="h-min" onClick={() => setIsAddModalOpen(true)}>
-               <Button.Icon Icon={FilePlus} />
-               <Button.Paragraph>Додати нову модель</Button.Paragraph>
-            </Button>
+            <Can resource="product_model" action="create">
+               <Button type="accent" className="h-min" onClick={() => setIsAddModalOpen(true)}>
+                  <Button.Icon Icon={FilePlus} />
+                  <Button.Paragraph>Додати нову модель</Button.Paragraph>
+               </Button>
+            </Can>
          </div>
 
          <div className="flex flex-col gap-(--components-gap)">
-            <ProductModelsHeader />
+            <Can resource="analytics" action="read">
+               <ProductModelsHeader />
+            </Can>
             <ModelList />
          </div>
-         <AddModelModal isOpen={isAddModalOpen} setIsOpen={setIsAddModalOpen} />
+         <Can resource="product_model" action="create">
+            <AddModelModal isOpen={isAddModalOpen} setIsOpen={setIsAddModalOpen} />
+         </Can>
       </>
    )
 }

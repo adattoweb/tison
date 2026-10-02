@@ -9,6 +9,6 @@ export const workPlace = {
       label: "Робоче місце",
       Icon: MonitorCog,
       nav: true,
-      permission: { resource: "session", action: "create" },
+      permission: { resource: "work_session", action: "read" },
    },
 } satisfies AppRoute

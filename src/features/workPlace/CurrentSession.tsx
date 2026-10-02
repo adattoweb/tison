@@ -7,6 +7,7 @@ import { EndSessionModal } from "./EndSessionModal"
 import type { WorkSessionRead } from "@/api/types/workSession"
 import { useElapsedTime } from "@/hooks/ui/useElapsedTime"
 import { formatDuration } from "@/utils/time"
+import { Can } from "@/components/Auth/Can"
 
 interface CurrentSessionProps {
    area: string
@@ -46,12 +47,16 @@ function ActiveSession({ session }: { session: WorkSessionRead }) {
             {session.note && <InfoRow label="Примітка" value={session.note} />}
          </div>
 
-         <Button onClick={() => setIsEndOpen(true)} type="accent" className="mt-auto w-full justify-center">
-            <Button.Icon Icon={SquareIcon} />
-            <Button.Paragraph>Завершити сесію</Button.Paragraph>
-         </Button>
+         <Can resource="work_session" action="update">
+            <Button onClick={() => setIsEndOpen(true)} type="accent" className="mt-auto w-full justify-center">
+               <Button.Icon Icon={SquareIcon} />
+               <Button.Paragraph>Завершити сесію</Button.Paragraph>
+            </Button>
+         </Can>
 
-         <EndSessionModal isOpen={isEndOpen} onClose={() => setIsEndOpen(false)} sessionId={session.id} />
+         <Can resource="work_session" action="update">
+            <EndSessionModal isOpen={isEndOpen} onClose={() => setIsEndOpen(false)} sessionId={session.id} />
+         </Can>
       </>
    )
 }

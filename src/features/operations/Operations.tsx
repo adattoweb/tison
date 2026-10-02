@@ -2,13 +2,9 @@ import PageDescription from "@/components/UI/PageDescription"
 import PageHeader from "@/components/UI/PageHeader"
 import { OperationsHeader } from "./OperationsHeader"
 import { OperationsTable } from "./OperationsTable"
-import Button from "@/components/UI/Button"
-import { PackagePlus } from "lucide-react"
-import { AddOperationModal } from "./AddOperationModal"
-import { useState } from "react"
+import { Can } from "@/components/Auth/Can"
 
 export function Operations() {
-   const [isOpen, setIsOpen] = useState(false)
    return (
       <>
          <div className="flex justify-between items-center">
@@ -16,16 +12,18 @@ export function Operations() {
                <PageHeader>Операції</PageHeader>
                <PageDescription>Список усіх операцій та їх поточний статус</PageDescription>
             </div>
-            <Button onClick={() => setIsOpen(true)} type="accent" className="h-min">
+            {/* <Button onClick={() => setIsOpen(true)} type="accent" className="h-min">
                <Button.Icon Icon={PackagePlus} />
                <Button.Paragraph>Додати операцію</Button.Paragraph>
-            </Button>
+            </Button> */}
          </div>
 
          <div className="flex flex-col gap-(--components-gap)">
-            <OperationsHeader />
+            <Can resource="analytics" action="read">
+               <OperationsHeader />
+            </Can>
             <OperationsTable />
-            <AddOperationModal isOpen={isOpen} setIsOpen={setIsOpen} />
+            {/* <AddOperationModal isOpen={isOpen} setIsOpen={setIsOpen} /> */}
          </div>
       </>
    )

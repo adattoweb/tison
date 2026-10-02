@@ -9,6 +9,7 @@ import { useToast } from "@/components/Toast/useToast"
 import { useDeleteProductModel } from "@/hooks/api/productModels/useDeleteProductModel"
 import { RowMenu } from "@/components/Table/RowMenu"
 import { ConfirmModal } from "@/components/Modal/ConfirmModal"
+import { Can } from "@/components/Auth/Can"
 
 const EASE_OPEN = "cubic-bezier(0.16, 1, 0.3, 1)"
 const EASE_CLOSE = "cubic-bezier(0.4, 0, 0.2, 1)"
@@ -127,8 +128,21 @@ export function Model({ model }: ModelProps) {
                      <RowMenu
                         className="ml-auto [&_svg]:rotate-0!"
                         actions={[
-                           { label: "Редагувати", Icon: PencilIcon, onClick: () => setIsEditing(true) },
-                           { label: "Видалити", Icon: Trash2Icon, danger: true, onClick: () => setIsDeleting(true) },
+                           {
+                              label: "Редагувати",
+                              Icon: PencilIcon,
+                              onClick: () => setIsEditing(true),
+                              resource: "product_model",
+                              action: "update",
+                           },
+                           {
+                              label: "Видалити",
+                              Icon: Trash2Icon,
+                              danger: true,
+                              onClick: () => setIsDeleting(true),
+                              resource: "product_model",
+                              action: "delete",
+                           },
                         ]}
                      />
                   </div>
@@ -149,7 +163,9 @@ export function Model({ model }: ModelProps) {
             )}
          </div>
          {isEditing && (
-            <UpdateProductModelModal key={model.id} isOpen model={model} onClose={() => setIsEditing(false)} />
+            <Can resource="product_model" action="update">
+               <UpdateProductModelModal key={model.id} isOpen model={model} onClose={() => setIsEditing(false)} />
+            </Can>
          )}
          <ConfirmModal
             isOpen={isDeleting}

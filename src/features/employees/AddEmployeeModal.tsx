@@ -1,4 +1,3 @@
-// components/modals/AddEmployeeModal.tsx
 import { useForm, type SubmitHandler } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { AtSign, Briefcase, HandCoins, Phone, Send, UserIcon } from "lucide-react"
@@ -32,6 +31,7 @@ export function AddEmployeeModal({ isOpen, setIsOpen }: ModalProps) {
       reset,
       setError,
       formState: { errors },
+      setValue,
    } = useForm<AdminUserCreateFormInput, unknown, AdminUserCreateInput>({
       resolver: zodResolver(AdminUserCreateSchema),
       defaultValues: {
@@ -43,6 +43,7 @@ export function AddEmployeeModal({ isOpen, setIsOpen }: ModalProps) {
             phone: "",
             salary: 0,
             position: "",
+            email: "",
          },
       },
    })
@@ -116,7 +117,14 @@ export function AddEmployeeModal({ isOpen, setIsOpen }: ModalProps) {
                         Icon={AtSign}
                         placeholder="example@mail.com"
                         hasError={!!errors.user?.email}
-                        {...register("user.email")}
+                        {...register("user.email", {
+                           onChange: event => {
+                              setValue("profile.email", event.target.value, {
+                                 shouldValidate: true,
+                                 shouldDirty: true,
+                              })
+                           },
+                        })}
                      />
                      <FieldError message={errors.user?.email?.message} />
                   </div>

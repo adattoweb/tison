@@ -6,6 +6,7 @@ import { OrdersTable } from "./OrdersTable"
 import { useState } from "react"
 import { AddOrderModal } from "./AddOrderModal"
 import { DashboardHeader } from "../dashboard/DashboardHeader"
+import { Can } from "@/components/Auth/Can"
 
 export function Orders() {
    const [isOpen, setIsOpen] = useState(false)
@@ -17,17 +18,24 @@ export function Orders() {
                <PageHeader>Планування виробництва</PageHeader>
                <PageDescription>Створення та контроль виробничих планів</PageDescription>
             </div>
-            <Button onClick={openModal} type="accent" className="h-min">
-               <Button.Icon Icon={PlusIcon} />
-               <Button.Paragraph>Створити план</Button.Paragraph>
-            </Button>
+            <Can resource="order" action="create">
+               <Button onClick={openModal} type="accent" className="h-min">
+                  <Button.Icon Icon={PlusIcon} />
+                  <Button.Paragraph>Створити план</Button.Paragraph>
+               </Button>
+            </Can>
          </div>
 
          <div className="flex flex-col gap-(--components-gap)">
+            <Can resource="analytics" action="read">
+               <DashboardHeader />
+            </Can>
             <DashboardHeader />
             <OrdersTable />
          </div>
-         <AddOrderModal isOpen={isOpen} setIsOpen={setIsOpen} />
+         <Can resource="order" action="create">
+            <AddOrderModal isOpen={isOpen} setIsOpen={setIsOpen} />
+         </Can>
       </>
    )
 }

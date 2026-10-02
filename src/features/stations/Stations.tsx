@@ -6,6 +6,7 @@ import Button from "@/components/UI/Button"
 import { MonitorCog } from "lucide-react"
 import { useState } from "react"
 import { AddStationModal } from "./AddStationModal"
+import { Can } from "@/components/Auth/Can"
 
 export function Stations() {
    const [isOpen, setIsOpen] = useState(false)
@@ -17,17 +18,23 @@ export function Stations() {
                <PageHeader>Робочі станції</PageHeader>
                <PageDescription>Моніторинг та управління робочими місцями</PageDescription>
             </div>
-            <Button onClick={openModal} type="accent" className="h-min">
-               <Button.Icon Icon={MonitorCog} />
-               <Button.Paragraph>Додати станцію</Button.Paragraph>
-            </Button>
+            <Can resource="station" action="create">
+               <Button onClick={openModal} type="accent" className="h-min">
+                  <Button.Icon Icon={MonitorCog} />
+                  <Button.Paragraph>Додати станцію</Button.Paragraph>
+               </Button>
+            </Can>
          </div>
 
          <div className="flex flex-col gap-(--components-gap)">
-            <StationsHeader />
+            <Can resource="analytics" action="read">
+               <StationsHeader />
+            </Can>
             <StationsTable />
          </div>
-         <AddStationModal isOpen={isOpen} setIsOpen={setIsOpen} />
+         <Can resource="station" action="create">
+            <AddStationModal isOpen={isOpen} setIsOpen={setIsOpen} />
+         </Can>
       </>
    )
 }

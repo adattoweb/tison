@@ -1,6 +1,8 @@
+export type action = "create" | "update" | "read" | "delete"
+
 export interface Permission {
    resource: string
-   action: string
+   action: action
 }
 
 export interface PermissionListRead {

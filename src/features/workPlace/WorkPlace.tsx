@@ -14,6 +14,7 @@ import { CurrentProduct } from "./CurrentProduct"
 import { DailySchedule } from "./DailySchedule"
 import { useCurrentWorkSession } from "@/hooks/api/workSessions/useCurrentWorkSession"
 import { useOperatorActiveWorkSession } from "@/hooks/api/operatorAnalytics/useOperatorActiveWorkSession"
+import { Can } from "@/components/Auth/Can"
 
 /** 5 колонок: мінімальна ширина блока 1/5, ділимо як 2/5 + 3/5 */
 const WIDE_AREAS = `
@@ -54,14 +55,18 @@ export function WorkPlace() {
                <PageDescription>Керування власними сессіями</PageDescription>
             </div>
             <div className="flex gap-4">
-               <Button onClick={() => setIsCreateProductModalOpen(true)} type="accent" className="h-min">
-                  <Button.Icon Icon={PlusIcon} />
-                  <Button.Paragraph>Додати виріб</Button.Paragraph>
-               </Button>
-               <Button onClick={() => setIsAddSessionModalOpen(true)} type="accent" className="h-min">
-                  <Button.Icon Icon={PlusIcon} />
-                  <Button.Paragraph>Додати сесію</Button.Paragraph>
-               </Button>
+               <Can resource="product" action="create">
+                  <Button onClick={() => setIsCreateProductModalOpen(true)} type="accent" className="h-min">
+                     <Button.Icon Icon={PlusIcon} />
+                     <Button.Paragraph>Додати виріб</Button.Paragraph>
+                  </Button>
+               </Can>
+               <Can resource="work_session" action="create">
+                  <Button onClick={() => setIsAddSessionModalOpen(true)} type="accent" className="h-min">
+                     <Button.Icon Icon={PlusIcon} />
+                     <Button.Paragraph>Додати сесію</Button.Paragraph>
+                  </Button>
+               </Can>
             </div>
          </div>
 
@@ -74,8 +79,13 @@ export function WorkPlace() {
             <DailySchedule area="schedule" userId={user?.id} />
          </div>
 
-         <CreateProductsModal isOpen={isCreateProductModalOpen} onClose={() => setIsCreateProductModalOpen(false)} />
-         <AddWorkSessionModal isOpen={isAddSessionModalOpen} setIsOpen={setIsAddSessionModalOpen} />
+         <Can resource="product" action="create">
+            <CreateProductsModal isOpen={isCreateProductModalOpen} onClose={() => setIsCreateProductModalOpen(false)} />
+         </Can>
+
+         <Can resource="work_session" action="create">
+            <AddWorkSessionModal isOpen={isAddSessionModalOpen} setIsOpen={setIsAddSessionModalOpen} />
+         </Can>
       </>
    )
 }

@@ -13,9 +13,9 @@ import clsx from "clsx"
 
 const ALL_SHIFT_LABEL = "Всі зміни"
 
-const columns = ["Працівник", "Посада", "Зміна", "У системі", "Заробітна плата", "Бонуси", "Продуктивність", ""]
+const columns = ["Працівник", "Посада", "Зміна", "У системі", "Заробітна плата", "Бонуси", "Продуктивність"]
 
-const tableClassNames = "min-w-300 grid-cols-[2fr_1.5fr_1.5fr_1fr_1fr_1fr_1fr_48px]"
+const tableClassNames = "min-w-300 grid-cols-[2fr_1.5fr_1.5fr_1fr_1fr_1fr_1fr]"
 
 const DEFAULT_PAGE_SIZE = 10
 
@@ -127,7 +127,6 @@ export function EmployeesTable() {
                   <Table.Money value={employee.salary} className="font-medium" />
                   <Table.Money value={employee.points} className="font-medium" />
                   <Table.Percent value={123} />
-                  <Table.MenuButton />
                </Table.Row>
             ))}
             <TablePagination

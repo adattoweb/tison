@@ -17,6 +17,7 @@ import { TOAST_DURATION } from "@/constants/app"
 import { Heatmap } from "./Heatmap"
 import { RecentProductsTable } from "./RecentProductsTable"
 import { RecentWorkSessionsTable } from "./RecentWorkSessionsTable"
+import { Can } from "@/components/Auth/Can"
 
 const WIDE_AREAS = `
    "header header header header header header header header header header"
@@ -71,18 +72,22 @@ export function Station() {
                <PageDescription>{station.department.name}</PageDescription>
             </div>
             <div className="flex gap-4">
-               <Button onClick={() => setIsUpdateModalOpen(true)} type="accent" className="h-min">
-                  <Button.Icon Icon={EditIcon} />
-                  <Button.Paragraph>Редагувати</Button.Paragraph>
-               </Button>
-               <Button
-                  onClick={() => setIsConfirmModalOpen(true)}
-                  type="accent"
-                  className="h-min bg-(--accent-color) text-black"
-               >
-                  <Button.Icon Icon={Trash} className="stroke-black!" />
-                  <Button.Paragraph>Видалити</Button.Paragraph>
-               </Button>
+               <Can resource="station" action="update">
+                  <Button onClick={() => setIsUpdateModalOpen(true)} type="accent" className="h-min">
+                     <Button.Icon Icon={EditIcon} />
+                     <Button.Paragraph>Редагувати</Button.Paragraph>
+                  </Button>
+               </Can>
+               <Can resource="station" action="delete">
+                  <Button
+                     onClick={() => setIsConfirmModalOpen(true)}
+                     type="accent"
+                     className="h-min bg-(--accent-color) text-black"
+                  >
+                     <Button.Icon Icon={Trash} className="stroke-black!" />
+                     <Button.Paragraph>Видалити</Button.Paragraph>
+                  </Button>
+               </Can>
             </div>
          </div>
          <div
@@ -100,7 +105,9 @@ export function Station() {
             <RecentProductsTable stationId={station.id} />
             <RecentWorkSessionsTable stationId={station.id} />
          </div>
-         <UpdateStationModal isOpen={isUpdateModalOpen} setIsOpen={setIsUpdateModalOpen} station={station} />
+         <Can resource="station" action="update">
+            <UpdateStationModal isOpen={isUpdateModalOpen} setIsOpen={setIsUpdateModalOpen} station={station} />
+         </Can>
          <ConfirmModal
             isOpen={isConfirmModalOpen}
             onClose={() => setIsConfirmModalOpen(false)}

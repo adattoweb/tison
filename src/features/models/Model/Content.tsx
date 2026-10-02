@@ -29,6 +29,7 @@ import { AddInstructionModal } from "./AddInstructionModal"
 import { titleClassName } from "@/utils/classNames"
 import { ImageGalleryModal } from "@/components/UI/ImageGalleryModal"
 import { useProductModel } from "@/hooks/api/productModels/useProductModel"
+import { Can } from "@/components/Auth/Can"
 
 interface ListItemProps {
    isActive: boolean
@@ -322,15 +323,19 @@ export function Content({ model }: ContentProps) {
             <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                <SortableContext items={instructions.map(s => s.id)} strategy={verticalListSortingStrategy}>
                   <ul className={clsx("flex flex-col gap-2 mt-2 w-full", isSaving && "opacity-70")}>
-                     {instructions.map(step => (
-                        <ListItem
-                           key={step.id}
-                           isActive={!isAboutActive && step.id === activeStep?.id}
-                           step={step}
-                           onSelect={() => handleSelectStep(step.id)}
-                        />
-                     ))}
-                     <AddItem setIsOpen={setIsInstructionModalOpen} />
+                     <Can resource="instruction" action="read">
+                        {instructions.map(step => (
+                           <ListItem
+                              key={step.id}
+                              isActive={!isAboutActive && step.id === activeStep?.id}
+                              step={step}
+                              onSelect={() => handleSelectStep(step.id)}
+                           />
+                        ))}
+                     </Can>
+                     <Can resource="instruction" action="create">
+                        <AddItem setIsOpen={setIsInstructionModalOpen} />
+                     </Can>
                   </ul>
                </SortableContext>
             </DndContext>
@@ -340,7 +345,9 @@ export function Content({ model }: ContentProps) {
             {isAboutActive ? (
                <AboutModelInfo model={model} />
             ) : activeStep ? (
-               <ActiveStep step={activeStep} />
+               <Can resource="instruction" action="read">
+                  <ActiveStep step={activeStep} />
+               </Can>
             ) : (
                <div className="flex flex-col gap-(--components-gap) ibm-plex-sans border border-(--stroke-color) rounded-lg px-(--components-py) py-(--components-py) flex-1">
                   <h2 className={titleClassName}>Немає інструкцій</h2>
@@ -348,11 +355,13 @@ export function Content({ model }: ContentProps) {
             )}
          </div>
 
-         <AddInstructionModal
-            isOpen={isInstructionModalOpen}
-            setIsOpen={setIsInstructionModalOpen}
-            modelId={model.id}
-         />
+         <Can resource="instruction" action="create">
+            <AddInstructionModal
+               isOpen={isInstructionModalOpen}
+               setIsOpen={setIsInstructionModalOpen}
+               modelId={model.id}
+            />
+         </Can>
       </main>
    )
 }

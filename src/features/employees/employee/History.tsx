@@ -11,7 +11,7 @@ import {
    ShieldCheckIcon,
    type LucideIcon,
 } from "lucide-react"
-import type { EmployeeActivityEvent, EmployeeActivityEventType, SessionResult } from "@/api/types/employeeAnalytics"
+import type { EmployeeActivityEvent, EmployeeActivityEventType } from "@/api/types/employeeAnalytics"
 import type { ProfileRead } from "@/api/types/profile"
 import { useEmployeeActivity } from "@/hooks/api/employeeAnalytics/useEmployeeActivity"
 import { avatarUrl } from "@/constants/global"
@@ -19,11 +19,12 @@ import { DEFAULT_PAGE_SIZE } from "@/constants/pagination"
 import { titleClassName } from "@/utils/classNames"
 import { formatDateTime } from "@/utils/time"
 import { TablePagination } from "@/components/Table/TablePagination"
+import type { SessionStatus } from "@/api/types/global"
 
-const SESSION_RESULT_LABELS: Record<SessionResult, string> = {
-   paused: "призупинено",
-   completed: "завершено успішно",
-   cancelled: "скасовано",
+const SESSION_RESULT_LABELS: Record<SessionStatus, string> = {
+   PAUSED: "призупинено",
+   COMPLETED: "завершено успішно",
+   CANCELLED: "скасовано",
 }
 
 const EVENT_META: Record<

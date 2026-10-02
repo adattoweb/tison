@@ -16,6 +16,7 @@ import { TOAST_DURATION } from "@/constants/app"
 import { useDearchiveOperationType } from "@/hooks/api/operationTypes/useDearchiveOperationTypes"
 import { tableMessageClassName } from "@/utils/classNames"
 import clsx from "clsx"
+import { Can } from "@/components/Auth/Can"
 
 const columns = ["Назва", "Бали", ""]
 
@@ -137,20 +138,36 @@ export function OperationTypesTable() {
                         actions={
                            isActive
                               ? [
-                                   { label: "Редагувати", Icon: Pencil, onClick: () => handleEdit(type) },
+                                   {
+                                      label: "Редагувати",
+                                      Icon: Pencil,
+                                      onClick: () => handleEdit(type),
+                                      resource: "operation_type",
+                                      action: "update",
+                                   },
                                    {
                                       label: "Видалити",
                                       Icon: Trash2,
                                       danger: true,
                                       onClick: () => setDeletingType(type),
+                                      resource: "operation_type",
+                                      action: "delete",
                                    },
                                 ]
                               : [
-                                   { label: "Редагувати", Icon: Pencil, onClick: () => handleEdit(type) },
+                                   {
+                                      label: "Редагувати",
+                                      Icon: Pencil,
+                                      onClick: () => handleEdit(type),
+                                      resource: "operation_type",
+                                      action: "update",
+                                   },
                                    {
                                       label: "Відновити",
                                       Icon: RotateCcw,
                                       onClick: () => handleRestore(type),
+                                      resource: "operation_type",
+                                      action: "update",
                                    },
                                 ]
                         }
@@ -172,7 +189,11 @@ export function OperationTypesTable() {
             </Table>
          </Table.Wrapper>
 
-         {editingType && <UpdateOperationTypesModal type={editingType} isOpen={isEditOpen} setIsOpen={setIsEditOpen} />}
+         {editingType && (
+            <Can resource="operation_type" action="update">
+               <UpdateOperationTypesModal type={editingType} isOpen={isEditOpen} setIsOpen={setIsEditOpen} />
+            </Can>
+         )}
 
          <ConfirmModal
             isOpen={deletingType !== null}

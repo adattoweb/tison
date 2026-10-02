@@ -36,9 +36,9 @@ const PROGRESS_OPTIONS: ProgressOption[] = [
 
 const STATUS_KEYS = Object.keys(STATUS) as StatusType[]
 
-const columns = ["Виріб", "Модель", "Замовлення", "Кроки", "Прогрес", "Статус", ""]
+const columns = ["Виріб", "Модель", "Замовлення", "Кроки", "Прогрес", "Статус"]
 
-const tableClassNames = "min-w-250 grid-cols-[1.3fr_1.8fr_1.2fr_1.2fr_1.2fr_1.3fr_48px]"
+const tableClassNames = "min-w-250 grid-cols-[1.3fr_1.8fr_1.2fr_1.2fr_1.2fr_1.3fr]"
 
 interface Filters {
    status: StatusType | undefined
@@ -73,7 +73,7 @@ export function ProductsTable() {
       maxProgress: filters.progress.max,
    })
 
-   const { data: modelsData } = useAllProductModels({ page: 1, pageSize: 100, isActive: true })
+   const { data: modelsData } = useAllProductModels({ page: 1, pageSize: 100, is_active: true })
    const { data: departmentsData } = useAllDepartments({ page: 1, pageSize: 100 })
 
    const productModels = modelsData?.items ?? []
@@ -216,7 +216,6 @@ export function ProductsTable() {
                   <Table.Text text={`${product.current_step ?? 0} з ${product.steps}`} />
                   <Table.Percent value={Math.round(product.progress)} goodThreshold={100} />
                   <Table.Status status={product.status} />
-                  <Table.MenuButton onClick={() => console.log("menu", product.id)} />
                </Table.Row>
             ))}
 

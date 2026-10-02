@@ -18,6 +18,7 @@ import { protectedLoader } from "./routes/protectedLoader"
 import { login } from "./routes/login"
 import { ToastProvider } from "./components/Toast/ToastProvider"
 import { ProtectedLayout } from "./layouts/ProtectedLayout"
+import { resetPassword } from "./routes/resetPassword"
 
 gsap.registerPlugin(useGSAP)
 
@@ -42,7 +43,7 @@ const router = createBrowserRouter([
       path: "/",
       Component: AppLayoutWithoutSidebar,
       errorElement: <ErrorPage />,
-      children: [login],
+      children: [login, resetPassword],
    },
 ])
 

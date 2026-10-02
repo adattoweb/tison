@@ -19,6 +19,7 @@ import { UpdateOrderModal } from "./UpdateOrderModal"
 import { RowMenu } from "@/components/Table/RowMenu"
 import { TOAST_DURATION } from "@/constants/app"
 import { tableMessageClassName } from "@/utils/classNames"
+import { Can } from "@/components/Auth/Can"
 
 interface StatusOption {
    value: StatusType | undefined
@@ -199,12 +200,20 @@ export function OrdersTable() {
                      <Table.Text text={formatDate(order.planned_end_at)} className="font-medium" />
                      <RowMenu
                         actions={[
-                           { label: "Редагувати", Icon: PencilIcon, onClick: () => setEditingOrder(order) },
+                           {
+                              label: "Редагувати",
+                              Icon: PencilIcon,
+                              onClick: () => setEditingOrder(order),
+                              resource: "order",
+                              action: "update",
+                           },
                            {
                               label: "Видалити",
                               Icon: Trash2Icon,
                               danger: true,
                               onClick: () => setDeletingOrder(order),
+                              resource: "order",
+                              action: "delete",
                            },
                         ]}
                      />
@@ -227,16 +236,18 @@ export function OrdersTable() {
          </Table.Wrapper>
 
          {editingOrder && (
-            <UpdateOrderModal
-               key={editingOrder.id}
-               isOpen
-               order={editingOrder}
-               onClose={() => setEditingOrder(null)}
-               onDelete={() => {
-                  setDeletingOrder(editingOrder)
-                  setEditingOrder(null)
-               }}
-            />
+            <Can resource="order" action="update">
+               <UpdateOrderModal
+                  key={editingOrder.id}
+                  isOpen
+                  order={editingOrder}
+                  onClose={() => setEditingOrder(null)}
+                  onDelete={() => {
+                     setDeletingOrder(editingOrder)
+                     setEditingOrder(null)
+                  }}
+               />
+            </Can>
          )}
 
          <ConfirmModal

@@ -11,6 +11,7 @@ import Button from "@/components/UI/Button"
 import { EditIcon } from "lucide-react"
 import { UpdateProfileModal } from "./UpdateProfileModal"
 import { useState } from "react"
+import { Can } from "@/components/Auth/Can"
 
 const WIDE_AREAS = `
    "header header header header header header header header header header"
@@ -65,10 +66,12 @@ export function Employee() {
                <PageHeader>
                   {profile.first_name} {profile.last_name}
                </PageHeader>
-               <Button onClick={() => setIsUpdateModalOpen(true)} type="accent">
-                  <Button.Icon Icon={EditIcon} />
-                  <Button.Paragraph>Редагувати</Button.Paragraph>
-               </Button>
+               <Can resource="user" action="update">
+                  <Button onClick={() => setIsUpdateModalOpen(true)} type="accent">
+                     <Button.Icon Icon={EditIcon} />
+                     <Button.Paragraph>Редагувати</Button.Paragraph>
+                  </Button>
+               </Can>
             </div>
             <div
                className="grid grid-cols-[repeat(10,1fr)] gap-(--components-gap) w-full"
@@ -84,7 +87,9 @@ export function Employee() {
                <EmployeeWorkloadHeatmap employeeId={String(id)} />
             </div>
          </div>
-         <UpdateProfileModal profile={profile} setIsOpen={setIsUpdateModalOpen} isOpen={isUpdateModalOpen} />
+         <Can resource="user" action="update">
+            <UpdateProfileModal profile={profile} setIsOpen={setIsUpdateModalOpen} isOpen={isUpdateModalOpen} />
+         </Can>
       </>
    )
 }
