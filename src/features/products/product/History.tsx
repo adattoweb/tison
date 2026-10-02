@@ -16,9 +16,9 @@ import type { ProductHistoryEvent, ProductHistoryEventType, SessionResult } from
 import { useProductHistory } from "@/hooks/api/productionAnalytics/useProductHistory"
 
 const SESSION_RESULT_LABELS: Record<SessionResult, string> = {
-   paused: "призупинено",
-   completed: "завершено успішно",
-   cancelled: "скасовано",
+   PAUSED: "призупинено",
+   COMPLETED: "завершено успішно",
+   CANCELLED: "скасовано",
 }
 
 const EVENT_META: Record<ProductHistoryEventType, { icon: LucideIcon; label: (event: ProductHistoryEvent) => string }> =

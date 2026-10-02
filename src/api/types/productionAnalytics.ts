@@ -37,7 +37,7 @@ export type ProductHistoryEventType =
    | "defect_opened"
    | "defect_closed"
 
-export type SessionResult = "paused" | "completed" | "cancelled"
+export type SessionResult = "PAUSED" | "COMPLETED" | "CANCELLED"
 
 export interface OperatorShortRead {
    id: string

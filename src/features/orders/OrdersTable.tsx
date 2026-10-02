@@ -34,9 +34,9 @@ const STATUS_OPTIONS: StatusOption[] = [
 
 const ALL_MODELS_LABEL = "Всі вироби"
 
-const columns = ["Виріб", "План", "Факт", "Прогрес", "Статус", "Почати з", "Закінчити до", ""]
+const columns = ["Номер", "Виріб", "План", "Факт", "Прогрес", "Статус", "Почати з", "Закінчити до", ""]
 
-const tableClassNames = "min-w-300 grid-cols-[1.5fr_1fr_1fr_2fr_1.2fr_1.5fr_1.5fr_48px]"
+const tableClassNames = "min-w-300 grid-cols-[48px_1.5fr_1fr_1fr_2fr_1.2fr_1.5fr_1.5fr_48px]"
 
 const DEFAULT_PAGE_SIZE = 10
 
@@ -70,7 +70,7 @@ const getProgress = (order: OrderListRead) => (order.plan > 0 ? Math.round((orde
 
 const getStatusLabel = (status: StatusType) => STATUS_OPTIONS.find(o => o.value === status)?.label ?? status
 
-export function OrderTable() {
+export function OrdersTable() {
    const [filters, setFilters] = useState<Filters>(INITIAL_FILTERS)
    const [page, setPage] = useState(1)
    const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE)
@@ -90,7 +90,7 @@ export function OrderTable() {
       endTo: rangeTo(filters.plannedEnd),
    })
 
-   const { data: modelsData } = useAllProductModels({ page: 1, pageSize: 100, isActive: true })
+   const { data: modelsData } = useAllProductModels({ page: 1, pageSize: 100, is_active: true })
    const productModels = modelsData?.items ?? []
    const modelTitleById = new Map(productModels.map(model => [model.id, model.title]))
 
@@ -112,7 +112,7 @@ export function OrderTable() {
    const modelLabel =
       filters.productModelId === undefined
          ? ALL_MODELS_LABEL
-         : (modelTitleById.get(filters.productModelId) ?? `Виріб #${filters.productModelId}`)
+         : (modelTitleById.get(filters.productModelId) ?? `Виріб №${filters.productModelId}`)
 
    return (
       <>
@@ -186,6 +186,7 @@ export function OrderTable() {
 
                {orders.map(order => (
                   <Table.Row key={order.id}>
+                     <Table.Text text={order.id} />
                      <Table.Text
                         text={modelTitleById.get(order.product_model_id) ?? `#${order.product_model_id}`}
                         className="font-medium"

@@ -7,7 +7,7 @@ import { TablePagination } from "@/components/Table/TablePagination"
 import { STATUS } from "@/constants/status"
 import type { StatusType } from "@/types/status"
 
-import { useAllStations } from "@/hooks/api/station/useAllStations"
+import { useAllStations } from "@/hooks/api/stations/useAllStations"
 import { useAllDepartments } from "@/hooks/api/departments/useAllDepartments"
 import type { DepartmentRead } from "@/api/types/department"
 import { useProfile } from "@/hooks/api/profile/useProfile"

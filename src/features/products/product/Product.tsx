@@ -70,7 +70,7 @@ export function Product() {
    const { data: product, isLoading, isError } = useProduct(productId)
    // планова дата завершення є в замовлення, а не у виробу
    const { data: order } = useOrder(product?.order_id ?? undefined)
-   const { data: modelsData } = useAllProductModels({ page: 1, pageSize: 100, isActive: true })
+   const { data: modelsData } = useAllProductModels({ page: 1, pageSize: 100, is_active: true })
    const model = modelsData?.items.find(m => m.id === product?.product_model_id)
 
    if (productId === undefined || isError) return <ErrorPage />

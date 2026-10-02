@@ -1,8 +1,8 @@
 import { z } from "zod"
 
 export const WorkSessionCreateSchema = z.object({
-   station_id: z.number().int(),
-   operation_id: z.number().int(),
+   station_id: z.number("Обов'язкове поле").int(),
+   operation_id: z.number("Обов'язкове поле").int(),
    note: z.string().max(512).optional(),
 })
 

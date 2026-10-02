@@ -21,6 +21,7 @@ export interface GetOperationsParams {
    minDuration?: number
    /** секунди */
    maxDuration?: number
+   product_id?: number
 }
 
 export const getProfileOperations = async (userId: string, limit = 10): Promise<OperationListRead[]> => {
@@ -46,6 +47,7 @@ export const getAllOperations = async (params: GetOperationsParams): Promise<Pag
          order_id: params.orderId,
          min_duration: params.minDuration,
          max_duration: params.maxDuration,
+         product_id: params.product_id,
       },
    })
    return data

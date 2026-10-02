@@ -3,7 +3,7 @@ import type { OperatorDailySchedule } from "@/api/types/operatorSchedule"
 import type { WorkSessionRead } from "@/api/types/workSession"
 
 export const getOperatorDailySchedule = async (userId: string, day?: string): Promise<OperatorDailySchedule> => {
-   const { data } = await api.get<OperatorDailySchedule>(`/analytics/operator/users/${userId}/schedule`, {
+   const { data } = await api.get<OperatorDailySchedule>(`/analytics/operator/${userId}/schedule`, {
       params: { day },
    })
    return data

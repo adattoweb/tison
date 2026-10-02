@@ -1,24 +1,7 @@
 import { useEffect, useRef, useState } from "react"
 import clsx from "clsx"
 import { useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query"
-import { CheckIcon, GripVerticalIcon, PlusIcon, Trash2Icon } from "lucide-react"
-import {
-   DndContext,
-   KeyboardSensor,
-   PointerSensor,
-   closestCenter,
-   useSensor,
-   useSensors,
-   type DragEndEvent,
-} from "@dnd-kit/core"
-import {
-   SortableContext,
-   arrayMove,
-   sortableKeyboardCoordinates,
-   useSortable,
-   verticalListSortingStrategy,
-} from "@dnd-kit/sortable"
-import { CSS } from "@dnd-kit/utilities"
+import { CheckIcon } from "lucide-react"
 
 import Modal from "@/components/Modal/Modal"
 import Dropdown from "@/components/UI/Dropdown"
@@ -26,6 +9,7 @@ import Dropdown from "@/components/UI/Dropdown"
 import { createProduct, deleteProduct, getAllProducts } from "@/api/endpoints/products"
 import { getAllProductModels, getProductModelById } from "@/api/endpoints/productModels"
 import { getAllOrders } from "@/api/endpoints/orders"
+import { useCurrentUser } from "@/hooks/api/auth/useCurrentUser" // TODO: твій хук поточного користувача
 import type { ProductModelListRead } from "@/api/types/product_model"
 import type { OrderListRead } from "@/api/types/order"
 
@@ -33,10 +17,9 @@ import type { OrderListRead } from "@/api/types/order"
 
 const MODELS_PAGE_SIZE = 100
 const ORDERS_PAGE_SIZE = 100
-/** Якщо замовлення необов'язкове — постав false */
-const REQUIRE_ORDER = true
+/** Статуси, при яких замовлення доступне для створення виробів */
+const AVAILABLE_STATUSES = ["ACTIVE", "IDLE"] as const
 
-/** Чиста синхронна функція: назва моделі приходить уже завантаженою */
 const orderLabel = (o: OrderListRead, modelTitle?: string) =>
    modelTitle ? `Замовлення №${o.id}, ${modelTitle}` : `Замовлення №${o.id}`
 
@@ -44,8 +27,12 @@ const QUERY_KEYS = {
    models: ["product-models", "active"] as const,
    productModel: (id: number) => ["product-model", id] as const,
    orders: ["orders", "products-modal"] as const,
+   ordersAll: ["orders"] as const,
    products: ["products"] as const,
 }
+
+/** Список id моделей-деталей, які обов'язково треба створити разом з головним виробом */
+const getRequiredDetailModelIds = (model: { details_ids?: number[] | null }): number[] => model.details_ids ?? []
 
 /* ------------------- scanner input (layout-independent) ------------------- */
 
@@ -134,11 +121,38 @@ function keyToLatin(e: KeyboardEvent): string | null {
    return null
 }
 
+const isTypingTarget = (target: EventTarget | null) => {
+   const el = target as HTMLElement | null
+   if (!el) return false
+   return el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.isContentEditable
+}
+
+/* ------------------------ product id helpers ------------------------ */
+
+/** Шукає виріб за кодом (код унікальний) і повертає його id */
+const findProductIdByCode = async (code: string): Promise<number | null> => {
+   const res = await getAllProducts({ page: 1, pageSize: 10, search: code } as Parameters<typeof getAllProducts>[0])
+   const found = res.items.find(p => p.code === code)
+   return found ? found.id : null
+}
+
+/** Дістає id зі відповіді createProduct. Якщо його там немає, шукає виріб за кодом */
+const resolveProductId = async (created: unknown, code: string): Promise<number> => {
+   const raw = created as { id?: unknown; data?: { id?: unknown } } | null | undefined
+   const direct = raw?.id ?? raw?.data?.id
+   if (typeof direct === "number") return direct
+   if (typeof direct === "string" && direct !== "" && !Number.isNaN(Number(direct))) return Number(direct)
+
+   const byCode = await findProductIdByCode(code)
+   if (byCode === null) throw new Error(`Не вдалося визначити id створеного виробу (${code})`)
+   return byCode
+}
+
 /* ----------------------------- types ----------------------------- */
 
 interface DraftProduct {
    uid: string
-   modelId: number | null
+   modelId: number
    code: string | null
    checking: boolean
    codeError: string | null
@@ -152,66 +166,48 @@ interface CreateProductsModalProps {
 
 interface CreatePayload {
    items: DraftProduct[]
-   orderId: number | null
+   orderId: number
 }
 
-const createDraft = (): DraftProduct => ({
+interface CreatedEntry {
+   code: string
+   id: number | null
+}
+
+const createDraft = (modelId: number): DraftProduct => ({
    uid: crypto.randomUUID(),
-   modelId: null,
+   modelId,
    code: null,
    checking: false,
    codeError: null,
 })
 
-/* ------------------------- sortable row -------------------------- */
+/* ------------------------------ row ------------------------------ */
 
-interface SortableRowProps {
+interface ProductRowProps {
    item: DraftProduct
    index: number
    isRoot: boolean
    isSelected: boolean
    modelTitle?: string
-   disabled: boolean
    onSelect: () => void
-   onDelete: () => void
 }
 
-function SortableRow({ item, index, isRoot, isSelected, modelTitle, disabled, onSelect, onDelete }: SortableRowProps) {
-   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
-      id: item.uid,
-      disabled,
-   })
-
-   const isComplete = !!item.modelId && !!item.code
-
+function ProductRow({ item, index, isRoot, isSelected, modelTitle, onSelect }: ProductRowProps) {
    return (
       <div
-         ref={setNodeRef}
-         style={{ transform: CSS.Transform.toString(transform), transition }}
          onClick={onSelect}
          className={clsx(
             "flex items-center gap-2 rounded-md border px-2 py-2 cursor-pointer select-none",
             isSelected
                ? "border-white/60 bg-(--bg-trans-hover-color)"
                : "border-(--stroke-color) bg-(--bg-trans-color)",
-            isDragging && "relative z-10 opacity-80",
          )}
       >
-         <button
-            type="button"
-            aria-label="Перемістити"
-            className="cursor-grab touch-none text-[#D9D9D9] active:cursor-grabbing"
-            onClick={e => e.stopPropagation()}
-            {...attributes}
-            {...listeners}
-         >
-            <GripVerticalIcon className="size-4 md:size-5" />
-         </button>
-
          <span className="w-5 shrink-0 text-center text-sm text-[#D9D9D9]">{index + 1}</span>
 
          <div className="flex min-w-0 flex-1 flex-col">
-            <span className="truncate text-sm md:text-base text-white">{modelTitle ?? "Новий виріб"}</span>
+            <span className="truncate text-sm md:text-base text-white">{modelTitle ?? `Модель #${item.modelId}`}</span>
             <span className={clsx("truncate text-xs md:text-sm", item.code ? "text-[#D9D9D9]" : "text-yellow-400")}>
                {item.code ?? (item.checking ? "Перевірка коду…" : "Без коду")}
             </span>
@@ -222,20 +218,7 @@ function SortableRow({ item, index, isRoot, isSelected, modelTitle, disabled, on
                головний
             </span>
          )}
-         {isComplete && <CheckIcon className="size-4 shrink-0 text-green-400" />}
-
-         <button
-            type="button"
-            aria-label="Видалити"
-            className="shrink-0 cursor-pointer text-[#D9D9D9] hover:text-red-400 disabled:opacity-40"
-            disabled={disabled}
-            onClick={e => {
-               e.stopPropagation()
-               onDelete()
-            }}
-         >
-            <Trash2Icon className="size-4 md:size-5" />
-         </button>
+         {item.code && <CheckIcon className="size-4 shrink-0 text-green-400" />}
       </div>
    )
 }
@@ -244,6 +227,8 @@ function SortableRow({ item, index, isRoot, isSelected, modelTitle, disabled, on
 
 function CreateProductsContent({ onClose, onCreated }: Omit<CreateProductsModalProps, "isOpen">) {
    const queryClient = useQueryClient()
+   const { data: me } = useCurrentUser()
+   const myId = me?.id ? String(me.id) : null
 
    const [items, setItems] = useState<DraftProduct[]>([])
    const [selectedUid, setSelectedUid] = useState<string | null>(null)
@@ -251,11 +236,7 @@ function CreateProductsContent({ onClose, onCreated }: Omit<CreateProductsModalP
    const [submitError, setSubmitError] = useState<string | null>(null)
    const scanBufferRef = useRef("")
    const scanTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-
-   const sensors = useSensors(
-      useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
-      useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
-   )
+   const builtForModelRef = useRef<number | null>(null)
 
    /* ----- data ----- */
 
@@ -268,23 +249,50 @@ function CreateProductsContent({ onClose, onCreated }: Omit<CreateProductsModalP
       staleTime: 60_000,
    })
 
-   const ordersQuery = useQuery({
-      queryKey: QUERY_KEYS.orders,
-      queryFn: () => getAllOrders({ page: 1, pageSize: ORDERS_PAGE_SIZE } as Parameters<typeof getAllOrders>[0]),
-      staleTime: 60_000,
+   // Статус у запиті одне поле, тому по запиту на кожен доступний статус
+   const ordersQuery = useQueries({
+      queries: AVAILABLE_STATUSES.map(status => ({
+         queryKey: [...QUERY_KEYS.orders, status],
+         queryFn: () =>
+            getAllOrders({ page: 1, pageSize: ORDERS_PAGE_SIZE, status } as Parameters<typeof getAllOrders>[0]),
+         staleTime: 60_000,
+      })),
+      combine: results => ({
+         items: results.flatMap(r => r.data?.items ?? []) as OrderListRead[],
+         isLoading: results.some(r => r.isLoading),
+         isError: results.some(r => r.isError),
+      }),
+   })
+
+   // Доступні: статус ACTIVE/IDLE + виконувати може кожен (порожній масив) або поточний користувач
+   const orders = ordersQuery.items
+      .filter(o => (AVAILABLE_STATUSES as readonly string[]).includes(String(o.status)))
+      .filter(o => {
+         const ids = (o.employees_ids ?? []).map(String)
+         return ids.length === 0 || (myId !== null && ids.includes(myId))
+      })
+      .sort((a, b) => a.id - b.id)
+
+   const selectedOrder = orders.find(o => o.id === orderId) ?? null
+   const orderModelId = selectedOrder?.product_model_id ?? null
+
+   // Склад моделі замовлення: з нього беремо обов'язкові деталі
+   const requirementsQuery = useQuery({
+      queryKey: QUERY_KEYS.productModel(orderModelId ?? 0),
+      queryFn: () => getProductModelById(orderModelId as number),
+      enabled: orderModelId !== null,
+      staleTime: 5 * 60_000,
    })
 
    const models: ProductModelListRead[] = modelsQuery.data?.items ?? []
-   const rootModels = models.filter(m => !m.is_detail)
-   const detailModels = models.filter(m => m.is_detail)
-
-   const orders: OrderListRead[] = ordersQuery.data?.items ?? []
-
-   const modelTitle = (id: number | null) => models.find(m => m.id === id)?.title
-
    const activeModelTitles = new Map(models.map(m => [m.id, m.title]))
+
+   // Назви моделей, яких немає серед активних (замовлення/деталі можуть посилатись на неактивні)
+   const requiredDetailIds = requirementsQuery.data ? getRequiredDetailModelIds(requirementsQuery.data) : []
    const missingModelIds = modelsQuery.isSuccess
-      ? [...new Set(orders.map(o => o.product_model_id))].filter(id => !activeModelTitles.has(id))
+      ? [...new Set([...orders.map(o => o.product_model_id), ...requiredDetailIds])].filter(
+           id => !activeModelTitles.has(id),
+        )
       : []
 
    const extraModelQueries = useQueries({
@@ -301,17 +309,32 @@ function CreateProductsContent({ onClose, onCreated }: Omit<CreateProductsModalP
       if (title) extraModelTitles.set(id, title)
    })
 
-   const getOrderLabel = (o: OrderListRead) =>
-      orderLabel(o, activeModelTitles.get(o.product_model_id) ?? extraModelTitles.get(o.product_model_id))
+   const modelTitle = (id: number) => activeModelTitles.get(id) ?? extraModelTitles.get(id)
+   const getOrderLabel = (o: OrderListRead) => orderLabel(o, modelTitle(o.product_model_id))
 
    const selected = items.find(i => i.uid === selectedUid) ?? null
    const rootUid = items.length > 0 ? items[0].uid : null
 
-   const rootItem = items.find(i => i.uid === rootUid) ?? null
-   const rootModelId = rootItem?.modelId ?? null
+   /* ----- автоматична побудова рядків при виборі замовлення ----- */
 
-   const filteredOrders = rootModelId !== null ? orders.filter(o => o.product_model_id === rootModelId) : []
-   const selectedOrder = filteredOrders.find(o => o.id === orderId) ?? null
+   useEffect(() => {
+      if (orderModelId === null) {
+         builtForModelRef.current = null
+         setItems([])
+         setSelectedUid(null)
+         return
+      }
+      const data = requirementsQuery.data
+      // будуємо один раз на модель, щоб повторне завантаження не стирало скановані коди
+      if (!data || builtForModelRef.current === orderModelId) return
+      builtForModelRef.current = orderModelId
+
+      const root = createDraft(orderModelId)
+      const parts = getRequiredDetailModelIds(data).map(createDraft)
+      setItems([root, ...parts])
+      setSelectedUid(root.uid)
+      setSubmitError(null)
+   }, [orderModelId, requirementsQuery.data])
 
    /* ----- helpers ----- */
 
@@ -322,48 +345,89 @@ function CreateProductsContent({ onClose, onCreated }: Omit<CreateProductsModalP
 
    const createMutation = useMutation({
       mutationFn: async ({ items, orderId }: CreatePayload) => {
-         const createdIds: number[] = []
-         // у типі ProductCreateInput немає id, а бекенд його повертає
-         const create = async (item: DraftProduct, parentId: number | null) => {
-            const created = (await createProduct({
-               code: item.code!,
-               product_model_id: item.modelId!,
-               order_id: orderId,
-               parent_id: parentId,
-            })) as unknown as { id: number }
-            createdIds.push(created.id)
-            return created.id
+         if (items.length === 0) {
+            throw new Error("Не вказано жодного виробу для створення")
          }
 
-         const root = items[0]
-         const children = items.slice(1)
-         let failedNumber = items.length // номер виробу в списку, на якому сталась помилка
+         const created: CreatedEntry[] = []
+
+         const create = async (item: DraftProduct, parentId: number | null): Promise<number> => {
+            const code = item.code?.trim()
+
+            if (!code) {
+               throw new Error("Не вказано код виробу")
+            }
+
+            const response = await createProduct({
+               code,
+               product_model_id: item.modelId,
+               order_id: orderId,
+               parent_id: parentId,
+            })
+
+            const entry: CreatedEntry = { code, id: null }
+            created.push(entry)
+
+            entry.id = await resolveProductId(response, code)
+
+            if (entry.id === null || entry.id === undefined) {
+               throw new Error(`Не вдалося визначити ID виробу ${code}`)
+            }
+
+            return entry.id
+         }
+
+         let failedNumber = 1
 
          try {
-            const rootId = await create(root, null)
-            for (let i = 0; i < children.length; i++) {
+            const rootId = await create(items[0], null)
+
+            for (let i = 1; i < items.length; i++) {
                failedNumber = i + 1
-               await create(children[i], rootId)
+               await create(items[i], rootId)
             }
-         } catch {
-            // Відкат у зворотному порядку: спочатку діти, останнім — корінь
-            const notDeleted: number[] = []
-            for (const id of [...createdIds].reverse()) {
+         } catch (error) {
+            console.error("Помилка створення виробів:", error)
+
+            const notDeleted: string[] = []
+
+            for (const entry of [...created].reverse()) {
                try {
+                  const id = entry.id ?? (await findProductIdByCode(entry.code))
+
+                  if (id === null || id === undefined) {
+                     throw new Error(`ID виробу ${entry.code} не знайдено`, { cause: error })
+                  }
+
                   await deleteProduct(id)
-               } catch {
-                  notDeleted.push(id)
+               } catch (deleteError) {
+                  console.error(`Не вдалося видалити виріб ${entry.code}:`, deleteError)
+
+                  notDeleted.push(entry.code)
                }
             }
+
+            const originalMessage = error instanceof Error ? error.message : String(error)
+
+            if (notDeleted.length === 0) {
+               throw new Error(
+                  `Не вдалося створити виріб №${failedNumber}. ` +
+                     `Усі створені вироби скасовано. Причина: ${originalMessage}`,
+                  { cause: error },
+               )
+            }
+
             throw new Error(
-               notDeleted.length === 0
-                  ? `Не вдалося створити виріб №${failedNumber}. Усі створені вироби скасовано`
-                  : `Не вдалося створити виріб №${failedNumber}. Не вдалося видалити вироби з id: ${notDeleted.join(", ")}`,
+               `Не вдалося створити виріб №${failedNumber}. ` +
+                  `Не вдалося видалити вироби з кодами: ${notDeleted.join(", ")}. ` +
+                  `Причина помилки створення: ${originalMessage}`,
+               { cause: error },
             )
          }
       },
       onSuccess: () => {
          void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.products })
+         void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.ordersAll })
          onCreated?.()
          onClose()
       },
@@ -374,41 +438,13 @@ function CreateProductsContent({ onClose, onCreated }: Omit<CreateProductsModalP
 
    const submitting = createMutation.isPending
 
-   /* ----- list actions ----- */
-
-   const handleAdd = () => {
-      const draft = createDraft()
-      setItems(prev => [...prev, draft])
-      setSelectedUid(draft.uid)
-      setSubmitError(null)
-   }
-
-   const handleDelete = (uid: string) => {
-      const idx = items.findIndex(i => i.uid === uid)
-      const next = items.filter(i => i.uid !== uid)
-      setItems(next)
-      if (selectedUid === uid) {
-         setSelectedUid(next[Math.min(idx, next.length - 1)]?.uid ?? null)
-      }
-      setSubmitError(null)
-   }
-
-   const handleDragEnd = ({ active, over }: DragEndEvent) => {
-      if (!over || active.id === over.id) return
-      setItems(prev => {
-         const from = prev.findIndex(i => i.uid === active.id)
-         const to = prev.findIndex(i => i.uid === over.id)
-         return arrayMove(prev, from, to)
-      })
-   }
-
    /* ----- scanning ----- */
 
    const handleScan = async (rawCode: string) => {
       const code = rawCode.trim()
       if (!code) return
       if (!selected) {
-         setSubmitError("Спершу додайте або оберіть виріб, а потім скануйте")
+         setSubmitError("Спершу оберіть замовлення, а потім скануйте")
          return
       }
 
@@ -423,17 +459,17 @@ function CreateProductsContent({ onClose, onCreated }: Omit<CreateProductsModalP
       updateItem(uid, { checking: true, codeError: null })
 
       try {
-         const res = await getAllProducts({ page: 1, pageSize: 10, search: code } as Parameters<
-            typeof getAllProducts
-         >[0])
-         const exists = res.items.some(p => p.code === code)
+         const id = await findProductIdByCode(code)
 
-         updateItem(
-            uid,
-            exists
-               ? { checking: false, code: null, codeError: "Виріб з таким кодом уже існує" }
-               : { checking: false, code, codeError: null },
-         )
+         if (id !== null) {
+            updateItem(uid, { checking: false, code: null, codeError: "Виріб з таким кодом уже існує" })
+            return
+         }
+
+         updateItem(uid, { checking: false, code, codeError: null })
+         // переходимо до наступного рядка без коду
+         const next = items.find(i => i.uid !== uid && !i.code)
+         if (next) setSelectedUid(next.uid)
       } catch {
          updateItem(uid, { checking: false, code: null, codeError: "Не вдалося перевірити код. Спробуйте ще раз" })
       }
@@ -458,6 +494,8 @@ function CreateProductsContent({ onClose, onCreated }: Omit<CreateProductsModalP
 
       const onKeyDown = (e: KeyboardEvent) => {
          if (e.ctrlKey || e.metaKey || e.altKey || e.isComposing) return
+         // не заважаємо звичайному вводу в полях (пошук, дропдауни з input)
+         if (isTypingTarget(e.target)) return
 
          if (e.key === "Enter" || e.key === "Tab") {
             // Якщо буфер порожній — Enter/Tab працюють як звичайно (кнопки, дропдауни)
@@ -489,28 +527,22 @@ function CreateProductsContent({ onClose, onCreated }: Omit<CreateProductsModalP
    /* ----- submit ----- */
 
    const handleSubmit = () => {
-      if (REQUIRE_ORDER && orderId === null) {
+      if (orderId === null || !selectedOrder) {
          setSubmitError("Оберіть замовлення")
          return
       }
       if (items.length === 0) {
-         setSubmitError("Додайте хоча б один виріб")
+         setSubmitError("Дочекайтесь завантаження складу виробу")
          return
       }
 
-      const invalidIdx = items.findIndex((i, idx) => {
-         if (!i.modelId || !i.code) return true
-         const model = models.find(m => m.id === i.modelId)
-         if (!model) return true
-         const isRootRow = idx === 0
-         return isRootRow ? model.is_detail : !model.is_detail
-      })
-      if (invalidIdx !== -1) {
-         setSelectedUid(items[invalidIdx].uid)
+      const missingIdx = items.findIndex(i => !i.code)
+      if (missingIdx !== -1) {
+         setSelectedUid(items[missingIdx].uid)
          setSubmitError(
-            invalidIdx === 0
-               ? "Головний виріб: оберіть модель (не деталь) та відскануйте код"
-               : `Деталь №${invalidIdx + 1}: оберіть модель-деталь та відскануйте код`,
+            missingIdx === 0
+               ? "Відскануйте код головного виробу"
+               : `Відскануйте код для деталі №${missingIdx + 1}. Потрібно створити всі деталі`,
          )
          return
       }
@@ -521,18 +553,22 @@ function CreateProductsContent({ onClose, onCreated }: Omit<CreateProductsModalP
 
    /* ----- render ----- */
 
+   const requirementsLoading = orderModelId !== null && requirementsQuery.isLoading
+   const filled = items.filter(i => i.code).length
+   const canSubmit = !submitting && items.length > 0 && !requirementsLoading
+
    return (
       <div>
          <Modal.Header>Створення виробів за сканом</Modal.Header>
 
          <Modal.Content className="!p-0 !border-0 !my-3">
             <div className="flex flex-col gap-4">
-               {/* ---------- замовлення (одне на всі вироби) ---------- */}
+               {/* ---------- замовлення (визначає головну модель і деталі) ---------- */}
                <div className="flex flex-col gap-2">
                   <Modal.Label>Замовлення</Modal.Label>
                   <Dropdown className="w-full">
                      <Dropdown.Button className="w-full" disabled={submitting || ordersQuery.isLoading}>
-                        <span className="truncate">
+                        <span className={clsx("truncate", !selectedOrder && "opacity-60")}>
                            {ordersQuery.isLoading
                               ? "Завантаження…"
                               : selectedOrder
@@ -542,108 +578,76 @@ function CreateProductsContent({ onClose, onCreated }: Omit<CreateProductsModalP
                         <Dropdown.Chevron />
                      </Dropdown.Button>
                      <Dropdown.Content>
-                        {!REQUIRE_ORDER && (
-                           <Dropdown.Item onClick={() => setOrderId(null)}>Без замовлення</Dropdown.Item>
+                        {orders.length === 0 && (
+                           <p className="px-3 md:px-4 py-2 opacity-60">Немає доступних замовлень</p>
                         )}
                         {orders.map(o => (
-                           <Dropdown.Item key={o.id} onClick={() => setOrderId(o.id)}>
+                           <Dropdown.Item
+                              key={o.id}
+                              onClick={() => {
+                                 setOrderId(o.id)
+                                 setSubmitError(null)
+                              }}
+                           >
                               {getOrderLabel(o)}
                            </Dropdown.Item>
                         ))}
                      </Dropdown.Content>
                   </Dropdown>
                   {ordersQuery.isError && <p className="text-sm text-red-400">Не вдалося завантажити замовлення</p>}
+                  {requirementsQuery.isError && (
+                     <p className="text-sm text-red-400">Не вдалося завантажити склад виробу</p>
+                  )}
                </div>
 
                <div className="grid h-[55vh] grid-cols-1 gap-4 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
                   {/* ---------- ліва частина: список ---------- */}
                   <div className="flex min-h-0 flex-col gap-2 border-(--stroke-color) md:border-r md:pr-4">
                      <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto">
-                        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                           <SortableContext items={items.map(i => i.uid)} strategy={verticalListSortingStrategy}>
-                              {items.map((item, index) => (
-                                 <SortableRow
-                                    key={item.uid}
-                                    item={item}
-                                    index={index}
-                                    isRoot={item.uid === rootUid}
-                                    isSelected={item.uid === selectedUid}
-                                    modelTitle={modelTitle(item.modelId)}
-                                    disabled={submitting}
-                                    onSelect={() => setSelectedUid(item.uid)}
-                                    onDelete={() => handleDelete(item.uid)}
-                                 />
-                              ))}
-                           </SortableContext>
-                        </DndContext>
+                        {items.map((item, index) => (
+                           <ProductRow
+                              key={item.uid}
+                              item={item}
+                              index={index}
+                              isRoot={item.uid === rootUid}
+                              isSelected={item.uid === selectedUid}
+                              modelTitle={modelTitle(item.modelId)}
+                              onSelect={() => setSelectedUid(item.uid)}
+                           />
+                        ))}
 
                         {items.length === 0 && (
                            <p className="py-6 text-center text-sm text-[#D9D9D9]">
-                              Список порожній. Додайте перший виріб
+                              {requirementsLoading ? "Завантаження складу…" : "Оберіть замовлення"}
                            </p>
                         )}
                      </div>
 
-                     <button
-                        type="button"
-                        disabled={submitting}
-                        onClick={handleAdd}
-                        className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-md border border-dashed border-(--stroke-color) px-4 py-2 text-sm md:text-base hover:bg-(--bg-trans-hover-color) disabled:opacity-50"
-                     >
-                        <PlusIcon className="size-4 md:size-5" />
-                        Додати виріб
-                     </button>
+                     {items.length > 0 && (
+                        <p className="text-sm text-[#D9D9D9]">
+                           Відскановано: {filled} з {items.length}
+                        </p>
+                     )}
                   </div>
 
                   {/* ---------- права частина: інформація ---------- */}
                   <div className="flex min-h-0 flex-col gap-4 overflow-y-auto">
                      {!selected ? (
-                        <p className="m-auto text-sm text-[#D9D9D9]">Оберіть або додайте виріб</p>
+                        <p className="m-auto text-sm text-[#D9D9D9]">Оберіть замовлення</p>
                      ) : (
                         <>
                            <p className="text-sm md:text-base text-[#D9D9D9]">
                               Виріб №{items.findIndex(i => i.uid === selected.uid) + 1}
-                              {selected.uid === rootUid && " · головний"}
+                              {selected.uid === rootUid ? " · головний" : " · деталь"}
                            </p>
 
                            <div className="flex flex-col gap-2">
                               <Modal.Label>
                                  {selected.uid === rootUid ? "Модель головного виробу" : "Модель деталі"}
                               </Modal.Label>
-                              <Dropdown className="w-full">
-                                 <Dropdown.Button className="w-full" disabled={submitting || modelsQuery.isLoading}>
-                                    <span className="truncate">
-                                       {modelsQuery.isLoading
-                                          ? "Завантаження…"
-                                          : (modelTitle(selected.modelId) ?? "Оберіть модель")}
-                                    </span>
-                                    <Dropdown.Chevron />
-                                 </Dropdown.Button>
-                                 <Dropdown.Content>
-                                    {(selected.uid === rootUid ? rootModels : detailModels).length === 0 && (
-                                       <p className="px-3 py-2 text-sm text-[#D9D9D9]">
-                                          {selected.uid === rootUid ? "Немає моделей виробів" : "Немає моделей-деталей"}
-                                       </p>
-                                    )}
-                                    {(selected.uid === rootUid ? rootModels : detailModels).map(m => (
-                                       <Dropdown.Item
-                                          key={m.id}
-                                          onClick={() => {
-                                             updateItem(selected.uid, { modelId: m.id })
-                                             // якщо змінили модель головного виробу — попереднє замовлення могло стати невалідним
-                                             if (selected.uid === rootUid && m.id !== rootModelId) {
-                                                setOrderId(null)
-                                             }
-                                          }}
-                                       >
-                                          {m.title}
-                                       </Dropdown.Item>
-                                    ))}
-                                 </Dropdown.Content>
-                              </Dropdown>
-                              {modelsQuery.isError && (
-                                 <p className="text-sm text-red-400">Не вдалося завантажити моделі</p>
-                              )}
+                              <div className="rounded-md border border-(--stroke-color) bg-(--bg-trans-color) px-4 py-3 text-sm md:text-base text-white">
+                                 {modelTitle(selected.modelId) ?? `Модель #${selected.modelId}`}
+                              </div>
                            </div>
 
                            <div className="flex flex-col gap-2">
@@ -657,7 +661,7 @@ function CreateProductsContent({ onClose, onCreated }: Omit<CreateProductsModalP
                                        {selected.code}
                                     </p>
                                  ) : (
-                                    <p className="text-sm md:text-base text-yellow-400">Відскануйте новий виріб</p>
+                                    <p className="text-sm md:text-base text-yellow-400">Відскануйте виріб</p>
                                  )}
                               </div>
                               {selected.codeError && <p className="text-sm text-red-400">{selected.codeError}</p>}
@@ -682,7 +686,7 @@ function CreateProductsContent({ onClose, onCreated }: Omit<CreateProductsModalP
                </button>
                <button
                   type="button"
-                  disabled={submitting || items.length === 0}
+                  disabled={!canSubmit}
                   onClick={handleSubmit}
                   className="cursor-pointer rounded-md border border-(--stroke-color) bg-(--bg-trans-hover-color) px-4 py-2 text-sm md:text-base disabled:cursor-not-allowed disabled:opacity-50"
                >

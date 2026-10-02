@@ -15,6 +15,8 @@ export const getAllProducts = async (params: ProductsParams): Promise<PaginatedR
          min_progress: params.minProgress,
          max_progress: params.maxProgress,
          search: params.search || null,
+         operator_id: params.operator_id,
+         order_id: params.order_id,
       },
    })
    return data

@@ -37,8 +37,10 @@ export interface ProductsParams {
    /** відсоток, 0–100 */
    maxProgress?: number
    search?: string
+   operator_id?: string
+   order_id?: number
 }
 
 export interface ModelParams extends ParamsWithActive {
-   is_detail: boolean
+   is_detail?: boolean
 }

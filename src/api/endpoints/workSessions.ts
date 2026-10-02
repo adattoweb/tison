@@ -2,6 +2,7 @@ import { api } from "@/api/api"
 import type { PaginatedResponse } from "@/api/types/pagination"
 import type { SessionStatus, WorkSessionRead, WorkSessionResponse } from "@/api/types/workSession"
 import type { WorkSessionCreateInput, WorkSessionEndInput } from "@/api/schemas/workSession"
+import { isAxiosError } from "axios"
 
 export interface GetWorkSessionsParams {
    page?: number
