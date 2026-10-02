@@ -12,6 +12,7 @@ import { useAllProducts } from "@/hooks/api/products/useAllProducts"
 import { useAllProductModels } from "@/hooks/api/productModels/useAllProductModels"
 import { useAllDepartments } from "@/hooks/api/departments/useAllDepartments"
 import { useDebouncedValue } from "@/hooks/api/useDebouncedValue"
+import { tableMessageClassName } from "@/utils/classNames"
 
 const ALL = {
    status: "Всі статуси",
@@ -199,12 +200,12 @@ export function ProductsTable() {
             tableClassNames={tableClassNames}
             className={clsx("transition-opacity", isPlaceholderData && "opacity-50")}
          >
-            {isLoading && <p className="min-w-250 px-4 py-8 text-center text-(--second-color)">Завантаження...</p>}
+            {isLoading && <p className={clsx(tableMessageClassName, "text-(--second-color)")}>Завантаження...</p>}
 
-            {isError && <p className="min-w-250 px-4 py-8 text-center text-red-400">Не вдалося завантажити вироби</p>}
+            {isError && <p className={clsx(tableMessageClassName, "text-red=400")}>Не вдалося завантажити вироби</p>}
 
             {!isLoading && !isError && products.length === 0 && (
-               <p className="min-w-250 px-4 py-8 text-center text-(--second-color)">Виробів не знайдено</p>
+               <p className={clsx(tableMessageClassName, "text-(--second-color)")}>Виробів не знайдено</p>
             )}
 
             {products.map(product => (

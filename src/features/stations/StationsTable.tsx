@@ -13,6 +13,8 @@ import type { DepartmentRead } from "@/api/types/department"
 import { useProfile } from "@/hooks/api/profile/useProfile"
 import type { StationListRead } from "@/api/types/station"
 import { getStationStatus } from "@/utils/getStationStatus"
+import { tableMessageClassName } from "@/utils/classNames"
+import clsx from "clsx"
 
 const ALL = { department: "Всі дільниці", status: "Всі статуси" } as const
 const STATUS_OPTIONS = [ALL.status, ...Object.keys(STATUS)] as (typeof ALL.status | StatusType)[]
@@ -47,7 +49,7 @@ export function StationsTable() {
    const [page, setPage] = useState(1)
    const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE)
 
-   const { data } = useAllStations({
+   const { data, isLoading, isError } = useAllStations({
       page,
       pageSize,
       departmentId: department?.id,
@@ -131,7 +133,14 @@ export function StationsTable() {
             </Button>
          </Table.Header>
 
-         <Table columns={columns} tableClassNames={tableClassNames} className="">
+         <Table columns={columns} tableClassNames={tableClassNames}>
+            {isLoading && <p className={clsx(tableMessageClassName, "text-(--second-color)")}>Завантаження...</p>}
+
+            {isError && <p className={clsx(tableMessageClassName, "text-red-400")}>Не вдалося завантажити станції</p>}
+
+            {!isLoading && !isError && stations.length === 0 && (
+               <p className={clsx(tableMessageClassName, "text-(--second-color)")}>Станцій не знайдено</p>
+            )}
             {stations.map((station, id) => (
                <Station key={id} station={station} />
             ))}

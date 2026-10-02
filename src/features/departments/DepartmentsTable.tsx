@@ -13,6 +13,8 @@ import { useDeleteDepartment } from "@/hooks/api/departments/useDeleteDepartment
 import { useDebouncedValue } from "@/hooks/api/useDebouncedValue"
 import { DEFAULT_PAGE_SIZE } from "@/constants/pagination"
 import { TOAST_DURATION } from "@/constants/app"
+import clsx from "clsx"
+import { tableMessageClassName } from "@/utils/classNames"
 
 const columns = ["Назва", ""]
 
@@ -31,7 +33,7 @@ export function DepartmentsTable() {
    const debouncedSearch = useDebouncedValue(search, 400)
    const { addToast } = useToast()
 
-   const { data, isFetching } = useAllDepartments({
+   const { data, isFetching, isLoading, isError } = useAllDepartments({
       page,
       pageSize,
       search: debouncedSearch || undefined,
@@ -74,6 +76,15 @@ export function DepartmentsTable() {
                tableClassNames={tableClassNames}
                className={isFetching ? "opacity-60 transition-opacity" : ""}
             >
+               {isLoading && <p className={clsx(tableMessageClassName, "text-(--second-color)")}>Завантаження...</p>}
+
+               {isError && (
+                  <p className={clsx(tableMessageClassName, "text-red-400")}>Не вдалося завантажити департаменти</p>
+               )}
+
+               {!isLoading && !isError && departments.length === 0 && (
+                  <p className={clsx(tableMessageClassName, "text-(--second-color)")}>Департаменти не знайдено</p>
+               )}
                {departments.map(department => (
                   <Table.Row key={department.id}>
                      <Table.Text text={department.name} />

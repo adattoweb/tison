@@ -12,6 +12,7 @@ export interface OrderListRead {
    status: StatusType
    plan: number
    fact: number
+   employees_ids: string[]
 }
 
 export interface OrderRead extends OrderListRead {

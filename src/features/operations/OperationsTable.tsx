@@ -12,6 +12,8 @@ import { useAllStations } from "@/hooks/api/station/useAllStations"
 import type { OperationListRead } from "@/api/types/operation"
 import type { StationListRead } from "@/api/types/station"
 import { DEFAULT_PAGE_SIZE } from "@/constants/pagination"
+import { tableMessageClassName } from "@/utils/classNames"
+import clsx from "clsx"
 
 const ALL = { status: "Всі статуси", station: "Всі станції", duration: "Будь-яка тривалість" } as const
 const STATUS_OPTIONS = [ALL.status, ...Object.keys(STATUS)] as (typeof ALL.status | StatusType)[]
@@ -72,7 +74,7 @@ export function OperationsTable() {
       minDuration: duration.min,
       maxDuration: duration.max,
    })
-   const { data: stations } = useAllStations({ page: 1, pageSize: 100 })
+   const { data: stations, isLoading, isError } = useAllStations({ page: 1, pageSize: 100 })
 
    const operations = data?.items ?? []
 
@@ -175,6 +177,13 @@ export function OperationsTable() {
          </Table.Header>
 
          <Table columns={columns} tableClassNames={tableClassNames}>
+            {isLoading && <p className={clsx(tableMessageClassName, "text-(--second-color)")}>Завантаження...</p>}
+
+            {isError && <p className={clsx(tableMessageClassName, "text-red-400")}>Не вдалося завантажити операції</p>}
+
+            {!isLoading && !isError && operations.length === 0 && (
+               <p className={clsx(tableMessageClassName, "text-(--second-color)")}>Операцій не знайдено</p>
+            )}
             {operations.map(operation => (
                <OperationRow key={operation.id} operation={operation} />
             ))}

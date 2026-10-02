@@ -1,5 +1,6 @@
 import { OrderUpdateFormSchema, type OrderUpdateFormInput } from "@/api/schemas/order"
 import type { OrderListRead } from "@/api/types/order"
+import type { ProfileRead } from "@/api/types/profile"
 import Modal from "@/components/Modal/Modal"
 import { useToast } from "@/components/Toast/useToast"
 import Button from "@/components/UI/Button"
@@ -7,13 +8,18 @@ import { DatePickerField } from "@/components/UI/DatePickerField"
 import Dropdown from "@/components/UI/Dropdown"
 import { FieldError } from "@/components/UI/FieldError"
 import { Input } from "@/components/UI/Input"
+import { SearchDropdown } from "@/components/UI/SearchDropdown"
 import { TOAST_DURATION } from "@/constants/app"
 import { useUpdateOrder } from "@/hooks/api/orders/useUpdateOrder"
 import { useAllProductModels } from "@/hooks/api/productModels/useAllProductModels"
+import { useAllProfiles } from "@/hooks/api/profile/useAllProfiles"
+import { useProfilesByIds } from "@/hooks/api/profile/useProfilesByIds"
+import { useDebouncedValue } from "@/hooks/api/useDebouncedValue"
 import { endOfDay, startOfDay } from "@/utils/time"
 import { zodResolver } from "@hookform/resolvers/zod"
 import clsx from "clsx"
 import { CheckCheckIcon, SquareChartGantt, Trash2Icon } from "lucide-react"
+import { useState } from "react"
 import { Controller, useForm, type SubmitHandler } from "react-hook-form"
 
 interface UpdateOrderModalProps {
@@ -28,10 +34,28 @@ const toIso = (value: string) => new Date(value).toISOString()
 
 export function UpdateOrderModal({ isOpen, order, onClose, onDelete }: UpdateOrderModalProps) {
    const { mutate: doUpdateOrder, isPending } = useUpdateOrder()
-   const { data: modelsData } = useAllProductModels({ page: 1, pageSize: 100, isActive: true })
+   const { data: modelsData } = useAllProductModels({ page: 1, pageSize: 100, is_active: true, is_detail: false })
    const { addToast } = useToast()
 
    const productModels = modelsData?.items ?? []
+
+   // Пошук працівників
+   const [profileSearch, setProfileSearch] = useState("")
+   const debouncedSearch = useDebouncedValue(profileSearch, 300)
+
+   const { data: profilesData, isFetching: isProfilesLoading } = useAllProfiles({
+      page: 1,
+      pageSize: 5,
+      search: debouncedSearch,
+   })
+   const profiles = profilesData?.items ?? []
+
+   // Підвантажуємо профілі вже призначених працівників
+   const { profiles: initialProfiles, isLoading: isInitialLoading } = useProfilesByIds(order.employees_ids ?? [])
+
+   // null = користувач ще не чіпав список, показуємо профілі із замовлення
+   const [touchedProfiles, setTouchedProfiles] = useState<ProfileRead[] | null>(null)
+   const selectedProfiles = touchedProfiles ?? initialProfiles
 
    const {
       register,
@@ -48,6 +72,7 @@ export function UpdateOrderModal({ isOpen, order, onClose, onDelete }: UpdateOrd
          fact: order.fact,
          planned_start_at: toIso(order.planned_start_at),
          planned_end_at: toIso(order.planned_end_at),
+         employees_ids: order.employees_ids ?? [],
       },
    })
 
@@ -134,41 +159,6 @@ export function UpdateOrderModal({ isOpen, order, onClose, onDelete }: UpdateOrd
                      <FieldError message={errors.fact?.message} />
                   </div>
 
-                  {/* <div className="md:col-span-2">
-                     <Controller
-                        name="status"
-                        control={control}
-                        render={({ field }) => {
-                           const selected = STATUS_OPTIONS.find(o => o.value === field.value)
-
-                           return (
-                              <div className="flex flex-col gap-1.5 w-full">
-                                 <Modal.Label>Статус</Modal.Label>
-                                 <Dropdown className="w-full!">
-                                    <Dropdown.Button
-                                       className={clsx("w-full h-11", errors.status && "border-red-400!")}
-                                    >
-                                       <span className="truncate">{selected?.label ?? field.value}</span>
-                                       <Dropdown.Chevron />
-                                    </Dropdown.Button>
-                                    <Dropdown.Content>
-                                       {STATUS_OPTIONS.map(option => (
-                                          <Dropdown.Item
-                                             key={option.value}
-                                             onClick={() => field.onChange(option.value)}
-                                          >
-                                             {option.label}
-                                          </Dropdown.Item>
-                                       ))}
-                                    </Dropdown.Content>
-                                 </Dropdown>
-                              </div>
-                           )
-                        }}
-                     />
-                     <FieldError message={errors.status?.message} />
-                  </div> */}
-
                   <div>
                      <Controller
                         name="planned_start_at"
@@ -207,6 +197,38 @@ export function UpdateOrderModal({ isOpen, order, onClose, onDelete }: UpdateOrd
                         )}
                      />
                      <FieldError message={errors.planned_end_at?.message} />
+                  </div>
+
+                  <div className="md:col-span-2">
+                     <Modal.Label>Працівники</Modal.Label>
+                     <Controller
+                        name="employees_ids"
+                        control={control}
+                        render={({ field }) => (
+                           <SearchDropdown<ProfileRead>
+                              items={profiles}
+                              selected={selectedProfiles}
+                              getKey={p => p.user_id}
+                              getLabel={p => `${p.last_name} ${p.first_name}`}
+                              getSubLabel={p => p.position}
+                              search={profileSearch}
+                              onSearchChange={setProfileSearch}
+                              isLoading={isProfilesLoading || isInitialLoading}
+                              hasError={!!errors.employees_ids}
+                              placeholder={isInitialLoading ? "Завантаження..." : "Оберіть працівників"}
+                              searchPlaceholder="Пошук за ім'ям..."
+                              onToggle={profile => {
+                                 const exists = selectedProfiles.some(p => p.user_id === profile.user_id)
+                                 const next = exists
+                                    ? selectedProfiles.filter(p => p.user_id !== profile.user_id)
+                                    : [...selectedProfiles, profile]
+                                 setTouchedProfiles(next)
+                                 field.onChange(next.map(p => p.user_id))
+                              }}
+                           />
+                        )}
+                     />
+                     <FieldError message={errors.employees_ids?.message} />
                   </div>
                </div>
             </Modal.Content>

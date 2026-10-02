@@ -8,6 +8,8 @@ import { ErrorPage } from "@/components/ErrorPage/ErrorPage"
 import { TablePagination } from "@/components/Table/TablePagination"
 import Dropdown from "@/components/UI/Dropdown"
 import Table from "@/components/Table/Table"
+import { tableMessageClassName } from "@/utils/classNames"
+import clsx from "clsx"
 
 export function ModelList() {
    const [search, setSearch] = useState("")
@@ -18,7 +20,7 @@ export function ModelList() {
 
    const debouncedSearch = useDebouncedValue(search, 400)
 
-   const { data } = useAllProductModels({
+   const { data, isLoading, isError } = useAllProductModels({
       page,
       pageSize,
       search: debouncedSearch || undefined,
@@ -80,6 +82,13 @@ export function ModelList() {
                </Dropdown.Content>
             </Dropdown>
          </Table.Header>
+         {isLoading && <p className={clsx(tableMessageClassName, "text-(--second-color)")}>Завантаження...</p>}
+
+         {isError && <p className={clsx(tableMessageClassName, "text-red-400")}>Не вдалося завантажити моделі</p>}
+
+         {!isLoading && !isError && models.length === 0 && (
+            <p className={clsx(tableMessageClassName, "text-(--second-color)")}>Моделей не знайдено</p>
+         )}
          {models.map((model, index) => (
             <Model key={index} model={model} />
          ))}

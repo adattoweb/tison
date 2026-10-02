@@ -16,6 +16,11 @@ import { CheckCheckIcon, SquareChartGantt } from "lucide-react"
 import { Controller, useForm, type SubmitHandler } from "react-hook-form"
 import { TOAST_DURATION } from "@/constants/app"
 import { DatePickerField } from "@/components/UI/DatePickerField"
+import { useDebouncedValue } from "@/hooks/api/useDebouncedValue"
+import { useState } from "react"
+import type { ProfileRead } from "@/api/types/profile"
+import { useAllProfiles } from "@/hooks/api/profile/useAllProfiles"
+import { SearchDropdown } from "@/components/UI/SearchDropdown"
 
 interface ModalProps {
    isOpen: boolean
@@ -24,8 +29,18 @@ interface ModalProps {
 
 export function AddOrderModal({ isOpen, setIsOpen }: ModalProps) {
    const { mutate: doCreateOrder, isPending } = useCreateOrder()
-   const { data: modelsData } = useAllProductModels({ page: 1, pageSize: 100, isActive: true })
+   const { data: modelsData } = useAllProductModels({ page: 1, pageSize: 100, is_active: true, is_detail: false })
    const { addToast } = useToast()
+   const [profileSearch, setProfileSearch] = useState("")
+   const [selectedProfiles, setSelectedProfiles] = useState<ProfileRead[]>([])
+   const debouncedSearch = useDebouncedValue(profileSearch, 300)
+
+   const { data: profilesData, isFetching: isProfilesLoading } = useAllProfiles({
+      page: 1,
+      pageSize: 5,
+      search: debouncedSearch,
+   })
+   const profiles = profilesData?.items ?? []
 
    const productModels = modelsData?.items ?? []
 
@@ -54,6 +69,8 @@ export function AddOrderModal({ isOpen, setIsOpen }: ModalProps) {
 
    const onClose = () => {
       reset()
+      setSelectedProfiles([])
+      setProfileSearch("")
       setIsOpen(false)
    }
 
@@ -172,6 +189,37 @@ export function AddOrderModal({ isOpen, setIsOpen }: ModalProps) {
                         )}
                      />
                      <FieldError message={errors.planned_end_at?.message} />
+                  </div>
+                  <div className="md:col-span-2">
+                     <Modal.Label>Працівники</Modal.Label>
+                     <Controller
+                        name="employees_ids"
+                        control={control}
+                        render={({ field }) => (
+                           <SearchDropdown<ProfileRead>
+                              items={profiles}
+                              selected={selectedProfiles}
+                              getKey={p => p.user_id}
+                              getLabel={p => `${p.last_name} ${p.first_name}`}
+                              getSubLabel={p => p.position}
+                              search={profileSearch}
+                              onSearchChange={setProfileSearch}
+                              isLoading={isProfilesLoading}
+                              hasError={!!errors.employees_ids}
+                              placeholder="Оберіть працівників"
+                              searchPlaceholder="Пошук за ім'ям..."
+                              onToggle={profile => {
+                                 const exists = selectedProfiles.some(p => p.user_id === profile.user_id)
+                                 const next = exists
+                                    ? selectedProfiles.filter(p => p.user_id !== profile.user_id)
+                                    : [...selectedProfiles, profile]
+                                 setSelectedProfiles(next)
+                                 field.onChange(next.map(p => p.user_id))
+                              }}
+                           />
+                        )}
+                     />
+                     <FieldError message={errors.employees_ids?.message} />
                   </div>
                </div>
             </Modal.Content>

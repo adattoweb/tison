@@ -6,6 +6,7 @@ import gsap from "gsap"
 import { useGSAP } from "@gsap/react"
 import { useRef, useState } from "react"
 import { Link } from "react-router"
+import { useCurrentUser } from "@/hooks/api/auth/useCurrentUser"
 
 interface ProfileProps {
    ref: React.RefObject<HTMLDivElement | null>
@@ -34,7 +35,7 @@ function MenuItem({ text, Icon, to, onClick }: ItemProps) {
 
 export function Profile({ ref, textsRef }: ProfileProps) {
    const { data: profile, isError } = useCurrentProfile()
-   // const { data: user } = useCurrentUser()
+   const { data: user, isLoading } = useCurrentUser()
    const [isOpen, setIsOpen] = useState(false)
    const menuRef = useRef<HTMLDivElement>(null)
 
@@ -78,8 +79,14 @@ export function Profile({ ref, textsRef }: ProfileProps) {
             className="flex flex-col w-full bg-(--bg-trans-color) border border-(--stroke-color) rounded-lg overflow-hidden"
             style={{ height: 0, opacity: 0 }}
          >
-            <MenuItem Icon={UserCircleIcon} text="Профіль" to="profile/me" />
-            <MenuItem Icon={LogOutIcon} text="Вийти" to="logout" />
+            {isLoading || user === undefined ? (
+               <p className="text-(--second-color)">Завантаження</p>
+            ) : (
+               <>
+                  <MenuItem Icon={UserCircleIcon} text="Профіль" to={`employees/${user.id}`} />
+                  <MenuItem Icon={LogOutIcon} text="Вийти" to="logout" />
+               </>
+            )}
          </div>
 
          <div

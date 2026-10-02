@@ -8,6 +8,8 @@ import { useAllProfiles } from "@/hooks/api/profile/useAllProfiles"
 import { useShifts } from "@/hooks/api/shifts/useShifts"
 import { useDebouncedValue } from "@/hooks/api/useDebouncedValue"
 import { formatTenure } from "@/utils/time"
+import { tableMessageClassName } from "@/utils/classNames"
+import clsx from "clsx"
 
 const ALL_SHIFT_LABEL = "Всі зміни"
 
@@ -28,7 +30,7 @@ export function EmployeesTable() {
 
    const { data: shifts } = useShifts()
 
-   const { data, isLoading, isFetching } = useAllProfiles({
+   const { data, isLoading, isFetching, isError } = useAllProfiles({
       page,
       pageSize,
       search: debouncedSearch || undefined,
@@ -95,47 +97,52 @@ export function EmployeesTable() {
             </Button>
          </Table.Header>
 
-         {isLoading ? (
-            <p className="py-8 text-center text-(--second-color)">Завантаження...</p>
-         ) : (
-            <Table
-               columns={columns}
-               tableClassNames={tableClassNames}
-               className={isFetching ? "opacity-60 transition-opacity" : ""}
-            >
-               {profiles.map(employee => (
-                  <Table.Row key={employee.id} to={`/employees/${employee.user_id}`}>
-                     <Table.Person avatarUrl={"123"} name={employee.first_name} code={employee.code} />
-                     <Table.Text text={employee.position} />
-                     <Table.TextGroup
-                        primary={employee.shift?.name ?? "Не призначено"}
-                        secondary={
-                           employee.shift?.start_at && employee.shift?.end_at
-                              ? `${employee.shift.start_at.slice(0, 5)} – ${employee.shift.end_at.slice(0, 5)}`
-                              : ""
-                        }
-                     />
-                     <Table.Text text={formatTenure(employee.created_at)} className="text-(--second-color)" />
-                     <Table.Money value={employee.salary} className="font-medium" />
-                     <Table.Money value={employee.points} className="font-medium" />
-                     <Table.Percent value={123} />
-                     <Table.MenuButton />
-                  </Table.Row>
-               ))}
-               <TablePagination
-                  page={page}
-                  pageSize={pageSize}
-                  total={total}
-                  onPageChange={setPage}
-                  onPageSizeChange={size => {
-                     setPageSize(size)
-                     setPage(1)
-                  }}
-                  entityLabel="працівників"
-                  className="min-w-300"
-               />
-            </Table>
-         )}
+         <Table
+            columns={columns}
+            tableClassNames={tableClassNames}
+            className={isFetching ? "opacity-60 transition-opacity" : ""}
+         >
+            {isLoading && <p className={clsx(tableMessageClassName, "text-(--second-color)")}>Завантаження...</p>}
+
+            {isError && (
+               <p className={clsx(tableMessageClassName, "text-red-400")}>Не вдалося завантажити працівників</p>
+            )}
+
+            {!isLoading && !isError && profiles.length === 0 && (
+               <p className={clsx(tableMessageClassName, "text-(--second-color)")}>Працівників не знайдено</p>
+            )}
+            {profiles.map(employee => (
+               <Table.Row key={employee.id} to={`/employees/${employee.user_id}`}>
+                  <Table.Person avatarUrl={"123"} name={employee.first_name} code={employee.code} />
+                  <Table.Text text={employee.position} />
+                  <Table.TextGroup
+                     primary={employee.shift?.name ?? "Не призначено"}
+                     secondary={
+                        employee.shift?.start_at && employee.shift?.end_at
+                           ? `${employee.shift.start_at.slice(0, 5)} – ${employee.shift.end_at.slice(0, 5)}`
+                           : ""
+                     }
+                  />
+                  <Table.Text text={formatTenure(employee.created_at)} className="text-(--second-color)" />
+                  <Table.Money value={employee.salary} className="font-medium" />
+                  <Table.Money value={employee.points} className="font-medium" />
+                  <Table.Percent value={123} />
+                  <Table.MenuButton />
+               </Table.Row>
+            ))}
+            <TablePagination
+               page={page}
+               pageSize={pageSize}
+               total={total}
+               onPageChange={setPage}
+               onPageSizeChange={size => {
+                  setPageSize(size)
+                  setPage(1)
+               }}
+               entityLabel="працівників"
+               className="min-w-300"
+            />
+         </Table>
       </Table.Wrapper>
    )
 }

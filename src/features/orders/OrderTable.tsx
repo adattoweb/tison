@@ -18,6 +18,7 @@ import { ConfirmModal } from "@/components/Modal/ConfirmModal"
 import { UpdateOrderModal } from "./UpdateOrderModal"
 import { RowMenu } from "@/components/Table/RowMenu"
 import { TOAST_DURATION } from "@/constants/app"
+import { tableMessageClassName } from "@/utils/classNames"
 
 interface StatusOption {
    value: StatusType | undefined
@@ -173,14 +174,14 @@ export function OrderTable() {
                tableClassNames={tableClassNames}
                className={clsx("transition-opacity", isPlaceholderData && "opacity-50")}
             >
-               {isLoading && <p className="min-w-300 px-4 py-8 text-center text-(--second-color)">Завантаження...</p>}
+               {isLoading && <p className={clsx(tableMessageClassName, "text-(--second-color)")}>Завантаження...</p>}
 
                {isError && (
-                  <p className="min-w-300 px-4 py-8 text-center text-red-400">Не вдалося завантажити замовлення</p>
+                  <p className={clsx(tableMessageClassName, "text-red-400")}>Не вдалося завантажити замовлення</p>
                )}
 
                {!isLoading && !isError && orders.length === 0 && (
-                  <p className="min-w-300 px-4 py-8 text-center text-(--second-color)">Замовлень не знайдено</p>
+                  <p className={clsx(tableMessageClassName, "text-(--second-color)")}>Замовлень не знайдено</p>
                )}
 
                {orders.map(order => (

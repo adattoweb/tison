@@ -1,6 +1,6 @@
 import { api } from "@/api/api"
 import type { PaginatedResponse } from "../types/pagination"
-import type { ProductListRead } from "@/api/types/product"
+import type { ProductListRead, ProductRead } from "@/api/types/product"
 import type { ProductCreateInput, ProductUpdateInput } from "../schemas/product"
 import type { ProductsParams } from "@/types/api"
 
@@ -20,8 +20,8 @@ export const getAllProducts = async (params: ProductsParams): Promise<PaginatedR
    return data
 }
 
-export const getProductById = async (id: number): Promise<ProductListRead> => {
-   const { data } = await api.get<ProductListRead>(`/products/${id}`)
+export const getProductById = async (id: number): Promise<ProductRead> => {
+   const { data } = await api.get<ProductRead>(`/products/${id}`)
    return data
 }
 

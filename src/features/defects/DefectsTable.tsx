@@ -15,6 +15,7 @@ import { useAllDefects } from "@/hooks/api/defects/useAllDefects"
 import { useAllOperations } from "@/hooks/api/operations/useAllOperations"
 import { useDebouncedValue } from "@/hooks/api/useDebouncedValue"
 import { endOfDay, formatDate, startOfDay } from "@/utils/time"
+import { tableMessageClassName } from "@/utils/classNames"
 
 const ALL_OPERATIONS_LABEL = "Всі операції"
 
@@ -149,12 +150,12 @@ export function DefectsTable() {
             tableClassNames={tableClassNames}
             className={clsx("transition-opacity", isPlaceholderData && "opacity-50")}
          >
-            {isLoading && <p className="min-w-7xl px-4 py-8 text-center text-(--second-color)">Завантаження...</p>}
+            {isLoading && <p className={clsx(tableMessageClassName, "text-(--second-color)")}>Завантаження...</p>}
 
-            {isError && <p className="min-w-7xl px-4 py-8 text-center text-red-400">Не вдалося завантажити дефекти</p>}
+            {isError && <p className={clsx(tableMessageClassName, "text-red-400")}>Не вдалося завантажити дефекти</p>}
 
             {!isLoading && !isError && defects.length === 0 && (
-               <p className="min-w-7xl px-4 py-8 text-center text-(--second-color)">Дефектів не знайдено</p>
+               <p className={clsx(tableMessageClassName, "text-(--second-color)")}>Дефектів не знайдено</p>
             )}
 
             {defects.map(defect => {

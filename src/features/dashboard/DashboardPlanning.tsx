@@ -2,6 +2,8 @@ import Table from "@/components/Table/Table"
 import type { StatusType } from "@/types/status"
 import type { ProductModelSummary } from "@/api/types/productionAnalytics"
 import { useProductionSummary } from "@/hooks/api/productionAnalytics/useProductionSummary"
+import { tableMessageClassName } from "@/utils/classNames"
+import clsx from "clsx"
 
 const columns = ["Виріб", "План", "Залишилось", "Завершено", "Прогрес", "Статус"]
 
@@ -20,12 +22,12 @@ export function DashboardPlanning() {
 
    return (
       <Table columns={columns} tableClassNames={tableClassNames} style={{ gridArea: "planning" }}>
-         {isLoading && <p className="py-8 text-center text-(--second-color)">Завантаження...</p>}
+         {isLoading && <p className={clsx(tableMessageClassName, "text-(--second-color)")}>Завантаження...</p>}
 
-         {isError && <p className="py-8 text-center text-red-400">Не вдалося завантажити дані</p>}
+         {isError && <p className={clsx(tableMessageClassName, "text-red-400")}>Не вдалося завантажити дані</p>}
 
          {!isLoading && !isError && items.length === 0 && (
-            <p className="py-8 text-center text-(--second-color)">На сьогодні планів немає</p>
+            <p className={clsx(tableMessageClassName, "text-(--second-color)")}>На сьогодні планів немає</p>
          )}
 
          {!isLoading &&

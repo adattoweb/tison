@@ -18,3 +18,8 @@ export interface ProductListRead {
    /** відсоток виконання, 0–100 */
    progress: number
 }
+
+export interface ProductRead extends ProductListRead {
+   parent: ProductListRead
+   children: ProductListRead
+}

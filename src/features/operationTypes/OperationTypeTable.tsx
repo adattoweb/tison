@@ -1,5 +1,3 @@
-// OperationTypesTable.tsx
-
 import { useState } from "react"
 import { Pencil, RotateCcw, Search, Trash2 } from "lucide-react"
 import Table from "@/components/Table/Table"
@@ -16,6 +14,8 @@ import { useAllOperationTypes } from "@/hooks/api/operationTypes/useAllOperation
 import { useDeleteOperationType } from "@/hooks/api/operationTypes/useDeleteOperationTypes"
 import { TOAST_DURATION } from "@/constants/app"
 import { useDearchiveOperationType } from "@/hooks/api/operationTypes/useDearchiveOperationTypes"
+import { tableMessageClassName } from "@/utils/classNames"
+import clsx from "clsx"
 
 const columns = ["Назва", "Бали", ""]
 
@@ -42,11 +42,11 @@ export function OperationTypesTable() {
    const debouncedSearch = useDebouncedValue(search, 400)
    const { addToast } = useToast()
 
-   const { data, isFetching } = useAllOperationTypes({
+   const { data, isFetching, isError, isLoading } = useAllOperationTypes({
       page,
       pageSize,
       search: debouncedSearch,
-      isActive,
+      is_active: isActive,
    })
    const { mutate: doDeleteOperationType } = useDeleteOperationType()
    const { mutate: doDearchiveOperationType } = useDearchiveOperationType()
@@ -120,6 +120,15 @@ export function OperationTypesTable() {
                tableClassNames={tableClassNames}
                className={isFetching ? "opacity-60 transition-opacity" : ""}
             >
+               {isLoading && <p className={clsx(tableMessageClassName, "text-(--second-color)")}>Завантаження...</p>}
+
+               {isError && (
+                  <p className={clsx(tableMessageClassName, "text-red-400")}>Не вдалося завантажити типи операцій</p>
+               )}
+
+               {!isLoading && !isError && operationTypes.length === 0 && (
+                  <p className={clsx(tableMessageClassName, "text-(--second-color)")}>Типів операцій не знайдено</p>
+               )}
                {operationTypes.map(type => (
                   <Table.Row key={type.id}>
                      <Table.Text text={type.name} />
@@ -173,7 +182,6 @@ export function OperationTypesTable() {
                doDeleteOperationType(deletingType.id, {
                   onSuccess: () => {
                      addToast("Успішно видалено тип операції!", { duration: TOAST_DURATION, type: "success" })
-                     // видалили останній запис на сторінці, повертаємось на попередню
                      if (operationTypes.length === 1 && page > 1) setPage(page - 1)
                   },
                })

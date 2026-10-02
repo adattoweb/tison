@@ -9,6 +9,7 @@ export const OrderBaseSchema = z.object({
    fact: z.number({ error: "Введіть факт" }).int("Введіть ціле число"),
    planned_start_at: isoDate("Вкажіть дату початку"),
    planned_end_at: isoDate("Вкажіть дату завершення"),
+   employees_ids: z.array(z.string()).default([]),
 })
 
 export const OrderCreateSchema = OrderBaseSchema.refine(d => d.fact <= d.plan, {
