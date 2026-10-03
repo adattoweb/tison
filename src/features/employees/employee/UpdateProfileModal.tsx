@@ -21,6 +21,10 @@ import { useUpdateProfileByAdmin } from "@/hooks/api/profile/useUpdateProfileByA
 import { useUploadImage } from "@/hooks/api/media/useUploadImage"
 import { useShifts } from "@/hooks/api/shifts/useShifts"
 import type { ProfileRead } from "@/api/types/profile"
+import { useIsUserActive } from "@/hooks/api/users/useIsUserActive"
+import { useActivateUser } from "@/hooks/api/users/useActivateUser"
+import { useDeactivateUser } from "@/hooks/api/users/useDeactivateUser"
+import { useIsSuperUser } from "@/hooks/api/users/useIsSuperUser"
 
 interface ModalProps {
    isOpen: boolean
@@ -33,6 +37,14 @@ export function UpdateProfileModal({ isOpen, setIsOpen, profile }: ModalProps) {
    const { mutate: doUpdateProfile, isPending: isUpdating } = useUpdateProfileByAdmin()
    const { mutateAsync: doUploadImage, isPending: isUploading } = useUploadImage()
    const { addToast } = useToast()
+
+   const { data: is_active } = useIsUserActive(profile.user_id)
+   const { data: is_superuser } = useIsSuperUser(profile.user_id)
+   console.log(is_superuser)
+   const { mutate: doActivateUser } = useActivateUser()
+   const { mutate: doDeactivateUser } = useDeactivateUser()
+
+   const switchActive = is_active?.is_active ? doDeactivateUser : doActivateUser
 
    const [avatarFile, setAvatarFile] = useState<File | null>(null)
 
@@ -240,6 +252,11 @@ export function UpdateProfileModal({ isOpen, setIsOpen, profile }: ModalProps) {
                </div>
             </Modal.Content>
             <footer className="flex justify-end gap-4">
+               {!is_superuser?.is_superuser && (
+                  <Button type="danger" onClick={() => switchActive(profile.user_id)}>
+                     <Button.Paragraph>{is_active?.is_active ? "Деактивувати" : "Активувати"}</Button.Paragraph>
+                  </Button>
+               )}
                <Button type="transparent" onClick={onClose} disabled={isSaving}>
                   <Button.Paragraph>Скасувати</Button.Paragraph>
                </Button>

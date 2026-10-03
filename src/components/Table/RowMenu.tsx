@@ -62,9 +62,8 @@ export function RowMenu({ actions, className }: RowMenuProps) {
             className="w-max! min-w-48 overflow-y-auto! py-1"
          >
             {actions.map(action => (
-               <Can resource={action.resource} action={action.action}>
+               <Can key={action.label} resource={action.resource} action={action.action}>
                   <Dropdown.Item
-                     key={action.label}
                      role="menuitem"
                      disabled={action.disabled}
                      onClick={event => {

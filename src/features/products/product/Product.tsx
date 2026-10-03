@@ -20,6 +20,8 @@ import { useToast } from "@/components/Toast/useToast"
 import { TOAST_DURATION } from "@/constants/app"
 import ProductDashboard from "./ProductDashboard"
 import { Can } from "@/components/Auth/Can"
+import { ParentProduct } from "./ParentProduct"
+import { ChildrenProducts } from "./ChildrenProducts"
 
 const WIDE_AREAS = `
    "header header header header header header header header header header"
@@ -48,6 +50,24 @@ const AREAS_BY_MODE: Record<LayoutMode, string> = {
    stacked: STACKED_AREAS,
 }
 
+const COLUMNS = 10
+
+const areaRow = (...cells: [name: string, span: number][]) =>
+   `"${cells.map(([name, span]) => Array(span).fill(name).join(" ")).join(" ")}"`
+
+function buildAreas(mode: LayoutMode, hasParent: boolean, hasChildren: boolean): string {
+   const rows: string[] = []
+
+   if (hasParent && hasChildren && mode !== "stacked") {
+      rows.push(areaRow(["parent", COLUMNS / 2], ["children", COLUMNS / 2]))
+   } else {
+      if (hasParent) rows.push(areaRow(["parent", COLUMNS]))
+      if (hasChildren) rows.push(areaRow(["children", COLUMNS]))
+   }
+
+   return rows.length === 0 ? AREAS_BY_MODE[mode] : `${AREAS_BY_MODE[mode]}\n${rows.join("\n")}`
+}
+
 export function Product() {
    const mode = useLayoutMode()
    const { id } = useParams()
@@ -72,13 +92,18 @@ export function Product() {
    // планова дата завершення є в замовлення, а не у виробу
    const { data: order } = useOrder(product?.order_id ?? undefined)
    const { data: modelsData } = useAllProductModels({ page: 1, pageSize: 100, is_active: true })
-   const model = modelsData?.items.find(m => m.id === product?.product_model_id)
+   const models = modelsData?.items ?? []
+   const model = models.find(m => m.id === product?.product_model_id)
 
    if (productId === undefined || isError) return <ErrorPage />
 
    if (isLoading || !product) {
       return <p className="py-8 text-center text-(--second-color)">Завантаження...</p>
    }
+
+   // TODO: у типі ProductRead виправ на parent: ProductListRead | null та children: ProductListRead[]
+   const parent = product.parent ?? null
+   const children = product.children ?? []
 
    return (
       <div className="flex flex-col gap-(--components-gap)">
@@ -108,13 +133,15 @@ export function Product() {
          </div>
          <div
             className="grid grid-cols-[repeat(10,1fr)] gap-(--components-gap) w-full"
-            style={{ gridTemplateAreas: AREAS_BY_MODE[mode] }}
+            style={{ gridTemplateAreas: buildAreas(mode, !!parent, children.length > 0) }}
          >
             <ProductHeader productId={product.id} />
             <Info product={product} model={model} order={order} />
             <History productId={product.id} />
             <Chart productModelId={product.product_model_id} />
             <ProductDashboard productModelId={product.product_model_id} />
+            {parent && <ParentProduct parent={parent} models={models} />}
+            {children.length > 0 && <ChildrenProducts children={children} models={models} />}
          </div>
          <Can resource="product" action="update">
             <UpdateProductModal

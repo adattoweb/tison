@@ -14,6 +14,14 @@ export interface UserRead {
    is_verified: boolean
 }
 
+export interface UserIsActiveRead {
+   is_active: boolean
+}
+
+export interface UserIsSuperUserRead {
+   is_superuser: boolean
+}
+
 export interface MeRead {
    id: string
    email: string

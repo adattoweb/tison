@@ -284,6 +284,12 @@ export function Content({ model }: ContentProps) {
       setActiveStepId(id)
    }
 
+   // Після видалення activeStep сам впаде на перший крок; якщо видалили останній, показуємо "Про модель"
+   const handleStepDeleted = () => {
+      setActiveStepId(null)
+      if (instructions.length <= 1) setIsAboutActive(true)
+   }
+
    const handleDragEnd = async ({ active, over }: DragEndEvent) => {
       if (!over || active.id === over.id || isSaving) return
 
@@ -346,7 +352,7 @@ export function Content({ model }: ContentProps) {
                <AboutModelInfo model={model} />
             ) : activeStep ? (
                <Can resource="instruction" action="read">
-                  <ActiveStep step={activeStep} />
+                  <ActiveStep step={activeStep} onDeleted={handleStepDeleted} />
                </Can>
             ) : (
                <div className="flex flex-col gap-(--components-gap) ibm-plex-sans border border-(--stroke-color) rounded-lg px-(--components-py) py-(--components-py) flex-1">
